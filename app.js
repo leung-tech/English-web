@@ -10,7 +10,7 @@
     used: 'primary-english-studio-used-v1'
   };
 
-  const state = { grade: 3, route: 'read', module: 'reading', session: null };
+  const state = { grade: 3, route: 'read', module: 'reading', session: null, modelGrade: 4, modelId: null };
   const safeGet = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
   const safeSet = (key, value) => localStorage.setItem(key, JSON.stringify(value));
   const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
@@ -39,7 +39,8 @@
       modules: [
         { id: 'sentence-builder', symbol: 'S', title: 'Sentence builder', titleZh: '句子重組', description: 'Turn word groups into full sentences', descriptionZh: '重組詞語，寫成完整句子', sessions: 6 },
         { id: 'proofreading', symbol: 'E', title: 'Proofreading', titleZh: '改錯練習', description: 'Spot grammar and spelling slips', descriptionZh: '找出常見文法與拼寫錯誤', sessions: 6 },
-        { id: 'writing-plan', symbol: 'P', title: 'Writing planner', titleZh: '寫作構思', description: 'Plan complete sentences and paragraphs', descriptionZh: '用完整句子組織小段落', sessions: 3 }
+        { id: 'writing-plan', symbol: 'P', title: 'Writing planner', titleZh: '寫作構思', description: 'Plan complete sentences and paragraphs', descriptionZh: '用完整句子組織小段落', sessions: 3 },
+        { id: 'writing-models', symbol: '★', title: 'High-score models', titleZh: '呈分試高分範文', description: 'P4–P6 model writing and scoring points', descriptionZh: '小四至小六範文與評分要點', sessions: 0, minGrade: 4, assessment: true }
       ]
     },
     listen: {
@@ -313,7 +314,8 @@
     return speakingPrompts[state.grade].map((model, index) => question(`speaking-${state.grade}-${index}`, 'listen', 'Speak aloud', 'Listen to the model. Then say it aloud and change the blank parts to make it true for you.', 'spoken', 'Excellent. Speaking in complete sentences builds confidence. Try saying the sentence once more with a clear voice and natural pace.', null, { audioText: model.replaceAll('____', 'your answer'), selfCheck: 'I have spoken the sentence aloud in a complete voice.', speaking: true, hint: 'Do not rush. Pause briefly at full stops and make your key words clear.' }));
   }
 
-  function selectedModule() { return routes[state.route].modules.find((item) => item.id === state.module) || routes[state.route].modules[0]; }
+  function availableModules(route = routes[state.route]) { return route.modules.filter((item) => !item.minGrade || state.grade >= item.minGrade); }
+  function selectedModule() { const modules = availableModules(); return modules.find((item) => item.id === state.module) || modules[0]; }
   function getBank() {
     if (state.module === 'vocabulary') return createVocabulary();
     if (state.module === 'grammar') return createGrammar();
@@ -375,7 +377,7 @@
   }
 
   function renderSkills() {
-    $('#skill-grid').innerHTML = Object.entries(routes).map(([id, route]) => `<button class="skill-card skill-${id} ${state.route === id ? 'selected' : ''}" data-route="${id}" style="--skill:${route.color};--tint:${route.tint}"><span class="skill-token">${route.token}</span><h3>${bilingual(route.label, route.labelZh)}</h3><p class="card-en">${escape(route.description)}</p><p class="card-zh">${escape(route.descriptionZh)}</p><small>${route.modules.length} PRACTICE OPTIONS · 練習選項 →</small></button>`).join('');
+    $('#skill-grid').innerHTML = Object.entries(routes).map(([id, route]) => `<button class="skill-card skill-${id} ${state.route === id ? 'selected' : ''}" data-route="${id}" style="--skill:${route.color};--tint:${route.tint}"><span class="skill-token">${route.token}</span><h3>${bilingual(route.label, route.labelZh)}</h3><p class="card-en">${escape(route.description)}</p><p class="card-zh">${escape(route.descriptionZh)}</p><small>${availableModules(route).length} PRACTICE OPTIONS · 練習選項 →</small></button>`).join('');
     $$('[data-route]').forEach((button) => button.addEventListener('click', () => {
       state.route = button.dataset.route;
       state.module = routes[state.route].modules[0].id;
@@ -385,13 +387,15 @@
 
   function renderModules() {
     const route = routes[state.route];
+    const modules = availableModules(route);
+    if (!modules.some((module) => module.id === state.module)) state.module = modules[0].id;
     $('#route-title').innerHTML = bilingual(route.title, route.titleZh);
     $('#route-description').innerHTML = bilingual(route.description, route.descriptionZh);
-    $('#module-list').innerHTML = route.modules.map((module) => `<button class="module-card ${state.module === module.id ? 'selected' : ''}" data-module="${module.id}"><i class="module-symbol">${module.symbol}</i><span><strong>${bilingual(module.title, module.titleZh)}</strong><span class="module-en">${escape(module.description)}</span><span class="module-zh">${escape(module.descriptionZh)}</span></span></button>`).join('');
+    $('#module-list').innerHTML = modules.map((module) => `<button class="module-card ${state.module === module.id ? 'selected' : ''}" data-module="${module.id}"><i class="module-symbol">${module.symbol}</i><span><strong>${bilingual(module.title, module.titleZh)}</strong><span class="module-en">${escape(module.description)}</span><span class="module-zh">${escape(module.descriptionZh)}</span>${module.assessment ? '<span class="assessment-chip">P4–P6 ASSESSMENT · 呈分試</span>' : ''}</span></button>`).join('');
     $$('[data-module]').forEach((button) => button.addEventListener('click', () => { state.module = button.dataset.module; renderHome(); }));
     const module = selectedModule();
-    $('#session-mark').textContent = `${module.sessions} QUESTIONS · ${module.sessions} 題`;
-    $('#scope-session-count').textContent = module.sessions;
+    $('#session-mark').textContent = module.assessment ? 'MODEL LIBRARY · 範文庫' : `${module.sessions} QUESTIONS · ${module.sessions} 題`;
+    $('#scope-session-count').textContent = module.assessment ? 'P4–6' : module.sessions;
     $('#selected-module-note').innerHTML = `${bilingual(module.title, module.titleZh)}<span class="selected-note-detail">${escape(module.descriptionZh)}</span>`;
   }
 
@@ -410,6 +414,31 @@
     renderSkills();
     renderModules();
     renderScopeSummary();
+  }
+
+  function renderWritingModels() {
+    const models = window.WRITING_MODELS || [];
+    const rubric = window.WRITING_RUBRIC || [];
+    const grades = [4, 5, 6];
+    if (!grades.includes(state.modelGrade)) state.modelGrade = Math.max(4, Math.min(6, state.grade));
+    const gradeModels = models.filter((model) => model.grade === state.modelGrade);
+    if (!gradeModels.some((model) => model.id === state.modelId)) state.modelId = gradeModels[0]?.id || null;
+    const selected = gradeModels.find((model) => model.id === state.modelId);
+    $('#models-grade-tabs').innerHTML = grades.map((grade) => `<button class="models-grade-tab ${grade === state.modelGrade ? 'active' : ''}" data-model-grade="${grade}">P${grade} Models · 小${grade}範文</button>`).join('');
+    $('#models-grade-heading').textContent = `P${state.modelGrade} Writing · 小${state.modelGrade}寫作`;
+    $('#models-grade-note').textContent = state.modelGrade === 4 ? 'Practise clear formats, story sequence and complete task points. 練習清晰格式、故事次序與完整回應。' : state.modelGrade === 5 ? 'Notice developed reasons, paragraphs and purpose-driven language. 留意理由發展、段落安排與寫作目的。' : 'Study formal structure, persuasion and more varied sentence patterns. 學習正式結構、說服技巧與較多句式變化。';
+    $('#model-picker').innerHTML = gradeModels.map((model) => `<button class="model-picker-btn ${model.id === state.modelId ? 'active' : ''}" data-model-id="${model.id}"><strong>${escape(model.genre)}</strong><small>${escape(model.genreZh)}</small><span>${escape(model.title)}</span></button>`).join('');
+    if (!selected) return;
+    $('#model-genre').textContent = `${selected.genre.toUpperCase()} · ${selected.genreZh}`;
+    $('#model-title').innerHTML = `${escape(selected.title)}<small>${escape(selected.titleZh)}</small>`;
+    $('#model-words').textContent = `${selected.words} · 建議篇幅`;
+    $('#model-task').textContent = selected.task;
+    $('#model-task-zh').textContent = selected.taskZh;
+    $('#model-copy').textContent = selected.model;
+    $('#rubric-list').innerHTML = rubric.map((item) => `<article class="rubric-item"><strong>${escape(item.title)}</strong><small>${escape(item.titleZh)}</small><p>${escape(item.strong)}<br>${escape(item.strongZh)}</p></article>`).join('');
+    $('#model-focus').innerHTML = `<h3>Why it works <small>閱卷重點</small></h3><ul>${selected.focus.map((item, index) => `<li>${escape(item)}<small>${escape(selected.focusZh[index])}</small></li>`).join('')}</ul>`;
+    $$('[data-model-grade]').forEach((button) => button.addEventListener('click', () => { state.modelGrade = Number(button.dataset.modelGrade); state.modelId = null; renderWritingModels(); }));
+    $$('[data-model-id]').forEach((button) => button.addEventListener('click', () => { state.modelId = button.dataset.modelId; renderWritingModels(); }));
   }
 
   function renderScopePage() {
@@ -527,6 +556,13 @@
 
   function startPractice() {
     const module = selectedModule();
+    if (module.assessment) {
+      state.modelGrade = Math.max(4, Math.min(6, state.grade));
+      state.modelId = null;
+      renderWritingModels();
+      showView('models');
+      return;
+    }
     const bank = getBank();
     const questions = selectSessionQuestions(bank, module.sessions);
     state.session = { questions, index: 0, drafts: Array(questions.length).fill(''), results: Array(questions.length).fill(null), review: false };
