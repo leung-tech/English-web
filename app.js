@@ -204,7 +204,7 @@
     const level = gradeNumber(), result = [];
     const basicTuples = [['I', 'like', 'my new book'], ['She', 'has', 'a red bag'], ['We', 'play', 'in the park'], ['He', 'reads', 'a story'], ['They', 'have', 'a music lesson'], ['Ben', 'draws', 'a picture'], ['Amy', 'writes', 'her name'], ['The cat', 'sleeps', 'under the chair'], ['My friends', 'walk', 'to school'], ['You', 'can help', 'your teacher']];
     const middleTuples = [['Amy', 'visited', 'the library'], ['We', 'played', 'a game'], ['Ben', 'will join', 'the art club'], ['The class', 'is going to plant', 'some flowers'], ['My sister', 'can recycle', 'the bottles'], ['The pupils', 'should keep', 'the classroom clean'], ['Our teacher', 'will read', 'a story'], ['I', 'enjoy', 'the science lesson'], ['They', 'are making', 'a poster'], ['The team', 'has finished', 'the project']];
-    const times = level <= 2 ? ['today', 'after school', 'every day', 'in the morning', 'with my friend', 'at home', 'on Monday', 'now', 'at the park', 'in class'] : ['yesterday', 'after school', 'next week', 'this afternoon', 'during the project', 'at the library', 'for the class', 'before lunch', 'with great care', 'at the school fair'];
+    const times = level <= 2 ? ['today', 'after school', 'every day', 'in the morning', 'with my friend', 'at home', 'on Monday', 'now', 'at the park', 'in class'] : ['at school', 'with the class', 'for a project', 'this afternoon', 'during the activity', 'at the library', 'with great care', 'before lunch', 'as a team', 'for practice'];
     const tuples = level <= 2 ? basicTuples : middleTuples;
     for (let index = 0; index < MAX_PER_TOPIC; index += 1) {
       const [subject, verb, object] = tuples[index % tuples.length], time = times[Math.floor(index / tuples.length) % times.length];
@@ -431,7 +431,7 @@
     $('#question-topic').textContent = item.subject === 'math' ? 'MATHS PRACTICE' : 'ENGLISH PRACTICE';
     const visual = renderVisual(item.visual);
     const passage = item.passage ? `<article class="passage"><strong>${escape(item.passage.title)}</strong><br>${escape(item.passage.text)}</article>` : '';
-    const writingGuide = item.writingSkill ? `<div class="writing-guide ${item.writingSkill === 'editing' ? 'editing' : 'ordering'}"><span>${item.writingSkill === 'editing' ? '改錯提示' : '排序提示'}</span><p>${item.writingSkill === 'editing' ? '找出一個文法錯誤，輸入改正後的完整句子。' : '把所有詞語按主語、動詞、其他資料的次序組合，再輸入完整句子。'}</p></div>` : '';
+    const writingGuide = item.writingSkill ? `<div class="writing-guide ${item.writingSkill === 'editing' ? 'editing' : 'ordering'}"><span>${item.writingSkill === 'editing' ? '改錯提示' : '排序提示'}</span><p>${item.writingSkill === 'editing' ? '先圈出錯誤位置，再輸入改正後的完整句子。完成後檢查主語與動詞是否配合。' : '先找主語，再放動詞，最後補上其他資料和句號；完成後讀一次，確認意思通順。'}</p></div>` : '';
     const body = item.options
       ? `<div class="choices">${item.options.map((choice, index) => `<button class="choice ${session.drafts[session.index] === String(index) ? 'selected' : ''}" data-choice="${index}"><span class="choice-letter">${String.fromCharCode(65 + index)}</span><span>${escape(choice)}</span></button>`).join('')}</div>`
       : `<div class="answer-area ${item.writingSkill ? 'short-writing-area' : ''}"><input class="answer-field" id="answer-field" autocomplete="off" inputmode="text" placeholder="${item.writingSkill ? '在此輸入完整英文句子' : '在此輸入答案'}" value="${escape(session.drafts[session.index] || '')}"></div>`;
