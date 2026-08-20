@@ -47,3 +47,11 @@ The P4 informal-email model was opened in the completed writing-support library.
 The P4 quiz was tested with an incorrect first response. The panel marked the selected wrong option, revealed the correct option and displayed a bilingual grammar explanation. The remaining questions were completed successfully enough to reach the completion state, which showed a 2/3 practice score and a restart control. This confirms answer marking, feedback, progression, scoring and restart behaviour.
 
 The complete writing-support preview also covered P5 and P6. The P5 formal-email model displayed three sentence-pattern cards and the five-part scoring panel. The P6 magazine-article model displayed a distinct three-question bilingual correction quiz, confirming that P4, P5 and P6 each load genre-specific models, writing-support resources, scoring guidance and quiz content.
+
+## Senior listening and oral-practice validation
+
+The P4 Listening comprehension module opened with a senior-specific Eco Club announcement question. It displayed a bilingual question, four answer choices, a replayable audio control and a four-question session indicator.
+
+After the P4 listening answer was checked, the bilingual feedback and the titled English transcript appeared as intended. The P6 oral-presentation module was also opened successfully. It showed a replayable model-audio control, bilingual proposal prompt, four presentation-plan steps, four key-language prompts, a self-check and a two-activity session count.
+
+The P6 oral self-check was completed and returned a successful completion message with the next-step control. The P5 Travel forum listening activity also loaded with a bilingual question, four answer choices and replayable audio. This confirms the P4–P6 senior listening scripts and oral-presentation modules work across all three target year levels.

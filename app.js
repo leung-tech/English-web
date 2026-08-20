@@ -49,7 +49,7 @@
       tip: '利用準備時間先看選項，預測可能聽到的人物、地點、數字或動作。',
       modules: [
         { id: 'listening', symbol: 'L', title: 'Listening lab', titleZh: '聆聽練習室', description: 'Replayable dialogues and short stories', descriptionZh: '可重播的短對話與故事', sessions: 4 },
-        { id: 'speaking', symbol: 'S', title: 'Speak aloud', titleZh: '朗讀與表達', description: 'Listen to a model, then say it aloud', descriptionZh: '聽範例後朗讀完整句子', sessions: 3 }
+        { id: 'speaking', symbol: 'S', title: 'Speak aloud', titleZh: '朗讀與表達', description: 'Listen to a model, then build your own talk', descriptionZh: '聽示範後按計劃完成個人短講', sessions: 2 }
       ]
     },
     language: {
@@ -304,6 +304,22 @@
   }
 
   function createListening() {
+    const seniorScripts = (window.SENIOR_LISTENING_LIBRARY || {})[state.grade];
+    if (seniorScripts) {
+      return seniorScripts.flatMap((script) => script.questions.map((item, index) => {
+        const shuffled = randomize(item.options);
+        const correct = item.options[item.answer];
+        return question(`senior-listening-${state.grade}-${script.id}-${index}`, 'listen', `Listening comprehension · ${script.title}`, item.prompt, shuffled.indexOf(correct), item.explanation, shuffled, {
+          audioText: script.script,
+          promptZh: item.promptZh,
+          scriptTitle: script.title,
+          scriptTitleZh: script.titleZh,
+          explanationZh: item.explanationZh,
+          seniorListening: true,
+          hint: 'Read the question first. Listen once for the main idea, then replay for a key word, time, reason or action. 先看題目；先聽主旨，再重播尋找重點字、時間、理由或行動。'
+        });
+      }));
+    }
     return listeningLibrary[state.grade].map(([audioText, prompt, options, explanation], index) => {
       const shuffled = randomize(options);
       return question(`listening-${state.grade}-${index}`, 'listen', 'Listening lab', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { audioText, hint: 'Listen once for the main idea. Listen again for a word, number, place or action from the question.' });
@@ -311,6 +327,17 @@
   }
 
   function createSpeaking() {
+    const seniorOral = (window.SENIOR_ORAL_LIBRARY || {})[state.grade];
+    if (seniorOral) {
+      return seniorOral.map((activity, index) => question(`senior-speaking-${state.grade}-${activity.id}-${index}`, 'listen', `Oral presentation · ${activity.title}`, activity.prompt, 'spoken', 'Excellent. Your plan now has a clear structure. Listen once more and improve one word, example or pause before you present again.', null, {
+        audioText: activity.model,
+        selfCheck: activity.selfCheck,
+        speaking: true,
+        oralActivity: activity,
+        promptZh: activity.promptZh,
+        hint: 'Use the four-step plan. Speak from key words rather than memorising every sentence. 按四步計劃說話；可依重點詞表達，不必逐字背誦。'
+      }));
+    }
     return speakingPrompts[state.grade].map((model, index) => question(`speaking-${state.grade}-${index}`, 'listen', 'Speak aloud', 'Listen to the model. Then say it aloud and change the blank parts to make it true for you.', 'spoken', 'Excellent. Speaking in complete sentences builds confidence. Try saying the sentence once more with a clear voice and natural pace.', null, { audioText: model.replaceAll('____', 'your answer'), selfCheck: 'I have spoken the sentence aloud in a complete voice.', speaking: true, hint: 'Do not rush. Pause briefly at full stops and make your key words clear.' }));
   }
 
@@ -551,11 +578,12 @@
     $('#practice-title').innerHTML = `${escape(scope().level)} · ${escape(item.topic)}<span class="practice-title-zh">${escape(route.labelZh)}</span>`;
     $('#question-number').textContent = String(session.index + 1).padStart(2, '0');
     $('#question-route').innerHTML = `${escape(route.label.toUpperCase())} PRACTICE <small>· ${escape(route.labelZh)}</small>`;
-    $('#practice-side-copy').textContent = item.route === 'listen' ? '可先播放兩次。核對後才會看到英文逐字稿。' : '逐題作答後，系統會提供一個可立即使用的重點提示。';
+    $('#practice-side-copy').textContent = item.oralActivity ? '先聽示範，再按四步計劃準備自己的短講。' : item.route === 'listen' ? '可先播放兩次。核對後才會看到英文逐字稿。' : '逐題作答後，系統會提供一個可立即使用的重點提示。';
     $('#skill-tip').textContent = route.tip;
 
     const passage = item.passage ? `<article class="passage"><strong>${escape(item.passage.title)}</strong>${escape(item.passage.text)}</article>` : '';
-    const audio = item.audioText ? `<section class="listen-player"><div><strong>${item.speaking ? 'Listen, then say it aloud.' : 'Listen first. You may replay the audio.'}</strong><span>${item.speaking ? '按播放鍵聽示範，然後用自己的資料完成句子。' : '核對答案後可查看英文逐字稿。'}</span></div><button class="play-audio" id="play-audio">Play audio</button></section>${currentResult && !item.speaking ? `<p class="transcript"><strong>Transcript:</strong> ${escape(item.audioText)}</p>` : ''}` : '';
+    const audio = item.audioText ? `<section class="listen-player"><div><strong>${item.oralActivity ? 'Listen to the model, then build your own talk.' : item.speaking ? 'Listen, then say it aloud.' : 'Listen first. You may replay the audio.'}</strong><span>${item.oralActivity ? '按播放鍵聽示範，然後按照四步計劃準備個人短講。' : item.speaking ? '按播放鍵聽示範，然後用自己的資料完成句子。' : '核對答案後可查看英文逐字稿。'}</span></div><button class="play-audio" id="play-audio">Play audio · 播放錄音</button></section>${currentResult && !item.speaking ? `<p class="transcript"><strong>${escape(item.scriptTitle ? `${item.scriptTitle} · Transcript` : 'Transcript')}:</strong> ${escape(item.audioText)}</p>` : ''}` : '';
+    const oralPlan = item.oralActivity ? `<section class="oral-plan"><header><p class="eyebrow">P4–P6 ORAL PRACTICE · 高小聆聽與口語</p><div><strong>${escape(item.oralActivity.title)}<small>${escape(item.oralActivity.titleZh)}</small></strong><span>${escape(item.oralActivity.duration)}</span></div></header><div class="oral-frames">${item.oralActivity.frames.map(([label, labelZh, frame, frameZh], index) => `<article><i>${index + 1}</i><div><b>${escape(label)}<small>${escape(labelZh)}</small></b><p>${escape(frame)}</p><span>${escape(frameZh)}</span></div></article>`).join('')}</div><footer><strong>Key language · 實用語句</strong><p>${item.oralActivity.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>` : '';
     const writingGuide = item.writing ? `<section class="writing-guide"><strong>${item.selfCheck ? 'Writing reminder' : 'Writing check'}</strong><p>${item.selfCheck ? '先完成你的想法，再讀一次，確保每句都有清楚的意思。' : '輸入完整英文句子。留意大寫字母、主語、動詞和句號。'}</p></section>` : '';
     let response = '';
     if (item.selfCheck) {
@@ -568,10 +596,10 @@
       response = `<input class="answer-field" id="answer-field" autocomplete="off" inputmode="text" placeholder="Write your answer in English" value="${escape(session.drafts[session.index] || '')}">`;
     }
 
-    $('#question-content').innerHTML = `${audio}${passage}<h1>${escape(item.prompt)}</h1>${writingGuide}${response}`;
+    $('#question-content').innerHTML = `${audio}${passage}<h1>${escape(item.prompt)}${item.promptZh ? `<small class="question-zh">${escape(item.promptZh)}</small>` : ''}</h1>${oralPlan}${writingGuide}${response}`;
     const feedback = $('#feedback');
     feedback.className = `feedback ${currentResult ? `show ${currentResult.correct ? 'correct' : 'wrong'}` : ''}`;
-    feedback.innerHTML = currentResult ? `<strong>${currentResult.correct ? 'Good work.' : 'Keep this one for review.'}</strong> ${escape(item.explanation)}` : '';
+    feedback.innerHTML = currentResult ? `<strong>${currentResult.correct ? 'Good work.' : 'Keep this one for review.'}</strong> ${escape(item.explanation)}${item.explanationZh ? `<small>${escape(item.explanationZh)}</small>` : ''}` : '';
     $('#check-question').classList.toggle('hidden', Boolean(currentResult));
     $('#next-question').classList.toggle('hidden', !currentResult);
     $('#previous-question').disabled = session.index === 0;
