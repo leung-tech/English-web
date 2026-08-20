@@ -56,3 +56,116 @@ window.WRITING_MODELS = [
     focusZh: ['吸引人的開首與直接提問', '加入例子與反方顧慮', '以有力呼籲作結']
   }
 ];
+
+
+window.WRITING_MODEL_SUPPORT = {
+  'p4-green-day': {
+    mistakes: [
+      { bad: 'Dear Amy, I invite you join Green Day.', better: 'Dear Amy, I would love you to join our Green Day.', tip: 'Use invite someone to join, or a friendly phrase such as I would love you to join.', tipZh: '使用 invite someone to join，或 I would love you to join 等友善邀請句式。' },
+      { bad: 'We collect bottles yesterday.', better: 'We will collect used bottles on Friday.', tip: 'Use will for a planned future school event.', tipZh: '學校將舉行的活動要用 will 表達未來。' },
+      { bad: 'It is fun. It is good.', better: 'I think the day will be enjoyable because we can help our school.', tip: 'Add one precise adjective and a reason.', tipZh: '加入一個準確形容詞和一個理由。' }
+    ],
+    vocab: [
+      { basic: 'good', strong: 'enjoyable', zh: '有趣的、令人愉快的' },
+      { basic: 'old bottles', strong: 'used plastic bottles', zh: '用過的塑膠瓶' },
+      { basic: 'bring', strong: 'remember to bring', zh: '記得帶備' }
+    ],
+    patterns: [
+      { en: 'Our school is holding [event] on [date].', zh: '我們的學校將於［日期］舉行［活動］。' },
+      { en: 'First, we will [activity]. Then, we will [activity].', zh: '首先，我們會［活動］，然後我們會［活動］。' },
+      { en: 'Please remember to bring [item] because [reason].', zh: '請記得帶備［物品］，因為［原因］。' }
+    ],
+    task: 'Write one invitation sentence using one stronger word and one pattern.', taskZh: '運用一個進階詞彙和一個句式，寫一句邀請句。'
+  },
+  'p4-wallet': {
+    mistakes: [
+      { bad: 'Ben find a wallet and give teacher.', better: 'Ben found a wallet and took it to the school office.', tip: 'Keep a finished story in the past tense and use a clear action verb.', tipZh: '完成的故事要保持過去式，並使用清楚的動作動詞。' },
+      { bad: 'Then Ben waited. Then teacher came. Then Ben happy.', better: 'At first, Ben waited. A few minutes later, Ms Lee arrived, and Ben felt proud.', tip: 'Replace repeated Then with sequence linkers and a feeling.', tipZh: '以次序連接詞和感受詞取代重複的 Then。' },
+      { bad: 'Ben was happy.', better: 'Ben felt proud because he had done the right thing.', tip: 'Give a precise feeling and explain why.', tipZh: '使用準確的感受詞，並交代理由。' }
+    ],
+    vocab: [
+      { basic: 'find', strong: 'discover / find', zh: '發現／找到' },
+      { basic: 'look', strong: 'look inside', zh: '往裡看' },
+      { basic: 'happy', strong: 'relieved / proud', zh: '如釋重負／自豪的' }
+    ],
+    patterns: [
+      { en: 'While [character] was [verb-ing], he/she saw [problem].', zh: '當［角色］正在［動作］時，他／她看見［問題］。' },
+      { en: 'At first, [character] wanted to [action]. However, [reason], so...', zh: '起初［角色］想［動作］。然而，因為［原因］，所以……' },
+      { en: 'In the end, [character] felt [feeling] because [reason].', zh: '最後，［角色］感到［感受］，因為［原因］。' }
+    ],
+    task: 'Rewrite a simple story ending with a feeling and a reason.', taskZh: '把一個簡單故事結局改寫為包含感受和理由的句子。'
+  },
+  'p5-canteen': {
+    mistakes: [
+      { bad: 'Hi Principal, our canteen is bad.', better: 'Dear Principal Chan, I am writing to suggest two ways to improve our school canteen.', tip: 'A formal email needs a respectful greeting and a clear purpose.', tipZh: '正式電郵需要禮貌稱呼和清楚寫作目的。' },
+      { bad: 'Students need healthy food. It is good.', better: 'A fruit-and-yoghurt cup would give pupils a quick, healthy snack.', tip: 'Explain a specific benefit instead of making a vague claim.', tipZh: '說明具體好處，不要只作空泛評價。' },
+      { bad: 'If pupils use cups, less cups throw away.', better: 'If more pupils used reusable cups, fewer plastic cups would be thrown away.', tip: 'Check plural nouns and make the condition-result link clear.', tipZh: '檢查複數名詞，並清楚連結條件和結果。' }
+    ],
+    vocab: [
+      { basic: 'good food', strong: 'healthy choices', zh: '健康選擇' },
+      { basic: 'a lot of rubbish', strong: 'less plastic waste', zh: '較少塑膠廢物' },
+      { basic: 'cheap', strong: 'at a reasonable price', zh: '價格合理' }
+    ],
+    patterns: [
+      { en: 'I am writing to suggest [number] ways to improve [place/service].', zh: '我寫信是想提出［數量］項改善［地方／服務］的建議。' },
+      { en: 'First, [suggestion]. This would [benefit].', zh: '首先，［建議］。這會［好處］。' },
+      { en: 'If [condition], [positive result].', zh: '如果［條件］，便會有［正面結果］。' }
+    ],
+    task: 'Write one formal suggestion and explain one likely benefit.', taskZh: '寫一項正式建議，並解釋一個可能帶來的好處。'
+  },
+  'p5-rainy-helper': {
+    mistakes: [
+      { bad: 'It rained. Mia went home. A boy cried.', better: 'Heavy rain was falling when Mia left the library.', tip: 'Combine background and action to create a setting.', tipZh: '把背景和動作結合，營造故事場景。' },
+      { bad: 'Mia helped the boy. It was good.', better: 'Mia opened her umbrella over the papers and picked up the wet worksheets.', tip: 'Show the helpful actions instead of only saying helped.', tipZh: '展示幫助別人的動作，而不只是說 helped。' },
+      { bad: 'The mother came. End.', better: 'Although Mia missed the first bus, she smiled because she had helped someone.', tip: 'End with a consequence and a reflection.', tipZh: '結尾要交代結果和反思。' }
+    ],
+    vocab: [
+      { basic: 'rained a lot', strong: 'heavy rain was falling', zh: '正下著大雨' },
+      { basic: 'walked fast', strong: 'hurried', zh: '匆忙趕路' },
+      { basic: 'wet papers', strong: 'soaked worksheets', zh: '濕透的工作紙' }
+    ],
+    patterns: [
+      { en: '[Background action] when [sudden action happened].', zh: '當［突然事情發生］時，［背景動作］正在進行。' },
+      { en: 'Without waiting, [character] [helpful action].', zh: '沒有猶豫，［角色］［幫助行動］。' },
+      { en: 'Although [small difficulty], [character] did not mind because [reflection].', zh: '雖然［小困難］，［角色］並不介意，因為［反思］。' }
+    ],
+    task: 'Create a two-sentence rainy-day setting and helpful action.', taskZh: '寫兩句包含雨天場景和幫助行動的句子。'
+  },
+  'p6-study-corner': {
+    mistakes: [
+      { bad: 'The school should make a quiet place.', better: 'I am writing to propose a quiet study corner in the library.', tip: 'State the proposal and location precisely at the beginning.', tipZh: '在開首準確交代建議和地點。' },
+      { bad: 'Put tables there. It will be good.', better: 'Two tables could be placed near the back windows so that pupils are not interrupted.', tip: 'Give a practical action and explain its purpose.', tipZh: '提出實際行動並解釋目的。' },
+      { bad: 'It is cheap and good for students.', better: 'The project would not require expensive equipment, but it could benefit many pupils.', tip: 'Use a more formal and persuasive tone.', tipZh: '使用較正式和具說服力的語氣。' }
+    ],
+    vocab: [
+      { basic: 'quiet place', strong: 'calm study area', zh: '寧靜自習區' },
+      { basic: 'make', strong: 'establish / create', zh: '設立／建立' },
+      { basic: 'not expensive', strong: 'would not require expensive equipment', zh: '不需要昂貴設備' }
+    ],
+    patterns: [
+      { en: 'I am writing to propose [project] because [need].', zh: '我寫信建議［項目］，因為［需要］。' },
+      { en: '[Resource] could be [past participle] near [place] so that [benefit].', zh: '［資源］可被［過去分詞］於［地點］附近，讓［好處］。' },
+      { en: 'If the project is successful, it may [positive result].', zh: '如果項目成功，可能會［正面結果］。' }
+    ],
+    task: 'Write one proposal action with a purpose, using could be + past participle.', taskZh: '用 could be + 過去分詞寫一項建議行動，並說明目的。'
+  },
+  'p6-volunteer': {
+    mistakes: [
+      { bad: 'Volunteer service is good.', better: 'Have you ever helped someone and felt happier afterwards?', tip: 'Use a title and an engaging question to draw readers in.', tipZh: '使用標題和吸引人的問題，引起讀者興趣。' },
+      { bad: 'Volunteers help people. It is important.', better: 'Pupils can read to younger children or help elderly visitors use digital devices.', tip: 'Develop your argument with specific examples.', tipZh: '用具體例子發展論點。' },
+      { bad: 'Everyone should volunteer. Bye.', better: 'Let us take one small action this term and build a kinder community.', tip: 'Finish an article with a strong call to action.', tipZh: '以有力的行動呼籲結束文章。' }
+    ],
+    vocab: [
+      { basic: 'help people', strong: 'support others', zh: '支援他人' },
+      { basic: 'old people', strong: 'elderly visitors', zh: '長者訪客' },
+      { basic: 'good', strong: 'meaningful / valuable', zh: '有意義的／有價值的' }
+    ],
+    patterns: [
+      { en: 'Have you ever [question] and [feeling/result]?', zh: '你曾否［問題］並［感受／結果］？' },
+      { en: 'For example, pupils can [action], [action] or [action].', zh: '例如，學生可以［行動］、［行動］或［行動］。' },
+      { en: 'Although some pupils [concern], even [small action] can [positive result].', zh: '雖然有些學生［顧慮］，即使［小行動］也能［正面結果］。' },
+      { en: 'Let us [call to action] so that [community benefit].', zh: '讓我們［行動呼籲］，讓［社區好處］。' }
+    ],
+    task: 'Write a final call to action for an article about your community.', taskZh: '為一篇關於社區的文章寫一個行動呼籲結尾。'
+  }
+};

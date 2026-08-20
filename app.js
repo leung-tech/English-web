@@ -10,7 +10,7 @@
     used: 'primary-english-studio-used-v1'
   };
 
-  const state = { grade: 3, route: 'read', module: 'reading', session: null, modelGrade: 4, modelId: null };
+  const state = { grade: 3, route: 'read', module: 'reading', session: null, modelGrade: 4, modelId: null, studyTab: 'mistakes' };
   const safeGet = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
   const safeSet = (key, value) => localStorage.setItem(key, JSON.stringify(value));
   const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
@@ -437,8 +437,32 @@
     $('#model-copy').textContent = selected.model;
     $('#rubric-list').innerHTML = rubric.map((item) => `<article class="rubric-item"><strong>${escape(item.title)}</strong><small>${escape(item.titleZh)}</small><p>${escape(item.strong)}<br>${escape(item.strongZh)}</p></article>`).join('');
     $('#model-focus').innerHTML = `<h3>Why it works <small>閱卷重點</small></h3><ul>${selected.focus.map((item, index) => `<li>${escape(item)}<small>${escape(selected.focusZh[index])}</small></li>`).join('')}</ul>`;
+    renderWritingStudy(selected);
     $$('[data-model-grade]').forEach((button) => button.addEventListener('click', () => { state.modelGrade = Number(button.dataset.modelGrade); state.modelId = null; renderWritingModels(); }));
     $$('[data-model-id]').forEach((button) => button.addEventListener('click', () => { state.modelId = button.dataset.modelId; renderWritingModels(); }));
+  }
+
+  function renderWritingStudy(selected) {
+    const support = (window.WRITING_MODEL_SUPPORT || {})[selected.id];
+    if (!support) return;
+    const tabs = [
+      { id: 'mistakes', en: 'Common mistakes', zh: '常見錯誤' },
+      { id: 'vocabulary', en: 'Vocabulary builder', zh: '詞彙擴展' },
+      { id: 'patterns', en: 'Sentence patterns', zh: '高分句式' }
+    ];
+    if (!tabs.some((tab) => tab.id === state.studyTab)) state.studyTab = 'mistakes';
+    $('#writing-study-tabs').innerHTML = tabs.map((tab) => `<button class="study-tab ${state.studyTab === tab.id ? 'active' : ''}" data-study-tab="${tab.id}">${tab.en} · ${tab.zh}</button>`).join('');
+    const tryBox = `<section class="study-try"><strong>Try it yourself · 試一試</strong><span>${escape(support.task)}<br>${escape(support.taskZh)}</span><textarea aria-label="Writing practice response" placeholder="Write your own sentence here · 在此寫下自己的句子"></textarea></section>`;
+    let content = '';
+    if (state.studyTab === 'mistakes') {
+      content = `<div class="mistake-grid">${support.mistakes.map((item) => `<article class="mistake-card"><div class="mistake-lines"><div class="mistake-line bad"><small>COMMON ERROR · 常見錯誤</small>${escape(item.bad)}</div><div class="mistake-line better"><small>BETTER VERSION · 較佳寫法</small>${escape(item.better)}</div></div><p class="mistake-tip">${escape(item.tip)}<small>${escape(item.tipZh)}</small></p></article>`).join('')}</div>${tryBox}`;
+    } else if (state.studyTab === 'vocabulary') {
+      content = `<div class="vocab-grid">${support.vocab.map((item) => `<article class="vocab-card"><span class="basic-word">${escape(item.basic)}</span><strong>→ ${escape(item.strong)}</strong><small>${escape(item.zh)}</small></article>`).join('')}</div>${tryBox}`;
+    } else {
+      content = `<div class="pattern-grid">${support.patterns.map((item) => `<article class="pattern-card"><strong>${escape(item.en)}</strong><small>${escape(item.zh)}</small></article>`).join('')}</div>${tryBox}`;
+    }
+    $('#writing-study-content').innerHTML = content;
+    $$('[data-study-tab]').forEach((button) => button.addEventListener('click', () => { state.studyTab = button.dataset.studyTab; renderWritingStudy(selected); }));
   }
 
   function renderScopePage() {
