@@ -24,43 +24,73 @@
 
   const routes = {
     read: {
-      token: 'R', color: '#214d7a', tint: '#eef7fc', label: 'Read', title: 'Read with confidence',
-      description: '閱讀短文、故事和實用文本，練習找出關鍵資料、主旨和簡單推論。',
+      token: 'R', color: '#214d7a', tint: '#eef7fc', label: 'Read', labelZh: '閱讀理解', title: 'Read with confidence', titleZh: '建立自信閱讀',
+      description: 'Understand stories, notices and information texts.', descriptionZh: '閱讀短文、故事和實用文本，找出關鍵資料、主旨和簡單推論。',
       tip: '先圈出題目中的關鍵字，再回到文章找相關句子。',
       modules: [
-        { id: 'reading', symbol: 'R', title: 'Reading comprehension', description: '短文、故事與主旨理解', sessions: 6 },
-        { id: 'reading-details', symbol: 'K', title: 'Key detail hunter', description: '人物、地點、時間與細節', sessions: 6 }
+        { id: 'reading', symbol: 'R', title: 'Reading comprehension', titleZh: '閱讀理解', description: 'Stories, notices and main ideas', descriptionZh: '短文、故事與主旨理解', sessions: 6 },
+        { id: 'reading-details', symbol: 'K', title: 'Key detail hunter', titleZh: '關鍵細節搜尋', description: 'People, places, times and actions', descriptionZh: '人物、地點、時間與細節', sessions: 6 }
       ]
     },
     write: {
-      token: 'W', color: '#d97463', tint: '#fff2ef', label: 'Write', title: 'Write clear English',
-      description: '由詞語排序、句子改錯到段落構思，逐步建立準確和有條理的寫作習慣。',
+      token: 'W', color: '#d97463', tint: '#fff2ef', label: 'Write', labelZh: '寫作與編輯', title: 'Write clear English', titleZh: '寫出清晰英語',
+      description: 'Build accurate sentences and organised ideas.', descriptionZh: '由詞語排序、句子改錯到段落構思，建立準確而有條理的寫作習慣。',
       tip: '寫完後先檢查主語、動詞、大小寫和句號，再讀一次是否通順。',
       modules: [
-        { id: 'sentence-builder', symbol: 'S', title: 'Sentence builder', description: '重組詞語，寫成完整句子', sessions: 6 },
-        { id: 'proofreading', symbol: 'E', title: 'Proofreading', description: '找出常見文法與拼寫錯誤', sessions: 6 },
-        { id: 'writing-plan', symbol: 'P', title: 'Writing planner', description: '用完整句子組織小段落', sessions: 3 }
+        { id: 'sentence-builder', symbol: 'S', title: 'Sentence builder', titleZh: '句子重組', description: 'Turn word groups into full sentences', descriptionZh: '重組詞語，寫成完整句子', sessions: 6 },
+        { id: 'proofreading', symbol: 'E', title: 'Proofreading', titleZh: '改錯練習', description: 'Spot grammar and spelling slips', descriptionZh: '找出常見文法與拼寫錯誤', sessions: 6 },
+        { id: 'writing-plan', symbol: 'P', title: 'Writing planner', titleZh: '寫作構思', description: 'Plan complete sentences and paragraphs', descriptionZh: '用完整句子組織小段落', sessions: 3 }
       ]
     },
     listen: {
-      token: 'L', color: '#4e8875', tint: '#eff9f4', label: 'Listen', title: 'Listen, then speak',
-      description: '先聽重點，再選答案；完成後可查看逐字稿，並用完整句子開口說英語。',
+      token: 'L', color: '#4e8875', tint: '#eff9f4', label: 'Listen', labelZh: '聆聽與口語', title: 'Listen, then speak', titleZh: '先聽再說',
+      description: 'Listen for key details, then speak in complete sentences.', descriptionZh: '先聽重點，再選答案；完成後查看逐字稿，並用完整句子開口說英語。',
       tip: '利用準備時間先看選項，預測可能聽到的人物、地點、數字或動作。',
       modules: [
-        { id: 'listening', symbol: 'L', title: 'Listening lab', description: '可重播的短對話與故事', sessions: 4 },
-        { id: 'speaking', symbol: 'S', title: 'Speak aloud', description: '聽範例後朗讀完整句子', sessions: 3 }
+        { id: 'listening', symbol: 'L', title: 'Listening lab', titleZh: '聆聽練習室', description: 'Replayable dialogues and short stories', descriptionZh: '可重播的短對話與故事', sessions: 4 },
+        { id: 'speaking', symbol: 'S', title: 'Speak aloud', titleZh: '朗讀與表達', description: 'Listen to a model, then say it aloud', descriptionZh: '聽範例後朗讀完整句子', sessions: 3 }
       ]
     },
     language: {
-      token: 'A', color: '#e1a443', tint: '#fff9ec', label: 'Apply', title: 'Apply language well',
-      description: '透過分級字詞、拼寫、文法與句型，把英語知識用在合適的語境中。',
+      token: 'A', color: '#e1a443', tint: '#fff9ec', label: 'Apply', labelZh: '語言運用', title: 'Apply language well', titleZh: '靈活運用英語',
+      description: 'Use vocabulary, spelling and grammar in context.', descriptionZh: '透過分級字詞、拼寫、文法與句型，把英語知識用在合適的語境中。',
       tip: '做時態題時，先找時間提示；做句子題時，先找誰在做這個動作。',
       modules: [
-        { id: 'vocabulary', symbol: 'V', title: 'Vocabulary & spelling', description: '核心字詞、拼寫與主題詞彙', sessions: 6 },
-        { id: 'grammar', symbol: 'G', title: 'Grammar & patterns', description: '時態、句型與語言運用', sessions: 6 }
+        { id: 'vocabulary', symbol: 'V', title: 'Vocabulary & spelling', titleZh: '字詞與拼寫', description: 'Core words, spelling and useful topics', descriptionZh: '核心字詞、拼寫與主題詞彙', sessions: 6 },
+        { id: 'grammar', symbol: 'G', title: 'Grammar & patterns', titleZh: '文法與句型', description: 'Tenses, patterns and language use', descriptionZh: '時態、句型與語言運用', sessions: 6 }
       ]
     }
   };
+
+  const scopeZh = {
+    1: { stage: '初小 · 基礎起步', overview: '從自然拼讀、日常字詞與簡短句子開始，建立英文興趣和信心。', reading: '閱讀圖像、標籤、童謠和短篇文字，找出熟悉關鍵字。', writing: '完成句子、看圖填空，並寫出 1–3 句生活相關短句。', listening: '辨識字母語音，聽懂簡單課室指令、名字、顏色和數字。', speaking: '介紹自己，回答簡單問題，並朗讀短對話。', assessment: '善用圖片線索；先輕聲讀出單字，再找相配的字母組合。' },
+    2: { stage: '初小 · 日常英語', overview: '用英文表達生活作息、需要和熟悉地方，逐步建立正確句子。', reading: '閱讀告示、時間表和簡短描述，配對細節和簡單問題。', writing: '圍繞日常生活、喜愛食物或地方，寫出 3–4 句連貫句子。', listening: '從短對話中聽出動作、時間、食物和天氣資料。', speaking: '用完整句子描述圖片，並提出簡單追問。', assessment: '做動詞題前先找主語，檢查是一個人還是多個人做動作。' },
+    3: { stage: '初小 · 連結想法', overview: '連結簡單想法，描述經歷，開始獨立閱讀短篇故事。', reading: '閱讀 80–120 字故事或資訊短文，找出人物、地點、動作和次序。', writing: '寫短日記或四格故事，交代開頭、發展和結局。', listening: '聽短故事時辨認場景、重點動作和角色感受。', speaking: '運用 first、next、finally 依次複述熟悉事件。', assessment: '圈出 yesterday、last week 等時間提示，它們常會告訴你動詞形式。' },
+    4: { stage: '高小 · 資訊與組織', overview: '清楚組織資訊，擴闊時態與語言功能的運用。', reading: '閱讀電郵、日記、說明和資訊文章，辨認寫作目的並整理資料。', writing: '寫有結構的段落、實用訊息和 60–90 字看圖描述。', listening: '從較長對話或錄音故事中找出主旨和支持細節。', speaking: '就健康習慣或環保等熟悉題目，作約一分鐘預備演說。', assessment: '聆聽前先看選項，預測可能出現的人物、地點或動作。' },
+    5: { stage: '高小 · 應用與推論', overview: '比較時態、從上下文推論意思，並為不同目的寫作。', reading: '閱讀報告、海報、圖表和新聞式短文，從語境作簡單推論。', writing: '寫 80–120 字電郵、記敘文、報告和建議書，使用段落和連接詞。', listening: '從較長對話、廣播或故事摘錄簡單筆記，辨認說話目的。', speaking: '在小組討論中表達意見，並提出一至兩個清晰理由。', assessment: '先找時間詞：yesterday 多用過去式；since 和 for 常用現在完成式。' },
+    6: { stage: '高小 · 升中準備', overview: '綜合語法、推論和獨立表達，為中學英語作準備。', reading: '閱讀多種體裁、觀點和較長文章，推論語氣、代詞指向與主旨。', writing: '寫 100–150 字電郵、故事、文章和建議書，安排吸引開首和完整段落。', listening: '從廣播或討論辨認主旨、細節資料和說話者語氣。', speaking: '作 1–2 分鐘有結構的演說，並在小組討論中作出有理回應。', assessment: '故事寫作要保持時態一致；用連接詞表達先後、對比和因果。' }
+  };
+
+  const termZh = {
+    'greetings': '問候語', 'family members': '家庭成員', 'school and stationery': '校園與文具', 'common animals': '常見動物', 'fruit and numbers': '水果與數字', 'toys': '玩具', 'colours': '顏色', 'clothes': '服飾',
+    'body parts': '身體部位', 'food and drinks': '食物與飲料', 'home rooms': '家居空間', 'public places': '公共場所', 'weather and seasons': '天氣與季節', 'daily routines': '日常作息',
+    'jobs': '職業', 'transport': '交通工具', 'hobbies and leisure': '興趣與休閒', 'shapes and size': '形狀與大小', 'illness and feelings': '身體不適與感受',
+    'world festivals': '世界節日', 'cultures': '各國文化', 'health and habits': '健康與生活習慣', 'recycling and the environment': '回收與環境保護', 'community facilities': '社區設施',
+    'world geography and travel': '世界地理與旅遊', 'natural disasters': '自然災害', 'technology and future life': '科技與未來生活', 'famous people and biographies': '著名人物與生平',
+    'secondary-school life': '升中校園生活', 'dreams and careers': '夢想與職業規劃', 'teenage challenges': '青少年成長煩惱', 'volunteer service': '義工服務', 'social topics': '社會議題',
+    'am / is / are': 'be 動詞', 'a / an / the': '冠詞', 'singular and plural nouns': '單複數名詞', 'personal pronouns': '人稱代名詞', 'my / your / his / her': '所有格形容詞', 'can / cannot': '能力與許可',
+    'have / has': '擁有與第三身用法', 'simple present tense': '簡單現在式', 'third-person -s': '第三身單數', 'there is / there are': '有／存在句型', 'countable nouns': '可數名詞', 'some / any': '一些／任何',
+    'simple past tense': '簡單過去式', 'common irregular verbs': '常用不規則動詞', 'present continuous': '現在進行式', 'comparatives': '比較級', 'frequency adverbs': '頻率副詞', 'and / but / because': '連接詞',
+    'will / will not': '簡單未來式', 'be going to': '計劃與意向', 'present perfect introduction': '現在完成式入門', 'should / must / must not': '建議與責任', 'much / many / a few / a little': '數量詞', 'superlatives': '最高級',
+    'present perfect with already / yet / for / since': '現在完成式時間詞', 'present, past and future contrast': '三種時態比較', 'passive voice introduction': '被動語態入門', 'first conditional': '第一類條件句', 'relative clauses': '關係子句', 'indirect questions': '間接問句',
+    'past continuous with simple past': '過去進行式與過去式', 'present perfect versus simple past': '完成式與過去式比較', 'passive voice': '被動語態', 'second conditional': '第二類條件句', 'gerunds and infinitives': '動名詞與不定詞', 'reported speech introduction': '間接引語入門',
+    'in / on / under / next to': '地方介詞', 'What / Who / Where / How many': '基礎疑問詞', 'present continuous': '現在進行式', 'days and time words': '日子與時間詞', 'possessive nouns': '所有格名詞', 'movement prepositions': '移動介詞', 'Why / How often': '進階疑問詞',
+    'adverbs of manner': '方式副詞', 'if for everyday results': '日常結果條件句', 'first / next / finally': '次序連接詞', 'comparatives and superlatives': '比較級與最高級', 'because / so / although': '因果與轉折連接詞', 'to-infinitive': '不定詞',
+    'reflexive and possessive pronouns': '反身與所有格代名詞', 'although / however / therefore': '轉折與因果連接詞', 'compound and complex sentences': '複合句與複雜句'
+  };
+
+  const bilingualTerm = (term) => `${term}｜${termZh[term] || '英文學習重點'}`;
+  const bilingual = (english, chinese, className = '') => `<span class="bi-en ${className}">${escape(english)}</span><span class="bi-zh">${escape(chinese)}</span>`;
 
   const question = (id, route, topic, prompt, answer, explanation, options = null, extras = {}) => ({
     id, grade: state.grade, route, topic, prompt, answer: String(answer), explanation, options, ...extras
@@ -334,8 +364,9 @@
 
   function renderSidebar() {
     const current = scope();
-    $('#rail-grade').textContent = `${current.level} English`;
-    $('#rail-note').textContent = current.overview;
+    const currentZh = scopeZh[state.grade];
+    $('#rail-grade').innerHTML = bilingual(`${current.level} English`, `小${state.grade}英文`);
+    $('#rail-note').innerHTML = bilingual(current.overview, currentZh.overview);
     $$('.grade-btn').forEach((button) => button.classList.toggle('selected', Number(button.dataset.grade) === state.grade));
     const record = stats();
     $('#completed-total').textContent = record.completed;
@@ -344,7 +375,7 @@
   }
 
   function renderSkills() {
-    $('#skill-grid').innerHTML = Object.entries(routes).map(([id, route]) => `<button class="skill-card skill-${id} ${state.route === id ? 'selected' : ''}" data-route="${id}" style="--skill:${route.color};--tint:${route.tint}"><span class="skill-token">${route.token}</span><h3>${route.label}</h3><p>${escape(route.description)}</p><small>${route.modules.length} PRACTICE OPTIONS →</small></button>`).join('');
+    $('#skill-grid').innerHTML = Object.entries(routes).map(([id, route]) => `<button class="skill-card skill-${id} ${state.route === id ? 'selected' : ''}" data-route="${id}" style="--skill:${route.color};--tint:${route.tint}"><span class="skill-token">${route.token}</span><h3>${bilingual(route.label, route.labelZh)}</h3><p class="card-en">${escape(route.description)}</p><p class="card-zh">${escape(route.descriptionZh)}</p><small>${route.modules.length} PRACTICE OPTIONS · 練習選項 →</small></button>`).join('');
     $$('[data-route]').forEach((button) => button.addEventListener('click', () => {
       state.route = button.dataset.route;
       state.module = routes[state.route].modules[0].id;
@@ -354,21 +385,22 @@
 
   function renderModules() {
     const route = routes[state.route];
-    $('#route-title').textContent = route.title;
-    $('#route-description').textContent = route.description;
-    $('#module-list').innerHTML = route.modules.map((module) => `<button class="module-card ${state.module === module.id ? 'selected' : ''}" data-module="${module.id}"><i class="module-symbol">${module.symbol}</i><span><strong>${escape(module.title)}</strong><span>${escape(module.description)}</span></span></button>`).join('');
+    $('#route-title').innerHTML = bilingual(route.title, route.titleZh);
+    $('#route-description').innerHTML = bilingual(route.description, route.descriptionZh);
+    $('#module-list').innerHTML = route.modules.map((module) => `<button class="module-card ${state.module === module.id ? 'selected' : ''}" data-module="${module.id}"><i class="module-symbol">${module.symbol}</i><span><strong>${bilingual(module.title, module.titleZh)}</strong><span class="module-en">${escape(module.description)}</span><span class="module-zh">${escape(module.descriptionZh)}</span></span></button>`).join('');
     $$('[data-module]').forEach((button) => button.addEventListener('click', () => { state.module = button.dataset.module; renderHome(); }));
     const module = selectedModule();
-    $('#session-mark').textContent = `${module.sessions} QUESTIONS`;
+    $('#session-mark').textContent = `${module.sessions} QUESTIONS · ${module.sessions} 題`;
     $('#scope-session-count').textContent = module.sessions;
-    $('#selected-module-note').textContent = `${module.title} · ${module.description}`;
+    $('#selected-module-note').innerHTML = `${bilingual(module.title, module.titleZh)}<span class="selected-note-detail">${escape(module.descriptionZh)}</span>`;
   }
 
   function renderScopeSummary() {
     const current = scope();
-    $('#scope-stage').textContent = current.stage;
-    $('#scope-overview').textContent = current.overview;
-    $('#scope-pills').innerHTML = current.vocabulary.slice(0, 4).map((item) => `<span>${escape(item)}</span>`).join('');
+    const currentZh = scopeZh[state.grade];
+    $('#scope-stage').innerHTML = bilingual(current.stage, currentZh.stage);
+    $('#scope-overview').innerHTML = bilingual(current.overview, currentZh.overview);
+    $('#scope-pills').innerHTML = current.vocabulary.slice(0, 4).map((item) => `<span>${escape(bilingualTerm(item))}</span>`).join('');
     $('#scope-word-count').textContent = current.wordBank.length;
     $('#scope-grammar-count').textContent = current.grammar.length;
   }
@@ -382,17 +414,18 @@
 
   function renderScopePage() {
     const current = scope();
-    $('#scope-page-title').textContent = `${current.level} English Scope`;
-    $('#scope-page-overview').textContent = current.overview;
-    $('#scope-stage-title').textContent = current.stage;
-    $('#scope-reading-writing').textContent = `${current.reading} ${current.writing}`;
-    $('#scope-tip').textContent = current.assessment;
-    $('#scope-vocabulary').innerHTML = current.vocabulary.map((item) => `<li>${escape(item)}</li>`).join('');
-    $('#scope-grammar').innerHTML = current.grammar.map((item) => `<li>${escape(item)}</li>`).join('');
-    $('#scope-reading').textContent = current.reading;
-    $('#scope-writing').textContent = current.writing;
-    $('#scope-listening').textContent = current.listening;
-    $('#scope-speaking').textContent = current.speaking;
+    const currentZh = scopeZh[state.grade];
+    $('#scope-page-title').innerHTML = bilingual(`${current.level} English Scope`, `小${state.grade}英文學習範疇`);
+    $('#scope-page-overview').innerHTML = bilingual(current.overview, currentZh.overview);
+    $('#scope-stage-title').innerHTML = bilingual(current.stage, currentZh.stage);
+    $('#scope-reading-writing').innerHTML = `<div class="bi-pair">${bilingual(current.reading, currentZh.reading)}</div><div class="bi-pair">${bilingual(current.writing, currentZh.writing)}</div>`;
+    $('#scope-tip').innerHTML = bilingual(current.assessment, currentZh.assessment);
+    $('#scope-vocabulary').innerHTML = current.vocabulary.map((item) => `<li>${escape(bilingualTerm(item))}</li>`).join('');
+    $('#scope-grammar').innerHTML = current.grammar.map((item) => `<li>${escape(bilingualTerm(item))}</li>`).join('');
+    $('#scope-reading').innerHTML = bilingual(current.reading, currentZh.reading);
+    $('#scope-writing').innerHTML = bilingual(current.writing, currentZh.writing);
+    $('#scope-listening').innerHTML = bilingual(current.listening, currentZh.listening);
+    $('#scope-speaking').innerHTML = bilingual(current.speaking, currentZh.speaking);
   }
 
   function speak(text) {
@@ -410,7 +443,7 @@
   function updateSessionProgress() {
     const session = state.session;
     const done = session.results.filter(Boolean).length;
-    $('#practice-subtitle').textContent = `Question ${session.index + 1} of ${session.questions.length}`;
+    $('#practice-subtitle').textContent = `Question ${session.index + 1} of ${session.questions.length} · 第 ${session.index + 1} 題，共 ${session.questions.length} 題`;
     $('#practice-progress').style.width = `${done / session.questions.length * 100}%`;
     $('#question-dots').innerHTML = session.questions.map((_, index) => `<button class="question-dot ${index === session.index ? 'current' : ''} ${session.results[index] ? 'checked' : ''}" data-question-index="${index}">${index + 1}</button>`).join('');
     $$('[data-question-index]').forEach((button) => button.addEventListener('click', () => { state.session.index = Number(button.dataset.questionIndex); renderQuestion(); }));
@@ -421,9 +454,9 @@
     const item = currentQuestion();
     const currentResult = session.results[session.index];
     const route = routes[item.route];
-    $('#practice-title').textContent = `${scope().level} · ${item.topic}`;
+    $('#practice-title').innerHTML = `${escape(scope().level)} · ${escape(item.topic)}<span class="practice-title-zh">${escape(route.labelZh)}</span>`;
     $('#question-number').textContent = String(session.index + 1).padStart(2, '0');
-    $('#question-route').textContent = `${route.label.toUpperCase()} PRACTICE`;
+    $('#question-route').innerHTML = `${escape(route.label.toUpperCase())} PRACTICE <small>· ${escape(route.labelZh)}</small>`;
     $('#practice-side-copy').textContent = item.route === 'listen' ? '可先播放兩次。核對後才會看到英文逐字稿。' : '逐題作答後，系統會提供一個可立即使用的重點提示。';
     $('#skill-tip').textContent = route.tip;
 
