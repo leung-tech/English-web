@@ -29,7 +29,8 @@
       tip: '先圈出題目中的關鍵字，再回到文章找相關句子。',
       modules: [
         { id: 'reading', symbol: 'R', title: 'Reading comprehension', titleZh: '閱讀理解', description: 'Stories, notices and main ideas', descriptionZh: '短文、故事與主旨理解', sessions: 6 },
-        { id: 'reading-details', symbol: 'K', title: 'Key detail hunter', titleZh: '關鍵細節搜尋', description: 'People, places, times and actions', descriptionZh: '人物、地點、時間與細節', sessions: 6 }
+        { id: 'reading-details', symbol: 'K', title: 'Key detail hunter', titleZh: '關鍵細節搜尋', description: 'People, places, times and actions', descriptionZh: '人物、地點、時間與細節', sessions: 6 },
+        { id: 'advanced-reading', symbol: '★', title: 'Advanced reading workshop', titleZh: '進階閱讀工作坊', description: 'P4–P6 genres, inference and model analysis', descriptionZh: '小四至小六多體裁閱讀、推論及範例解析', sessions: 4, minGrade: 4 }
       ]
     },
     write: {
@@ -61,7 +62,9 @@
       tip: '做時態題時，先找時間提示；做句子題時，先找誰在做這個動作。',
       modules: [
         { id: 'vocabulary', symbol: 'V', title: 'Vocabulary & spelling', titleZh: '字詞與拼寫', description: 'Core words, spelling and useful topics', descriptionZh: '核心字詞、拼寫與主題詞彙', sessions: 6 },
-        { id: 'grammar', symbol: 'G', title: 'Grammar & patterns', titleZh: '文法與句型', description: 'Tenses, patterns and language use', descriptionZh: '時態、句型與語言運用', sessions: 6 }
+        { id: 'grammar', symbol: 'G', title: 'Grammar & patterns', titleZh: 'Tenses, patterns and language use', descriptionZh: '時態、句型與語言運用', sessions: 6 },
+        { id: 'junior-game', symbol: '♪', title: 'Phonics & story game', titleZh: '拼音與故事遊戲', description: 'Hear a word or clue, then make a playful choice', descriptionZh: '聽字詞或故事線索，再作有趣選擇', sessions: 6, maxGrade: 3 },
+        { id: 'word-match', symbol: '↔', title: 'Word Match', titleZh: '單字配對', description: 'Reveal word clues and build everyday vocabulary', descriptionZh: '翻開單字線索，建立生活英語詞彙', sessions: 3, maxGrade: 3 }
       ]
     }
   };
@@ -378,7 +381,7 @@
     return speakingPrompts[state.grade].map((model, index) => question(`speaking-${state.grade}-${index}`, 'listen', 'Speak aloud', 'Listen to the model. Then say it aloud and change the blank parts to make it true for you.', 'spoken', 'Excellent. Speaking in complete sentences builds confidence. Try saying the sentence once more with a clear voice and natural pace.', null, { audioText: model.replaceAll('____', 'your answer'), selfCheck: 'I have spoken the sentence aloud in a complete voice.', speaking: true, hint: 'Do not rush. Pause briefly at full stops and make your key words clear.' }));
   }
 
-  function availableModules(route = routes[state.route]) { return route.modules.filter((item) => !item.minGrade || state.grade >= item.minGrade); }
+  function availableModules(route = routes[state.route]) { return route.modules.filter((item) => (!item.minGrade || state.grade >= item.minGrade) && (!item.maxGrade || state.grade <= item.maxGrade)); }
   function selectedModule() { const modules = availableModules(); return modules.find((item) => item.id === state.module) || modules[0]; }
   function getBank() {
     if (state.module === 'vocabulary') return createVocabulary();
@@ -391,8 +394,43 @@
     if (state.module === 'listening-vocab') return createListeningFlashcards();
     if (state.module === 'listening-check') return createListeningChecks();
     if (state.module === 'roleplay') return createRoleplays();
+    if (state.module === 'junior-game') return createJuniorGame();
+    if (state.module === 'word-match') return createJuniorWordMatch();
+    if (state.module === 'advanced-reading') return createAdvancedReading();
     if (state.module === 'reading-details') return createKeyDetails();
     return createReading();
+  }
+
+  function createJuniorGame() {
+    const games = (window.JUNIOR_SENIOR_EXTENSION || {}).games?.[state.grade]?.audio || [];
+    return games.map(([audioText, prompt, promptZh, options, answer, explanation, explanationZh], index) => {
+      const shuffled = randomize(options);
+      return question(`junior-game-${state.grade}-${index}`, 'language', 'Phonics & story game', prompt, shuffled.indexOf(options[answer]), explanation, shuffled, { audioText, promptZh, explanationZh, juniorGame: true, hint: 'Listen once, say the key word softly, then choose the best answer. 先聽一次，小聲讀出重點字，再選最合適答案。' });
+    });
+  }
+
+  function createJuniorWordMatch() {
+    const cards = (window.JUNIOR_SENIOR_EXTENSION || {}).games?.[state.grade]?.match || [];
+    return cards.map(([word, clue, chinese], index) => question(`word-match-${state.grade}-${word}`, 'language', 'Word Match', `Match “${word}” with its clue. Then say the word aloud.`, 'known', 'Great matching. Read the word and its clue again so that they stay together in your mind.', null, {
+      selfCheck: `I revealed “${word}”, matched its clue and said it aloud. · 我已翻開「${word}」、配對線索並朗讀。`,
+      audioText: word,
+      flashcard: { word, chinese, definition: clue, example: `“${word}” means: ${clue}` },
+      flashcardType: 'match',
+      hint: 'Read the clue first. Which word does it describe? 先讀線索；它描述的是哪個字？'
+    }));
+  }
+
+  function createAdvancedReading() {
+    const passages = (window.JUNIOR_SENIOR_EXTENSION || {}).advancedReading?.[state.grade] || [];
+    return passages.flatMap((passage, passageIndex) => passage.questions.map(([prompt, promptZh, options, answer, explanation, explanationZh, analysis], questionIndex) => {
+      const shuffled = randomize(options);
+      return question(`advanced-reading-${state.grade}-${passageIndex}-${questionIndex}`, 'read', `Advanced reading · ${passage.genre}`, prompt, shuffled.indexOf(options[answer]), explanation, shuffled, {
+        promptZh, explanationZh,
+        passage: { title: `${passage.genre} · ${passage.title}`, text: passage.text },
+        advancedAnalysis: { genre: passage.genre, genreZh: passage.genreZh, clue: analysis[0], model: analysis[1], why: analysis[2] },
+        hint: 'Read the question first. Find a clue, then decide whether the answer is stated, inferred or linked to the writer’s purpose. 先讀題目，找出線索，再判斷答案是直接指出、需要推論，還是和作者目的相關。'
+      });
+    }));
   }
 
   function createKeyDetails() {
@@ -621,10 +659,10 @@
     $('#practice-side-copy').textContent = item.oralActivity ? '先聽示範，再按四步計劃準備自己的短講。' : item.route === 'listen' ? '可先播放兩次。核對後才會看到英文逐字稿。' : '逐題作答後，系統會提供一個可立即使用的重點提示。';
     $('#skill-tip').textContent = route.tip;
 
-    const passage = item.passage ? `<article class="passage"><strong>${escape(item.passage.title)}</strong>${escape(item.passage.text)}</article>` : '';
+    const passage = item.passage ? `<article class="passage ${item.advancedAnalysis ? 'advanced-passage' : ''}">${item.advancedAnalysis ? `<small class="genre-label">${escape(item.advancedAnalysis.genre)} · ${escape(item.advancedAnalysis.genreZh)}</small>` : ''}<strong>${escape(item.passage.title)}</strong>${escape(item.passage.text)}</article>` : '';
     const audio = item.audioText ? `<section class="listen-player"><div><strong>${item.oralActivity ? 'Listen to the model, then build your own talk.' : item.speaking ? 'Listen, then say it aloud.' : 'Listen first. You may replay the audio.'}</strong><span>${item.oralActivity ? '按播放鍵聽示範，然後按照四步計劃準備個人短講。' : item.speaking ? '按播放鍵聽示範，然後用自己的資料完成句子。' : '核對答案後可查看英文逐字稿。'}</span></div><button class="play-audio" id="play-audio">Play audio · 播放錄音</button></section>${currentResult && !item.speaking ? `<p class="transcript"><strong>${escape(item.scriptTitle ? `${item.scriptTitle} · Transcript` : 'Transcript')}:</strong> ${escape(item.audioText)}</p>` : ''}` : '';
     const oralPlan = item.oralActivity ? `<section class="oral-plan"><header><p class="eyebrow">P4–P6 ORAL PRACTICE · 高小聆聽與口語</p><div><strong>${escape(item.oralActivity.title)}<small>${escape(item.oralActivity.titleZh)}</small></strong><span>${escape(item.oralActivity.duration)}</span></div></header><div class="oral-frames">${item.oralActivity.frames.map(([label, labelZh, frame, frameZh], index) => `<article><i>${index + 1}</i><div><b>${escape(label)}<small>${escape(labelZh)}</small></b><p>${escape(frame)}</p><span>${escape(frameZh)}</span></div></article>`).join('')}</div><footer><strong>Key language · 實用語句</strong><p>${item.oralActivity.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>` : '';
-    const flashcard = item.flashcard ? `<section class="flashcard ${session.revealed?.[session.index] ? 'revealed' : ''}"><div class="flashcard-front"><p class="eyebrow">LISTENING VOCABULARY · 聆聽詞彙卡</p><strong>${escape(item.flashcard.word)}</strong><span>Preview the word, then listen and use it. · 預習詞彙，然後聆聽及運用。</span></div><div class="flashcard-actions"><button class="secondary" id="flash-reveal">${session.revealed?.[session.index] ? 'Meaning revealed · 已顯示意思' : 'Reveal meaning · 顯示意思'}</button><button class="secondary" id="flash-audio">Play word · 播放字詞</button></div><div class="flashcard-back ${session.revealed?.[session.index] ? 'show' : ''}"><strong>${escape(item.flashcard.chinese)}</strong><p>${escape(item.flashcard.definition)}</p><blockquote>${escape(item.flashcard.example)}</blockquote></div></section>` : '';
+    const flashcard = item.flashcard ? `<section class="flashcard ${session.revealed?.[session.index] ? 'revealed' : ''}"><div class="flashcard-front"><p class="eyebrow">${item.flashcardType === 'match' ? 'WORD MATCH · 單字配對' : 'LISTENING VOCABULARY · 聆聽詞彙卡'}</p><strong>${escape(item.flashcard.word)}</strong><span>Preview the word, then listen and use it. · 預習詞彙，然後聆聽及運用。</span></div><div class="flashcard-actions"><button class="secondary" id="flash-reveal">${session.revealed?.[session.index] ? 'Meaning revealed · 已顯示意思' : 'Reveal meaning · 顯示意思'}</button><button class="secondary" id="flash-audio">Play word · 播放字詞</button></div><div class="flashcard-back ${session.revealed?.[session.index] ? 'show' : ''}"><strong>${escape(item.flashcard.chinese)}</strong><p>${escape(item.flashcard.definition)}</p><blockquote>${escape(item.flashcard.example)}</blockquote></div></section>` : '';
     const roleplay = item.roleplay ? `<section class="roleplay-card"><header><p class="eyebrow">ROLE-PLAY PRACTICE · 角色對話</p><strong>${escape(item.roleplay.title)}<small>${escape(item.roleplay.titleZh)}</small></strong><span>${escape(item.roleplay.roles[0])}</span><span>${escape(item.roleplay.roles[1])}</span></header><div class="roleplay-actions"><button class="secondary" data-role-audio="A">Listen to A · 聽 A 角色</button><button class="secondary" data-role-audio="B">Listen to B · 聽 B 角色</button></div><div class="roleplay-lines">${item.roleplay.dialogue.map(([speaker, line]) => `<p class="role-${speaker.toLowerCase()}"><b>${speaker}</b><span>${escape(line)}</span></p>`).join('')}</div><footer><strong>Useful phrases · 實用語句</strong><p>${item.roleplay.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>` : '';
     const writingGuide = item.writing ? `<section class="writing-guide"><strong>${item.selfCheck ? 'Writing reminder' : 'Writing check'}</strong><p>${item.selfCheck ? '先完成你的想法，再讀一次，確保每句都有清楚的意思。' : '輸入完整英文句子。留意大寫字母、主語、動詞和句號。'}</p></section>` : '';
     let response = '';
@@ -638,7 +676,8 @@
       response = `<input class="answer-field" id="answer-field" autocomplete="off" inputmode="text" placeholder="Write your answer in English" value="${escape(session.drafts[session.index] || '')}">`;
     }
 
-    $('#question-content').innerHTML = `${audio}${passage}<h1>${escape(item.prompt)}${item.promptZh ? `<small class="question-zh">${escape(item.promptZh)}</small>` : ''}</h1>${flashcard}${oralPlan}${roleplay}${writingGuide}${response}`;
+    const modelAnalysis = currentResult && item.advancedAnalysis ? `<section class="reading-analysis"><p class="eyebrow">MODEL ANALYSIS · 範例解析</p><article><strong>Find the clue · 找出線索</strong><p>${escape(item.advancedAnalysis.clue)}</p></article><article><strong>Model answer · 範例答案</strong><p>${escape(item.advancedAnalysis.model)}</p></article><article><strong>Why it works · 解題原因</strong><p>${escape(item.advancedAnalysis.why)}</p></article></section>` : '';
+    $('#question-content').innerHTML = `${audio}${passage}<h1>${escape(item.prompt)}${item.promptZh ? `<small class="question-zh">${escape(item.promptZh)}</small>` : ''}</h1>${flashcard}${oralPlan}${roleplay}${writingGuide}${response}${modelAnalysis}`;
     const feedback = $('#feedback');
     feedback.className = `feedback ${currentResult ? `show ${currentResult.correct ? 'correct' : 'wrong'}` : ''}`;
     feedback.innerHTML = currentResult ? `<strong>${currentResult.correct ? 'Good work.' : 'Keep this one for review.'}</strong> ${escape(item.explanation)}${item.explanationZh ? `<small>${escape(item.explanationZh)}</small>` : ''}` : '';

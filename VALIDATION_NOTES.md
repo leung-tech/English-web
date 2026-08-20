@@ -69,3 +69,11 @@ The P4 Listening vocabulary module opened as an eight-card session. A card initi
 The P5 Listening quick check loaded six replayable items with four answer choices. A correct response displayed immediate bilingual feedback and the short transcript. The P6 Role-play module loaded a bilingual goal, six A/B dialogue lines, separate Role A and Role B audio controls, four useful phrases and a speaking self-check.
 
 The public site was verified after the extension deployment. At P6, the Listen route showed Listening vocabulary, Listening quick check and Role-play practice in addition to the existing modules. The live role-play session loaded the secondary-school advice title, six dialogue turns and separate Role A and Role B audio controls.
+
+## Junior games and advanced reading validation
+
+The P1 Apply route showed four modules, including the new Phonics & story game and Word Match. The phonics game launched with replayable audio, a bilingual prompt and four selectable answers.
+
+The P2 Word Match activity showed a Word Match label, hidden clue panel, Chinese meaning and English clue after reveal, plus a self-check. The P6 Advanced reading workshop showed the Magazine article genre, a long-form original passage and four answer options. After checking an answer, it displayed bilingual feedback and a three-part model analysis with text clue, model answer and reading-strategy explanation.
+
+The P3 Phonics & story game loaded six replayable game questions. The P4 Advanced reading workshop launched a School news report session, while P5 launched a Travel blog session; each displayed four questions, the bilingual genre label and the selected year level.
