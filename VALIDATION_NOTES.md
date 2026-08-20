@@ -67,3 +67,5 @@ Final public deployment verification succeeded after versioned script URLs were 
 The P4 Listening vocabulary module opened as an eight-card session. A card initially showed only the English target word and revealed the Chinese meaning plus context sentence only after the reveal control was used.
 
 The P5 Listening quick check loaded six replayable items with four answer choices. A correct response displayed immediate bilingual feedback and the short transcript. The P6 Role-play module loaded a bilingual goal, six A/B dialogue lines, separate Role A and Role B audio controls, four useful phrases and a speaking self-check.
+
+The public site was verified after the extension deployment. At P6, the Listen route showed Listening vocabulary, Listening quick check and Role-play practice in addition to the existing modules. The live role-play session loaded the secondary-school advice title, six dialogue turns and separate Role A and Role B audio controls.
