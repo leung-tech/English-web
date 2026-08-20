@@ -277,18 +277,18 @@
   }
 
   function createGrammar() {
-    return expanded('grammar', grammarSets[state.grade]).map(([prompt, options, explanation], index) => {
+    return expanded('grammar', grammarSets[state.grade]).map(([prompt, options, explanation, promptZh, explanationZh], index) => {
       const shuffled = randomize(options);
-      return question(`grammar-${state.grade}-${index}`, 'language', 'Grammar & patterns', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { hint: scope().assessment });
+      return question(`grammar-${state.grade}-${index}`, 'language', 'Grammar & patterns', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { promptZh, explanationZh, hint: scope().assessment });
     });
   }
 
   function createReading() {
     const items = [];
     expanded('reading', readingLibrary[state.grade]).forEach((passage, passageIndex) => {
-      passage.questions.forEach(([prompt, options, explanation], questionIndex) => {
+      passage.questions.forEach(([prompt, options, explanation, promptZh, explanationZh], questionIndex) => {
         const shuffled = randomize(options);
-        items.push(question(`reading-${state.grade}-${passageIndex}-${questionIndex}`, 'read', 'Reading comprehension', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { passage: { title: passage.title, text: passage.text }, hint: 'Find the key word from the question in the passage, then read the whole sentence around it.' }));
+        items.push(question(`reading-${state.grade}-${passageIndex}-${questionIndex}`, 'read', 'Reading comprehension', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { promptZh, explanationZh, passage: { title: passage.title, text: passage.text }, hint: 'Find the key word from the question in the passage, then read the whole sentence around it.' }));
       });
     });
     return items;
@@ -328,9 +328,9 @@
         });
       }));
     }
-    return expanded('juniorListening', listeningLibrary[state.grade]).map(([audioText, prompt, options, explanation], index) => {
+    return expanded('juniorListening', listeningLibrary[state.grade]).map(([audioText, prompt, options, explanation, promptZh, explanationZh], index) => {
       const shuffled = randomize(options);
-      return question(`listening-${state.grade}-${index}`, 'listen', 'Listening lab', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { audioText, hint: 'Listen once for the main idea. Listen again for a word, number, place or action from the question.' });
+      return question(`listening-${state.grade}-${index}`, 'listen', 'Listening lab', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { audioText, promptZh, explanationZh, hint: 'Listen once for the main idea. Listen again for a word, number, place or action from the question.' });
     });
   }
 

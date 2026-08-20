@@ -111,3 +111,11 @@ A broad launch scan covered 75 available grade-route-module combinations across 
 Mobile screenshots of the P6 high-score writing library showed readable header text, visible return control, responsive P4–P6 grade tabs and a single-column model picker. No text collision or horizontal clipping was observed in the tested top section.
 
 The final accessibility-oriented DOM check found no duplicate IDs and no unnamed buttons, inputs or text areas in the active model-library view. The tested page width matched the 1280px viewport without horizontal overflow.
+
+## Hong Kong learning-cycle expansion
+
+A new original P1–P6 Hong Kong learning-cycle bank was added for school, transport, community, environment, rainy-day safety, heritage, accessibility and reading-community contexts. The bank extends vocabulary, grammar, reading, sentence ordering, proofreading, writing, speaking, junior listening, phonics/story games, word matching, senior listening, listening flashcards, quick checks, role-play and advanced reading.
+
+The revised content audit loaded both the original expansion and the Hong Kong learning-cycle bank. It passed all P1–P6 coverage thresholds and JavaScript syntax checks. In a local browser run, P6 Advanced Reading loaded seven active questions and opened an interactive passage with four answer options and bilingual question support.
+
+A direct browser check confirmed that the new P6 Proposal extract, “A Safer Path to the Community Centre”, contains two questions with Chinese prompts, explanations and model-analysis text. The loaded expansion bank now provides every grade with 12 added vocabulary words, 4 grammar questions, 3 reading passages, 5 writing prompts and 5 speaking prompts. P1–P3 each have 4 added listening items, while P4–P6 each have 2 added senior listening scripts.
