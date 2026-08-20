@@ -91,3 +91,5 @@ A complete P6 Advanced reading session was sampled across all five questions. It
 The public site loaded QUESTION_BANK_EXPANSION successfully. Online checks confirmed P1 Grammar (8 questions), P4 Listening (6 questions), P6 Advanced reading (5 questions) and P6 Role-play (3 questions), with the displayed and launched counts matching.
 
 All six high-score writing models were checked locally. Each model’s interactive grammar/error-correction quiz now contains four questions, including the new genre-specific extension item.
+
+The final public deployment loaded QUESTION_BANK_EXPANSION and all six writing-model correction quizzes. Each of the P4, P5 and P6 models now has four interactive error-correction questions online.
