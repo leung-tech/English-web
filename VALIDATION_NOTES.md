@@ -93,3 +93,21 @@ The public site loaded QUESTION_BANK_EXPANSION successfully. Online checks confi
 All six high-score writing models were checked locally. Each model’s interactive grammar/error-correction quiz now contains four questions, including the new genre-specific extension item.
 
 The final public deployment loaded QUESTION_BANK_EXPANSION and all six writing-model correction quizzes. Each of the P4, P5 and P6 models now has four interactive error-correction questions online.
+
+## Comprehensive quality review
+
+Desktop homepage review at 1280 × 1100 found no horizontal overflow, no empty buttons and no unlabelled data-entry fields. The document contained one user-facing hero H1 and separate view headings for scope, models, results and review.
+
+The Grammar & patterns module had one bilingual field mismatch. It was corrected to show the Chinese title 「文法與句型」 and its separate English/Chinese description. A sweep of all grades and four routes found no module cards with missing bilingual labels.
+
+Responsive homepage screenshots were reviewed at 1280 × 1100 and 390 × 844. The desktop hierarchy, route cards, sidebar and practice area were aligned without overlap. The mobile layout stacked the year selector, progress panel and hero correctly; navigation controls remained visible, with no horizontal overflow observed. The compact header and hero text stayed readable at the tested width.
+
+The P6 writing-model library showed the two appropriate P6 models, five rubric criteria and four study tabs. The model screen and the interactive grammar-quiz tab had no horizontal overflow; the quiz showed one bilingual prompt, three answer choices and a check control.
+
+The P5 listening session was checked after an answer was marked. Replay audio, bilingual feedback, transcript reveal, hint, previous/next controls and six-step progress navigation all rendered without overlap. The transcript remained hidden before marking and appeared only after feedback was produced.
+
+A broad launch scan covered 75 available grade-route-module combinations across P1–P6. Every checked module entered either a practice session or its appropriate model-library route without browser exceptions, and no checked desktop state produced horizontal overflow.
+
+Mobile screenshots of the P6 high-score writing library showed readable header text, visible return control, responsive P4–P6 grade tabs and a single-column model picker. No text collision or horizontal clipping was observed in the tested top section.
+
+The final accessibility-oriented DOM check found no duplicate IDs and no unnamed buttons, inputs or text areas in the active model-library view. The tested page width matched the 1280px viewport without horizontal overflow.
