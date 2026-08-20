@@ -28,9 +28,9 @@
       description: 'Understand stories, notices and information texts.', descriptionZh: '閱讀短文、故事和實用文本，找出關鍵資料、主旨和簡單推論。',
       tip: '先圈出題目中的關鍵字，再回到文章找相關句子。',
       modules: [
-        { id: 'reading', symbol: 'R', title: 'Reading comprehension', titleZh: '閱讀理解', description: 'Stories, notices and main ideas', descriptionZh: '短文、故事與主旨理解', sessions: 6 },
-        { id: 'reading-details', symbol: 'K', title: 'Key detail hunter', titleZh: '關鍵細節搜尋', description: 'People, places, times and actions', descriptionZh: '人物、地點、時間與細節', sessions: 6 },
-        { id: 'advanced-reading', symbol: '★', title: 'Advanced reading workshop', titleZh: '進階閱讀工作坊', description: 'P4–P6 genres, inference and model analysis', descriptionZh: '小四至小六多體裁閱讀、推論及範例解析', sessions: 4, minGrade: 4 }
+        { id: 'reading', symbol: 'R', title: 'Reading comprehension', titleZh: '閱讀理解', description: 'Stories, notices and main ideas', descriptionZh: '短文、故事與主旨理解', sessions: 10 },
+        { id: 'reading-details', symbol: 'K', title: 'Key detail hunter', titleZh: '關鍵細節搜尋', description: 'People, places, times and actions', descriptionZh: '人物、地點、時間與細節', sessions: 10 },
+        { id: 'advanced-reading', symbol: '★', title: 'Advanced reading workshop', titleZh: '進階閱讀工作坊', description: 'P4–P6 genres, inference and model analysis', descriptionZh: '小四至小六多體裁閱讀、推論及範例解析', sessions: 5, minGrade: 4 }
       ]
     },
     write: {
@@ -38,9 +38,9 @@
       description: 'Build accurate sentences and organised ideas.', descriptionZh: '由詞語排序、句子改錯到段落構思，建立準確而有條理的寫作習慣。',
       tip: '寫完後先檢查主語、動詞、大小寫和句號，再讀一次是否通順。',
       modules: [
-        { id: 'sentence-builder', symbol: 'S', title: 'Sentence builder', titleZh: '句子重組', description: 'Turn word groups into full sentences', descriptionZh: '重組詞語，寫成完整句子', sessions: 6 },
-        { id: 'proofreading', symbol: 'E', title: 'Proofreading', titleZh: '改錯練習', description: 'Spot grammar and spelling slips', descriptionZh: '找出常見文法與拼寫錯誤', sessions: 6 },
-        { id: 'writing-plan', symbol: 'P', title: 'Writing planner', titleZh: '寫作構思', description: 'Plan complete sentences and paragraphs', descriptionZh: '用完整句子組織小段落', sessions: 3 },
+        { id: 'sentence-builder', symbol: 'S', title: 'Sentence builder', titleZh: '句子重組', description: 'Turn word groups into full sentences', descriptionZh: '重組詞語，寫成完整句子', sessions: 8 },
+        { id: 'proofreading', symbol: 'E', title: 'Proofreading', titleZh: '改錯練習', description: 'Spot grammar and spelling slips', descriptionZh: '找出常見文法與拼寫錯誤', sessions: 8 },
+        { id: 'writing-plan', symbol: 'P', title: 'Writing planner', titleZh: '寫作構思', description: 'Plan complete sentences and paragraphs', descriptionZh: '用完整句子組織小段落', sessions: 6 },
         { id: 'writing-models', symbol: '★', title: 'High-score models', titleZh: '呈分試高分範文', description: 'P4–P6 model writing and scoring points', descriptionZh: '小四至小六範文與評分要點', sessions: 0, minGrade: 4, assessment: true }
       ]
     },
@@ -49,11 +49,11 @@
       description: 'Listen for key details, then speak in complete sentences.', descriptionZh: '先聽重點，再選答案；完成後查看逐字稿，並用完整句子開口說英語。',
       tip: '利用準備時間先看選項，預測可能聽到的人物、地點、數字或動作。',
       modules: [
-        { id: 'listening', symbol: 'L', title: 'Listening lab', titleZh: '聆聽練習室', description: 'Replayable dialogues and short stories', descriptionZh: '可重播的短對話與故事', sessions: 4 },
-        { id: 'speaking', symbol: 'S', title: 'Speak aloud', titleZh: '朗讀與表達', description: 'Listen to a model, then build your own talk', descriptionZh: '聽示範後按計劃完成個人短講', sessions: 2 },
-        { id: 'listening-vocab', symbol: 'V', title: 'Listening vocabulary', titleZh: '聆聽詞彙卡', description: 'Reveal, hear and use key listening words', descriptionZh: '翻開、聆聽及運用聆聽重點詞彙', sessions: 8, minGrade: 4 },
-        { id: 'listening-check', symbol: 'Q', title: 'Listening quick check', titleZh: '聽後小測', description: 'Short replayable clips with instant feedback', descriptionZh: '可重播短句配合即時中英回饋', sessions: 6, minGrade: 4 },
-        { id: 'roleplay', symbol: 'R', title: 'Role-play practice', titleZh: '角色對話', description: 'Take both roles in useful school-life dialogues', descriptionZh: '在實用校園情境中練習 A、B 角色對話', sessions: 2, minGrade: 4 }
+        { id: 'listening', symbol: 'L', title: 'Listening lab', titleZh: '聆聽練習室', description: 'Replayable dialogues and short stories', descriptionZh: '可重播的短對話與故事', sessions: 10 },
+        { id: 'speaking', symbol: 'S', title: 'Speak aloud', titleZh: '朗讀與表達', descriptionZh: '聽示範後按計劃完成個人短講', description: 'Listen to a model, then build your own talk', sessions: 5 },
+        { id: 'listening-vocab', symbol: 'V', title: 'Listening vocabulary', titleZh: '聆聽詞彙卡', description: 'Reveal, hear and use key listening words', descriptionZh: '翻開、聆聽及運用聆聽重點詞彙', sessions: 10, minGrade: 4 },
+        { id: 'listening-check', symbol: 'Q', title: 'Listening quick check', titleZh: '聽後小測', description: 'Short replayable clips with instant feedback', descriptionZh: '可重播短句配合即時中英回饋', sessions: 7, minGrade: 4 },
+        { id: 'roleplay', symbol: 'R', title: 'Role-play practice', titleZh: '角色對話', description: 'Take both roles in useful school-life dialogues', descriptionZh: '在實用校園情境中練習 A、B 角色對話', sessions: 3, minGrade: 4 }
       ]
     },
     language: {
@@ -61,10 +61,10 @@
       description: 'Use vocabulary, spelling and grammar in context.', descriptionZh: '透過分級字詞、拼寫、文法與句型，把英語知識用在合適的語境中。',
       tip: '做時態題時，先找時間提示；做句子題時，先找誰在做這個動作。',
       modules: [
-        { id: 'vocabulary', symbol: 'V', title: 'Vocabulary & spelling', titleZh: '字詞與拼寫', description: 'Core words, spelling and useful topics', descriptionZh: '核心字詞、拼寫與主題詞彙', sessions: 6 },
-        { id: 'grammar', symbol: 'G', title: 'Grammar & patterns', titleZh: 'Tenses, patterns and language use', descriptionZh: '時態、句型與語言運用', sessions: 6 },
-        { id: 'junior-game', symbol: '♪', title: 'Phonics & story game', titleZh: '拼音與故事遊戲', description: 'Hear a word or clue, then make a playful choice', descriptionZh: '聽字詞或故事線索，再作有趣選擇', sessions: 6, maxGrade: 3 },
-        { id: 'word-match', symbol: '↔', title: 'Word Match', titleZh: '單字配對', description: 'Reveal word clues and build everyday vocabulary', descriptionZh: '翻開單字線索，建立生活英語詞彙', sessions: 3, maxGrade: 3 }
+        { id: 'vocabulary', symbol: 'V', title: 'Vocabulary & spelling', titleZh: '字詞與拼寫', description: 'Core words, spelling and useful topics', descriptionZh: '核心字詞、拼寫與主題詞彙', sessions: 12 },
+        { id: 'grammar', symbol: 'G', title: 'Grammar & patterns', titleZh: 'Tenses, patterns and language use', descriptionZh: '時態、句型與語言運用', sessions: 8 },
+        { id: 'junior-game', symbol: '♪', title: 'Phonics & story game', titleZh: '拼音與故事遊戲', description: 'Hear a word or clue, then make a playful choice', descriptionZh: '聽字詞或故事線索，再作有趣選擇', sessions: 8, maxGrade: 3 },
+        { id: 'word-match', symbol: '↔', title: 'Word Match', titleZh: '單字配對', description: 'Reveal word clues and build everyday vocabulary', descriptionZh: '翻開單字線索，建立生活英語詞彙', sessions: 6, maxGrade: 3 }
       ]
     }
   };
@@ -102,6 +102,8 @@
   const question = (id, route, topic, prompt, answer, explanation, options = null, extras = {}) => ({
     id, grade: state.grade, route, topic, prompt, answer: String(answer), explanation, options, ...extras
   });
+  const expansion = () => window.QUESTION_BANK_EXPANSION || {};
+  const expanded = (key, source) => [...source, ...(expansion()[key]?.[state.grade] || [])];
 
   const grammarSets = {
     1: [
@@ -262,7 +264,7 @@
   };
 
   function createVocabulary() {
-    const words = scope().wordBank;
+    const words = expanded('words', scope().wordBank);
     const allWords = Object.values(scopeMap).flatMap((item) => item.wordBank);
     const frames = ['Choose the correctly spelt word:', 'Which word belongs to this year’s word bank?', 'Choose the spelling you should keep in your notebook:'];
     return Array.from({ length: 36 }, (_, index) => {
@@ -275,7 +277,7 @@
   }
 
   function createGrammar() {
-    return grammarSets[state.grade].map(([prompt, options, explanation], index) => {
+    return expanded('grammar', grammarSets[state.grade]).map(([prompt, options, explanation], index) => {
       const shuffled = randomize(options);
       return question(`grammar-${state.grade}-${index}`, 'language', 'Grammar & patterns', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { hint: scope().assessment });
     });
@@ -283,7 +285,7 @@
 
   function createReading() {
     const items = [];
-    readingLibrary[state.grade].forEach((passage, passageIndex) => {
+    expanded('reading', readingLibrary[state.grade]).forEach((passage, passageIndex) => {
       passage.questions.forEach(([prompt, options, explanation], questionIndex) => {
         const shuffled = randomize(options);
         items.push(question(`reading-${state.grade}-${passageIndex}-${questionIndex}`, 'read', 'Reading comprehension', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { passage: { title: passage.title, text: passage.text }, hint: 'Find the key word from the question in the passage, then read the whole sentence around it.' }));
@@ -293,7 +295,7 @@
   }
 
   function createSentenceBuilder() {
-    return sentenceBuilders[state.grade].map((sentence, index) => {
+    return expanded('sentences', sentenceBuilders[state.grade]).map((sentence, index) => {
       const words = sentence.replace('.', '').split(' ');
       const rotation = index % words.length;
       const mixed = [...words.slice(rotation), ...words.slice(0, rotation)].join(' / ');
@@ -302,17 +304,17 @@
   }
 
   function createProofreading() {
-    return proofreadingPairs[state.grade].map(([incorrect, correct], index) => question(`proofread-${state.grade}-${index}`, 'write', 'Proofreading', `This sentence has one mistake. Write the corrected sentence: ${incorrect}`, correct, `Correct sentence: ${correct}`, null, { writing: true, hint: 'Check the subject, the verb form, the tense clue and punctuation.' }));
+    return expanded('proofreading', proofreadingPairs[state.grade]).map(([incorrect, correct], index) => question(`proofread-${state.grade}-${index}`, 'write', 'Proofreading', `This sentence has one mistake. Write the corrected sentence: ${incorrect}`, correct, `Correct sentence: ${correct}`, null, { writing: true, hint: 'Check the subject, the verb form, the tense clue and punctuation.' }));
   }
 
   function createWritingPlan() {
-    return writingPrompts[state.grade].map((prompt, index) => question(`writing-plan-${state.grade}-${index}`, 'write', 'Writing planner', prompt, 'self-check', 'Well done. A first draft is the beginning of good writing. Read your sentences aloud and check that each one has a subject, a verb and a full stop.', null, { writing: true, multiline: true, selfCheck: 'I have written my first draft and checked it once.', hint: 'Use the prompt as your first idea. Add a detail, a reason or a time word to make your writing clearer.' }));
+    return expanded('writing', writingPrompts[state.grade]).map((prompt, index) => question(`writing-plan-${state.grade}-${index}`, 'write', 'Writing planner', prompt, 'self-check', 'Well done. A first draft is the beginning of good writing. Read your sentences aloud and check that each one has a subject, a verb and a full stop.', null, { writing: true, multiline: true, selfCheck: 'I have written my first draft and checked it once.', hint: 'Use the prompt as your first idea. Add a detail, a reason or a time word to make your writing clearer.' }));
   }
 
   function createListening() {
     const seniorScripts = (window.SENIOR_LISTENING_LIBRARY || {})[state.grade];
     if (seniorScripts) {
-      return seniorScripts.flatMap((script) => script.questions.map((item, index) => {
+      return [...seniorScripts, ...(expansion().seniorListening?.[state.grade] || [])].flatMap((script) => script.questions.map((item, index) => {
         const shuffled = randomize(item.options);
         const correct = item.options[item.answer];
         return question(`senior-listening-${state.grade}-${script.id}-${index}`, 'listen', `Listening comprehension · ${script.title}`, item.prompt, shuffled.indexOf(correct), item.explanation, shuffled, {
@@ -326,14 +328,14 @@
         });
       }));
     }
-    return listeningLibrary[state.grade].map(([audioText, prompt, options, explanation], index) => {
+    return expanded('juniorListening', listeningLibrary[state.grade]).map(([audioText, prompt, options, explanation], index) => {
       const shuffled = randomize(options);
       return question(`listening-${state.grade}-${index}`, 'listen', 'Listening lab', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { audioText, hint: 'Listen once for the main idea. Listen again for a word, number, place or action from the question.' });
     });
   }
 
   function createListeningFlashcards() {
-    const cards = (window.LISTENING_SPEAKING_EXTENSION || {}).flashcards?.[state.grade] || [];
+    const cards = [...((window.LISTENING_SPEAKING_EXTENSION || {}).flashcards?.[state.grade] || []), ...(expansion().flashcards?.[state.grade] || [])];
     return cards.map(([word, chinese, definition, example], index) => question(`listening-vocab-${state.grade}-${word}`, 'listen', 'Listening vocabulary', `Reveal the card, listen to “${word}”, then say its example sentence aloud.`, 'known', 'Strong work. You have previewed a key word before listening. Try using it again when you hear the longer script.', null, {
       selfCheck: `I revealed “${word}” and said the example sentence aloud. · 我已翻開「${word}」並朗讀例句。`,
       audioText: word,
@@ -343,7 +345,7 @@
   }
 
   function createListeningChecks() {
-    const checks = (window.LISTENING_SPEAKING_EXTENSION || {}).checks?.[state.grade] || [];
+    const checks = [...((window.LISTENING_SPEAKING_EXTENSION || {}).checks?.[state.grade] || []), ...(expansion().checks?.[state.grade] || [])];
     return checks.map(([id, audioText, prompt, promptZh, options, answer, explanation, explanationZh]) => {
       const shuffled = randomize(options);
       return question(id, 'listen', 'Listening quick check', prompt, shuffled.indexOf(options[answer]), explanation, shuffled, {
@@ -355,7 +357,7 @@
   }
 
   function createRoleplays() {
-    const roleplays = (window.LISTENING_SPEAKING_EXTENSION || {}).roleplays?.[state.grade] || [];
+    const roleplays = [...((window.LISTENING_SPEAKING_EXTENSION || {}).roleplays?.[state.grade] || []), ...(expansion().roleplays?.[state.grade] || [])];
     return roleplays.map((activity) => question(`roleplay-${state.grade}-${activity.id}`, 'listen', `Role-play · ${activity.title}`, activity.goal, 'spoken', 'Excellent. Try the dialogue again and change one detail so that the conversation becomes your own.', null, {
       audioText: activity.dialogue.map(([speaker, line]) => `Role ${speaker}: ${line}`).join(' '),
       promptZh: activity.goalZh,
@@ -369,7 +371,7 @@
   function createSpeaking() {
     const seniorOral = (window.SENIOR_ORAL_LIBRARY || {})[state.grade];
     if (seniorOral) {
-      return seniorOral.map((activity, index) => question(`senior-speaking-${state.grade}-${activity.id}-${index}`, 'listen', `Oral presentation · ${activity.title}`, activity.prompt, 'spoken', 'Excellent. Your plan now has a clear structure. Listen once more and improve one word, example or pause before you present again.', null, {
+      const structured = seniorOral.map((activity, index) => question(`senior-speaking-${state.grade}-${activity.id}-${index}`, 'listen', `Oral presentation · ${activity.title}`, activity.prompt, 'spoken', 'Excellent. Your plan now has a clear structure. Listen once more and improve one word, example or pause before you present again.', null, {
         audioText: activity.model,
         selfCheck: activity.selfCheck,
         speaking: true,
@@ -377,8 +379,10 @@
         promptZh: activity.promptZh,
         hint: 'Use the four-step plan. Speak from key words rather than memorising every sentence. 按四步計劃說話；可依重點詞表達，不必逐字背誦。'
       }));
+      const extras = (expansion().speaking?.[state.grade] || []).map((model, index) => question(`senior-speaking-extra-${state.grade}-${index}`, 'listen', 'Speak aloud', 'Listen to the model. Then say it aloud and change the blank parts to make it true for you.', 'spoken', 'Excellent. Try the sentence once more with a clear voice and natural pace.', null, { audioText: model.replaceAll('____', 'your answer'), selfCheck: 'I have spoken the sentence aloud in a complete voice.', speaking: true, hint: 'Use a clear opening and finish each thought before adding the next point. 用清楚開首，並完成每一個想法才加入下一點。' }));
+      return [...structured, ...extras];
     }
-    return speakingPrompts[state.grade].map((model, index) => question(`speaking-${state.grade}-${index}`, 'listen', 'Speak aloud', 'Listen to the model. Then say it aloud and change the blank parts to make it true for you.', 'spoken', 'Excellent. Speaking in complete sentences builds confidence. Try saying the sentence once more with a clear voice and natural pace.', null, { audioText: model.replaceAll('____', 'your answer'), selfCheck: 'I have spoken the sentence aloud in a complete voice.', speaking: true, hint: 'Do not rush. Pause briefly at full stops and make your key words clear.' }));
+    return expanded('speaking', speakingPrompts[state.grade]).map((model, index) => question(`speaking-${state.grade}-${index}`, 'listen', 'Speak aloud', 'Listen to the model. Then say it aloud and change the blank parts to make it true for you.', 'spoken', 'Excellent. Speaking in complete sentences builds confidence. Try saying the sentence once more with a clear voice and natural pace.', null, { audioText: model.replaceAll('____', 'your answer'), selfCheck: 'I have spoken the sentence aloud in a complete voice.', speaking: true, hint: 'Do not rush. Pause briefly at full stops and make your key words clear.' }));
   }
 
   function availableModules(route = routes[state.route]) { return route.modules.filter((item) => (!item.minGrade || state.grade >= item.minGrade) && (!item.maxGrade || state.grade <= item.maxGrade)); }
@@ -402,7 +406,7 @@
   }
 
   function createJuniorGame() {
-    const games = (window.JUNIOR_SENIOR_EXTENSION || {}).games?.[state.grade]?.audio || [];
+    const games = [...((window.JUNIOR_SENIOR_EXTENSION || {}).games?.[state.grade]?.audio || []), ...(expansion().juniorGame?.[state.grade] || [])];
     return games.map(([audioText, prompt, promptZh, options, answer, explanation, explanationZh], index) => {
       const shuffled = randomize(options);
       return question(`junior-game-${state.grade}-${index}`, 'language', 'Phonics & story game', prompt, shuffled.indexOf(options[answer]), explanation, shuffled, { audioText, promptZh, explanationZh, juniorGame: true, hint: 'Listen once, say the key word softly, then choose the best answer. 先聽一次，小聲讀出重點字，再選最合適答案。' });
@@ -410,7 +414,7 @@
   }
 
   function createJuniorWordMatch() {
-    const cards = (window.JUNIOR_SENIOR_EXTENSION || {}).games?.[state.grade]?.match || [];
+    const cards = [...((window.JUNIOR_SENIOR_EXTENSION || {}).games?.[state.grade]?.match || []), ...(expansion().juniorMatch?.[state.grade] || [])];
     return cards.map(([word, clue, chinese], index) => question(`word-match-${state.grade}-${word}`, 'language', 'Word Match', `Match “${word}” with its clue. Then say the word aloud.`, 'known', 'Great matching. Read the word and its clue again so that they stay together in your mind.', null, {
       selfCheck: `I revealed “${word}”, matched its clue and said it aloud. · 我已翻開「${word}」、配對線索並朗讀。`,
       audioText: word,
@@ -421,7 +425,7 @@
   }
 
   function createAdvancedReading() {
-    const passages = (window.JUNIOR_SENIOR_EXTENSION || {}).advancedReading?.[state.grade] || [];
+    const passages = [...((window.JUNIOR_SENIOR_EXTENSION || {}).advancedReading?.[state.grade] || []), ...(expansion().advancedReading?.[state.grade] || [])];
     return passages.flatMap((passage, passageIndex) => passage.questions.map(([prompt, promptZh, options, answer, explanation, explanationZh, analysis], questionIndex) => {
       const shuffled = randomize(options);
       return question(`advanced-reading-${state.grade}-${passageIndex}-${questionIndex}`, 'read', `Advanced reading · ${passage.genre}`, prompt, shuffled.indexOf(options[answer]), explanation, shuffled, {
@@ -499,8 +503,9 @@
     $('#module-list').innerHTML = modules.map((module) => `<button class="module-card ${state.module === module.id ? 'selected' : ''}" data-module="${module.id}"><i class="module-symbol">${module.symbol}</i><span><strong>${bilingual(module.title, module.titleZh)}</strong><span class="module-en">${escape(module.description)}</span><span class="module-zh">${escape(module.descriptionZh)}</span>${module.assessment ? '<span class="assessment-chip">P4–P6 ASSESSMENT · 呈分試</span>' : ''}</span></button>`).join('');
     $$('[data-module]').forEach((button) => button.addEventListener('click', () => { state.module = button.dataset.module; renderHome(); }));
     const module = selectedModule();
-    $('#session-mark').textContent = module.assessment ? 'MODEL LIBRARY · 範文庫' : `${module.sessions} QUESTIONS · ${module.sessions} 題`;
-    $('#scope-session-count').textContent = module.assessment ? 'P4–6' : module.sessions;
+    const activeCount = module.assessment ? 'P4–6' : (getBank().length || module.sessions);
+    $('#session-mark').textContent = module.assessment ? 'MODEL LIBRARY · 範文庫' : `${activeCount} QUESTIONS · ${activeCount} 題`;
+    $('#scope-session-count').textContent = activeCount;
     $('#selected-module-note').innerHTML = `${bilingual(module.title, module.titleZh)}<span class="selected-note-detail">${escape(module.descriptionZh)}</span>`;
   }
 

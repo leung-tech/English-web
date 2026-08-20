@@ -79,3 +79,11 @@ The P2 Word Match activity showed a Word Match label, hidden clue panel, Chinese
 The P3 Phonics & story game loaded six replayable game questions. The P4 Advanced reading workshop launched a School news report session, while P5 launched a Travel blog session; each displayed four questions, the bilingual genre label and the selected year level.
 
 The public deployment was checked after the update. The P1 Apply route displayed Vocabulary, Grammar, Phonics & story game and Word Match. The P6 Read route displayed Advanced reading workshop, which launched a Magazine article with the model-analysis flow available after answer checking.
+
+## Full question-bank expansion validation
+
+Initial integration testing confirmed that the expansion banks loaded into each category. The session-selection limits were then raised so students receive the enlarged sets rather than the earlier shorter default sessions. Final validation will confirm the updated session counts across junior and senior modules.
+
+Final local count checks confirmed that displayed and launched session sizes match: P1 Grammar 8, P1 Reading 8, P1 Listening 6, P2 Phonics & story game 8, P4 Listening 6, P4 Writing planner 6, P5 Advanced reading 5, and P6 Role-play 3.
+
+A complete P6 Advanced reading session was sampled across all five questions. It included Magazine article, Formal letter and the newly added Opinion column, and every question displayed the model-analysis panel after checking.
