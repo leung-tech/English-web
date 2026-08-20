@@ -87,3 +87,5 @@ Initial integration testing confirmed that the expansion banks loaded into each 
 Final local count checks confirmed that displayed and launched session sizes match: P1 Grammar 8, P1 Reading 8, P1 Listening 6, P2 Phonics & story game 8, P4 Listening 6, P4 Writing planner 6, P5 Advanced reading 5, and P6 Role-play 3.
 
 A complete P6 Advanced reading session was sampled across all five questions. It included Magazine article, Formal letter and the newly added Opinion column, and every question displayed the model-analysis panel after checking.
+
+The public site loaded QUESTION_BANK_EXPANSION successfully. Online checks confirmed P1 Grammar (8 questions), P4 Listening (6 questions), P6 Advanced reading (5 questions) and P6 Role-play (3 questions), with the displayed and launched counts matching.
