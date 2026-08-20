@@ -3,7 +3,7 @@
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
   const MAX_PER_TOPIC = 100;
-  const KEYS = { wrong: 'hk-primary-wrongbook-v2', stats: 'hk-primary-stats-v2', used: 'hk-primary-used-v2' };
+  const KEYS = { wrong: 'hk-primary-wrongbook-v2', stats: 'hk-primary-stats-v2', used: 'hk-primary-used-v2', rewards: 'hk-primary-rewards-v1' };
   const state = { grade: '小五', subject: 'math', topic: 'operations', session: null, filter: 'all' };
 
   const safeGet = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
@@ -12,6 +12,8 @@
   const wrongbook = () => safeGet(KEYS.wrong, []);
   const saveStats = (value) => safeSet(KEYS.stats, value);
   const saveWrongbook = (value) => safeSet(KEYS.wrong, value);
+  const rewards = () => safeGet(KEYS.rewards, { lastCheckIn: '', streak: 0, dates: [], badges: [], visualQuestions: 0 });
+  const saveRewards = (value) => safeSet(KEYS.rewards, value);
   const gradeNumber = () => Number(state.grade.replace(/\D/g, '')) || 5;
   const escape = (value) => String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
   const normalize = (value) => String(value ?? '').trim().toLowerCase().replace(/[，。！？]/g, '').replace(/\s+/g, ' ');
@@ -31,11 +33,48 @@
     ]
   };
 
-  const getTopics = () => topicCatalog[state.subject].filter((topic) => !topic.advanced || isHigh());
+  const getTopics = () => {
+    const standardTopics = topicCatalog[state.subject].filter((topic) => !topic.advanced || isHigh());
+    if (state.subject === 'english' && isHigh()) return [...standardTopics, { id: 'visual-reading', title: '圖像與圖表閱讀', description: '結合圖片、資料圖表與英文短文', icon: '◫', kind: 'english', sessions: 5, advanced: true }];
+    return standardTopics;
+  };
   const selectedTopic = () => getTopics().find((topic) => topic.id === state.topic) || getTopics()[0];
-  const question = (id, topic, subject, prompt, answer, explanation, options = null, passage = null) => ({ id, topic, subject, prompt, answer: String(answer), explanation, options, passage });
+  const question = (id, topic, subject, prompt, answer, explanation, options = null, passage = null, visual = null) => ({ id, topic, subject, prompt, answer: String(answer), explanation, options, passage, visual });
   const gcd = (a, b) => { while (b) [a, b] = [b, a % b]; return Math.abs(a); };
   const fraction = (top, bottom) => { const divisor = gcd(top, bottom); return `${top / divisor}/${bottom / divisor}`; };
+  const dayKey = (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  const previousDay = () => { const date = new Date(); date.setDate(date.getDate() - 1); return dayKey(date); };
+  const badgeDefinitions = [
+    { id: 'first-step', mark: '✓', title: '起步印記', rule: '完成 1 題', check: (record, learning) => learning.completed >= 1 },
+    { id: 'steady-ten', mark: '10', title: '十題累積', rule: '完成 10 題', check: (record, learning) => learning.completed >= 10 },
+    { id: 'practice-fifty', mark: '50', title: '練習達人', rule: '完成 50 題', check: (record, learning) => learning.completed >= 50 },
+    { id: 'streak-three', mark: '3', title: '三日連續', rule: '連續 3 日', check: (record) => record.streak >= 3 },
+    { id: 'visual-reader', mark: '◫', title: '圖像讀者', rule: '完成 1 題圖像題', check: (record) => record.visualQuestions >= 1 }
+  ];
+  function unlockBadges(record = rewards()) {
+    record.badges ||= []; record.visualQuestions ||= 0;
+    const learning = stats();
+    badgeDefinitions.forEach((badge) => { if (badge.check(record, learning) && !record.badges.includes(badge.id)) record.badges.push(badge.id); });
+    return record;
+  }
+  function checkInToday() {
+    const record = rewards(), today = dayKey();
+    if (record.lastCheckIn === today) { toast('今天已完成打卡，明天再見。'); return; }
+    record.streak = record.lastCheckIn === previousDay() ? (record.streak || 0) + 1 : 1;
+    record.lastCheckIn = today; record.dates = [...new Set([...(record.dates || []), today])].slice(-31);
+    const before = new Set(record.badges || []); unlockBadges(record); saveRewards(record);
+    const unlocked = record.badges.find((badge) => !before.has(badge));
+    renderRewards(); toast(unlocked ? `打卡成功，解鎖「${badgeDefinitions.find((badge) => badge.id === unlocked).title}」！` : `打卡成功，已連續 ${record.streak} 日。`);
+  }
+  function renderRewards() {
+    const record = unlockBadges(rewards()); saveRewards(record);
+    const dates = Array.from({ length: 7 }, (_, index) => { const date = new Date(); date.setDate(date.getDate() - (6 - index)); return dayKey(date); });
+    $('#streak-total').textContent = record.streak || 0;
+    $('#checkin-status').textContent = record.lastCheckIn === dayKey() ? '今天的學習印記已蓋上，明天再繼續。' : '每日完成一次打卡，累積你的學習節奏。';
+    $('#checkin-button').textContent = record.lastCheckIn === dayKey() ? '今天已打卡' : '今天打卡'; $('#checkin-button').disabled = record.lastCheckIn === dayKey();
+    $('#week-dots').innerHTML = dates.map((date, index) => `<i class="${record.dates?.includes(date) ? 'done' : ''} ${date === dayKey() ? 'today' : ''}">${index + 1}</i>`).join('');
+    $('#badge-list').innerHTML = badgeDefinitions.map((badge) => { const unlocked = record.badges.includes(badge.id); return `<article class="badge ${unlocked ? 'unlocked' : 'locked'}"><span class="badge-mark">${badge.mark}</span><strong>${badge.title}</strong><small>${unlocked ? '已解鎖' : badge.rule}</small></article>`; }).join('');
+  }
 
   function createOperations() {
     const level = gradeNumber(), limit = [0, 10, 50, 100, 1000, 10000, 100000][level];
@@ -168,12 +207,58 @@
     return result;
   }
 
+  const visualSets = [
+    { type: 'image', title: 'The Rooftop Garden Club', src: '/manus-storage/reading-eco-club_fa701fbb.jpg', alt: 'Pupils work together in a school rooftop garden.', text: 'The Eco Club meets on the school rooftop every Friday. Pupils grow herbs in raised planters and record plant height. They reuse clean bottles as watering cans because the club wants to reduce waste. Last month, they also made a small area for butterflies and bees.', aim: 'reduce waste while caring for the garden', action: 'record plant height', detail: 'reuse clean bottles as watering cans' },
+    { type: 'image', title: 'A Community Book Exchange', src: '/manus-storage/reading-community-library_32d50d45.jpg', alt: 'Pupils organise books in a community library.', text: 'On Saturday morning, Maya and her classmates helped at a community book exchange. They sorted returned books by level and placed them on the correct shelves. A quiet reading corner was prepared for younger children. The team checked every borrowing card carefully before the library opened.', aim: 'make it easier for families to share books', action: 'sorted returned books by level', detail: 'checked every borrowing card carefully' },
+    { type: 'image', title: 'Measuring New Growth', src: '/manus-storage/reading-eco-club_fa701fbb.jpg', alt: 'A pupil measures a young plant with a ruler.', text: 'The garden group measures the same plants every week. This helps pupils compare growth after rainy and sunny days. When a plant grows slowly, the group checks whether it has enough water and light. They do not change everything at once because they want their notes to be fair.', aim: 'compare plant growth over time', action: 'measures the same plants every week', detail: 'does not change everything at once' },
+    { type: 'image', title: 'Choosing Books for Others', src: '/manus-storage/reading-community-library_32d50d45.jpg', alt: 'Pupils arrange books in a welcoming library.', text: 'At the book exchange, pupils placed picture books on lower shelves and longer stories on higher shelves. They wanted younger visitors to find books that they could reach and enjoy independently. The volunteers smiled when a child chose a book without asking for help.', aim: 'help younger visitors choose books independently', action: 'placed picture books on lower shelves', detail: 'longer stories were placed on higher shelves' },
+    { type: 'image', title: 'A Garden for Small Animals', src: '/manus-storage/reading-eco-club_fa701fbb.jpg', alt: 'A school garden with plants and a butterfly.', text: 'The Eco Club noticed that few butterflies visited the rooftop garden. The pupils planted flowers near the herbs and kept one corner quiet. They learned that insects need food and safe places to rest. After several weeks, the group saw more butterflies around the planters.', aim: 'make the garden welcoming for butterflies', action: 'planted flowers near the herbs', detail: 'kept one corner quiet' },
+    { type: 'image', title: 'The Book Cart Team', src: '/manus-storage/reading-community-library_32d50d45.jpg', alt: 'Pupils use a book cart to organise a library.', text: 'Before the library opened, the Book Cart Team checked the books that had been returned. If a cover was loose, they placed the book in a repair tray. If the book was ready, they returned it to the correct shelf. Their careful work meant visitors could find clean, complete books easily.', aim: 'make returned books ready for visitors', action: 'checked the books that had been returned', detail: 'placed loose-cover books in a repair tray' },
+    { type: 'image', title: 'Saving Water at School', src: '/manus-storage/reading-eco-club_fa701fbb.jpg', alt: 'Pupils water plants with a reused bottle.', text: 'The garden group wanted to use less water. Instead of filling large watering cans every day, they collected rainwater in a covered container. They watered plants in the early morning, when less water would disappear in the heat. The pupils compared the amount of water used each week.', aim: 'use less water in the garden', action: 'collected rainwater in a covered container', detail: 'watered plants in the early morning' },
+    { type: 'image', title: 'The Quiet Reading Corner', src: '/manus-storage/reading-community-library_32d50d45.jpg', alt: 'A quiet reading corner in a community library.', text: 'The library team made a quiet corner with soft cushions and a small book basket. They chose this place because some children found it hard to read near the busy return desk. The team asked visitors what they liked and changed the corner after listening to their suggestions.', aim: 'give children a calmer place to read', action: 'made a quiet corner with cushions', detail: 'changed the corner after listening to suggestions' },
+    { type: 'image', title: 'Notes from the Garden', src: '/manus-storage/reading-eco-club_fa701fbb.jpg', alt: 'A pupil writes observations in a garden notebook.', text: 'Each Eco Club member has a small garden notebook. They write the date, weather and one observation every time they visit. At the end of the month, they read their notes together. The notebooks help them explain why some plants grew better than others.', aim: 'understand why plants grow differently', action: 'write the date, weather and one observation', detail: 'read their notes together at the end of the month' },
+    { type: 'image', title: 'Welcoming New Readers', src: '/manus-storage/reading-community-library_32d50d45.jpg', alt: 'A friendly book exchange with pupils and a volunteer.', text: 'When a new family arrived at the book exchange, a pupil volunteer showed them where to return books and where to choose another one. She did not simply choose a book for the child. Instead, she asked what the child enjoyed reading and pointed out a few suitable shelves.', aim: 'help new families use the book exchange confidently', action: 'showed visitors where to return and choose books', detail: 'asked what the child enjoyed reading' },
+    { type: 'chart', title: 'Books Borrowed in One Week', labels: ['Mon', 'Tue', 'Wed', 'Thu'], values: [18, 27, 21, 34], text: 'The chart shows books borrowed from the class library. More books were borrowed on Thursday because the class had a quiet reading period before lunch.' },
+    { type: 'chart', title: 'Eco Club Recycling Results', labels: ['Paper', 'Plastic', 'Cans', 'Glass'], values: [42, 28, 16, 9], text: 'The chart shows items collected by the Eco Club in one month. The group placed collection boxes near classrooms and reminded pupils to rinse containers.' },
+    { type: 'chart', title: 'After-school Club Choices', labels: ['Art', 'Coding', 'Drama', 'Sports'], values: [24, 31, 18, 27], text: 'The chart shows how many pupils joined each after-school club. The school will use the results to plan rooms and equipment for next term.' },
+    { type: 'chart', title: 'Minutes Read Each Day', labels: ['Mon', 'Tue', 'Wed', 'Thu'], values: [25, 35, 30, 40], text: 'The chart shows average reading minutes each day. The teacher asked pupils to discuss one new word after every session.' },
+    { type: 'chart', title: 'Water Saved by Class', labels: ['5A', '5B', '6A', '6B'], values: [16, 22, 19, 28], text: 'The chart shows litres of water saved by four classes during a water-saving challenge. Pupils checked taps after recess and put reminder labels beside sinks.' },
+    { type: 'chart', title: 'School Garden Plant Growth', labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], values: [4, 7, 11, 15], text: 'The chart shows average basil plant height in centimetres. The club measured the plants on the same day each week.' },
+    { type: 'chart', title: 'Reusable Cups Collected', labels: ['Mon', 'Tue', 'Wed', 'Thu'], values: [12, 20, 26, 18], text: 'The chart shows reusable cups returned to the school canteen. The Eco Team gave pupils a stamp on their lunch card when they returned a clean cup.' },
+    { type: 'chart', title: 'Library Visit Times', labels: ['Before school', 'Recess', 'Lunch', 'After school'], values: [9, 18, 37, 14], text: 'The chart shows library visits at different times of day. Library helpers used the information to decide when they should be on duty.' },
+    { type: 'chart', title: 'Healthy Snack Survey', labels: ['Fruit', 'Yoghurt', 'Nuts', 'Biscuits'], values: [32, 24, 12, 17], text: 'The chart shows pupils’ favourite choices in a healthy snack survey. The canteen will use the results when it plans a new snack day.' },
+    { type: 'chart', title: 'Steps in a Walking Challenge', labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], values: [5400, 6200, 7100, 7600], text: 'The chart shows average daily steps during a four-week walking challenge. Pupils recorded their steps before sharing one activity that helped them move more.' }
+  ];
+  function createVisualReading() {
+    const result = [];
+    visualSets.forEach((set, index) => {
+      const visual = set.type === 'image' ? { type: 'image', src: set.src, alt: set.alt, caption: 'Study the image and read the short passage.' } : { type: 'chart', title: set.title, labels: set.labels, values: set.values, caption: 'Study the bar chart and read the short passage.' };
+      const high = set.values ? Math.max(...set.values) : 0, highIndex = set.values ? set.values.indexOf(high) : 0, low = set.values ? Math.min(...set.values) : 0, lowIndex = set.values ? set.values.indexOf(low) : 0;
+      const prompts = set.type === 'image' ? [
+        ['What is the main aim of the group?', [`To ${set.aim}.`, 'To win a sports competition.', 'To close the school rooftop.', 'To avoid working together.'], 0, `The passage explains that the group wanted to ${set.aim}.`],
+        ['Which action is described in both the image and the passage?', [`They ${set.action}.`, 'They travelled to another country.', 'They built a new school.', 'They watched a film.'], 0, `The passage says that the pupils ${set.action}.`],
+        ['Which detail shows that the group planned carefully?', [`They ${set.detail}.`, 'They stopped writing notes.', 'They ignored visitors.', 'They changed the project every minute.'], 0, 'This detail shows a thoughtful approach to the activity.'],
+        ['What can readers infer about the pupils?', ['They notice small details and work as a team.', 'They dislike learning outside.', 'They never listen to suggestions.', 'They are not interested in helping.'], 0, 'Their actions show responsibility, curiosity and teamwork.'],
+        ['Which title best matches the image and passage?', [set.title, 'A Day Without a Plan', 'Why Nobody Reads', 'The Lost Classroom'], 0, `The visual and passage both focus on ${set.title.toLowerCase()}.`]
+      ] : [
+        ['Which category had the highest number?', [set.labels[highIndex], set.labels[(highIndex + 1) % 4], set.labels[(highIndex + 2) % 4], set.labels[lowIndex]], 0, `${set.labels[highIndex]} is the highest bar at ${high}.`],
+        [`How many were recorded for ${set.labels[0]}?`, [String(set.values[0]), String(high), String(low), String(set.values[1])], 0, `The bar for ${set.labels[0]} shows ${set.values[0]}.`],
+        [`What is the difference between ${set.labels[highIndex]} and ${set.labels[lowIndex]}?`, [String(high - low), String(high + low), String(high), String(low)], 0, `${high} − ${low} = ${high - low}.`],
+        ['Which statement is supported by the chart?', [`${set.labels[highIndex]} had more than ${set.labels[lowIndex]}.`, 'Every category had the same number.', `${set.labels[lowIndex]} had the most.`, 'The chart gives no numbers.'], 0, `The bars show that ${set.labels[highIndex]} is greater than ${set.labels[lowIndex]}.`],
+        ['What is the most useful reason for making this chart?', ['To compare numbers in different categories.', 'To tell a fictional story.', 'To hide information from readers.', 'To show a map of the school.'], 0, 'A bar chart makes it easy to compare values across categories.']
+      ];
+      prompts.forEach(([prompt, options, answer, explanation], number) => result.push(question(`visual-reading-${gradeNumber()}-${index}-${number}`, '圖像與圖表閱讀', 'english', prompt, answer, explanation, options, { title: set.title, text: set.text }, visual)));
+    });
+    return result;
+  }
+
   function getBank() {
     if (state.topic === 'operations') return createOperations();
     if (state.topic === 'fractions') return createFractions();
     if (state.topic === 'word-problems') return createWordProblems();
     if (state.topic === 'vocabulary') return createVocabulary();
     if (state.topic === 'grammar') return createGrammar();
+    if (state.topic === 'visual-reading') return createVisualReading();
     return createReading();
   }
 
@@ -216,7 +301,7 @@
     $('#topic-count').textContent = `${getTopics().length} 個課題`;
     $('#selection-title').textContent = `${state.grade} · ${state.subject === 'math' ? '數學' : '英文'} · ${topic.title}`;
     $('#selection-description').textContent = `共 ${topic.sessions} 題，逐題作答後才會顯示評語。`;
-    renderStats();
+    renderStats(); renderRewards();
   }
 
   function updateSessionProgress() {
@@ -228,22 +313,30 @@
     $('#session-wrong-count').textContent = wrongbook().length;
   }
   function currentQuestion() { return state.session.questions[state.session.index]; }
+  function renderVisual(visual) {
+    if (!visual) return '';
+    if (visual.type === 'image') return `<figure class="reading-visual image-visual"><button class="visual-open" type="button" data-zoom-image="${visual.src}" data-zoom-alt="${escape(visual.alt)}"><img src="${visual.src}" alt="${escape(visual.alt)}"></button><figcaption>${escape(visual.caption)}</figcaption></figure>`;
+    const maximum = Math.max(...visual.values);
+    return `<figure class="reading-visual chart-visual"><figcaption><strong>${escape(visual.title)}</strong><span>${escape(visual.caption)}</span></figcaption><div class="bar-chart">${visual.values.map((value, index) => `<div class="bar-item"><span class="bar-value">${value}</span><i style="--bar-height:${Math.max(9, Math.round((value / maximum) * 100))}%"></i><small>${escape(visual.labels[index])}</small></div>`).join('')}</div></figure>`;
+  }
   function renderQuestion() {
     const session = state.session, item = currentQuestion(), currentResult = session.results[session.index];
     $('#session-title').textContent = `${state.grade} · ${item.subject === 'math' ? '數學' : '英文'} · ${item.topic}`;
     $('#question-number').textContent = String(session.index + 1).padStart(2, '0');
     $('#question-topic').textContent = item.subject === 'math' ? 'MATHS PRACTICE' : 'ENGLISH PRACTICE';
+    const visual = renderVisual(item.visual);
     const passage = item.passage ? `<article class="passage"><strong>${escape(item.passage.title)}</strong><br>${escape(item.passage.text)}</article>` : '';
     const body = item.options
       ? `<div class="choices">${item.options.map((choice, index) => `<button class="choice ${session.drafts[session.index] === String(index) ? 'selected' : ''}" data-choice="${index}"><span class="choice-letter">${String.fromCharCode(65 + index)}</span><span>${escape(choice)}</span></button>`).join('')}</div>`
       : `<div class="answer-area"><input class="answer-field" id="answer-field" autocomplete="off" inputmode="text" placeholder="在此輸入答案" value="${escape(session.drafts[session.index] || '')}"></div>`;
-    $('#question-content').innerHTML = `${passage}<h1>${escape(item.prompt)}</h1>${body}`;
+    $('#question-content').innerHTML = `${visual}${passage}<h1>${escape(item.prompt)}</h1>${body}`;
     const feedback = $('#feedback');
     feedback.className = `feedback ${currentResult ? `show ${currentResult.correct ? 'correct' : 'wrong'}` : ''}`;
     feedback.innerHTML = currentResult ? `<strong>${currentResult.correct ? '答對了。' : '這一題先放進錯題本。'}</strong> ${escape(item.explanation)}` : '';
     $('#check-question').classList.toggle('hidden', Boolean(currentResult)); $('#next-question').classList.toggle('hidden', !currentResult); $('#previous-question').disabled = session.index === 0;
     if (item.options) $$('[data-choice]').forEach((button) => button.addEventListener('click', () => { if (currentResult) return; session.drafts[session.index] = button.dataset.choice; $$('.choice').forEach((choice) => choice.classList.toggle('selected', choice === button)); }));
     else $('#answer-field').addEventListener('input', (event) => { session.drafts[session.index] = event.target.value; });
+    $('[data-zoom-image]')?.addEventListener('click', (event) => { const button = event.currentTarget, modal = $('#image-modal'); $('#image-modal-content').src = button.dataset.zoomImage; $('#image-modal-content').alt = button.dataset.zoomAlt; $('#image-modal-caption').textContent = button.dataset.zoomAlt; modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false'); });
     updateSessionProgress();
   }
 
@@ -261,6 +354,7 @@
     const correct = item.options ? String(answer) === item.answer : normalize(answer) === normalize(item.answer);
     session.results[session.index] = { correct, answer };
     const data = stats(); data.completed += 1; if (correct) data.correct += 1; saveStats(data);
+    const rewardRecord = rewards(); if (item.visual) rewardRecord.visualQuestions = (rewardRecord.visualQuestions || 0) + 1; saveRewards(unlockBadges(rewardRecord));
     if (correct) { removeWrong(item.id); toast('答對了，繼續保持！'); } else { addWrong(item, answer); toast('已加入錯題本，之後可再挑戰。'); }
     renderQuestion(); renderStats();
   }
@@ -298,6 +392,8 @@
     $$('.side-nav button, .top-actions [data-nav]').forEach((button) => button.addEventListener('click', () => { const view = button.dataset.nav; if (view === 'wrongbook') { renderWrongbook(); showView('wrongbook'); } else { showView('home'); renderHome(); } }));
     $('#check-question').addEventListener('click', checkCurrent); $('#next-question').addEventListener('click', nextQuestion); $('#previous-question').addEventListener('click', () => { if (state.session.index > 0) { state.session.index -= 1; renderQuestion(); } });
     $('#save-later').addEventListener('click', () => { showView('home'); renderHome(); toast('進度暫時保留在這個瀏覽器分頁。'); }); $('#result-home').addEventListener('click', () => { showView('home'); renderHome(); }); $('#result-wrongbook').addEventListener('click', () => { renderWrongbook(); showView('wrongbook'); });
+    $('#checkin-button').addEventListener('click', checkInToday);
+    const closeModal = () => { $('#image-modal').classList.remove('open'); $('#image-modal').setAttribute('aria-hidden', 'true'); }; $('#image-modal-close').addEventListener('click', closeModal); $('#image-modal').addEventListener('click', (event) => { if (event.target.id === 'image-modal') closeModal(); });
     $$('.filter-tab').forEach((button) => button.addEventListener('click', () => { state.filter = button.dataset.filter; renderWrongbook(); }));
   }
 
