@@ -55,3 +55,7 @@ The P4 Listening comprehension module opened with a senior-specific Eco Club ann
 After the P4 listening answer was checked, the bilingual feedback and the titled English transcript appeared as intended. The P6 oral-presentation module was also opened successfully. It showed a replayable model-audio control, bilingual proposal prompt, four presentation-plan steps, four key-language prompts, a self-check and a two-activity session count.
 
 The P6 oral self-check was completed and returned a successful completion message with the next-step control. The P5 Travel forum listening activity also loaded with a bilingual question, four answer choices and replayable audio. This confirms the P4–P6 senior listening scripts and oral-presentation modules work across all three target year levels.
+
+The public GitHub Pages URL opened successfully. Its initial cached page still showed the pre-update generic P6 speaking title rather than the new oral-presentation plan, indicating that the Pages deployment needs to finish refreshing before final online verification. The published page itself is reachable; the live senior-oral assets will be rechecked after deployment status confirms completion.
+
+After GitHub Pages reported a successful build, the public page loaded the new senior-oral data file but still used a cached earlier app.js, causing the generic P6 speaking card to appear despite the data object being present. The page will be updated with versioned script URLs to force the browser to retrieve the matching current application logic.
