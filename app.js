@@ -14,9 +14,9 @@
   const saveWrongbook = (value) => safeSet(KEYS.wrong, value);
   const rewards = () => safeGet(KEYS.rewards, { lastCheckIn: '', streak: 0, dates: [], badges: [], visualQuestions: 0 });
   const saveRewards = (value) => safeSet(KEYS.rewards, value);
-  const gradeNumber = () => Number(state.grade.replace(/\D/g, '')) || 5;
+  const gradeNumber = () => ({ 小一: 1, 小二: 2, 小三: 3, 小四: 4, 小五: 5, 小六: 6 }[state.grade] || Number(state.grade.replace(/\D/g, '')) || 5);
   const escape = (value) => String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
-  const normalize = (value) => String(value ?? '').trim().toLowerCase().replace(/[，。！？]/g, '').replace(/\s+/g, ' ');
+  const normalize = (value) => String(value ?? '').trim().toLowerCase().replace(/[.,!?，。！？]/g, '').replace(/\s+/g, ' ');
   const randomize = (items) => [...items].sort(() => Math.random() - 0.5);
   const isHigh = () => gradeNumber() >= 5;
 
@@ -35,7 +35,17 @@
 
   const getTopics = () => {
     const standardTopics = topicCatalog[state.subject].filter((topic) => !topic.advanced || isHigh());
-    if (state.subject === 'english' && isHigh()) return [...standardTopics, { id: 'visual-reading', title: '圖像與圖表閱讀', description: '結合圖片、資料圖表與英文短文', icon: '◫', kind: 'english', sessions: 5, advanced: true }];
+    if (state.subject === 'english') {
+      const scope = window.HK_PRIMARY_ENGLISH_SCOPE?.[gradeNumber()];
+      const englishTopics = [
+        { id: 'vocabulary', title: '分級字詞與拼寫', description: scope ? `${scope.band}：${scope.words.slice(0, 3).join(' · ')}…` : '按年級的高頻字詞與拼寫', icon: 'Aa', kind: 'english', sessions: 8 },
+        { id: 'grammar', title: '文法與句型', description: scope ? `${scope.grammar[0][1]}、${scope.grammar[1][1]} 等` : '按年級的基礎文法', icon: '✓', kind: 'english', sessions: 8 },
+        { id: 'sentence-patterns', title: '句子結構', description: '依年級重組及完成正確英文句子', icon: '↔', kind: 'english', sessions: 8 },
+        { id: 'reading', title: '閱讀理解', description: scope ? scope.reading : '閱讀短文、推論重點與回答問題', icon: '⌁', kind: 'english', sessions: gradeNumber() <= 2 ? 4 : 5 }
+      ];
+      if (isHigh()) englishTopics.push({ id: 'visual-reading', title: '圖像與圖表閱讀', description: '結合圖片、資料圖表與英文短文', icon: '◫', kind: 'english', sessions: 5, advanced: true });
+      return englishTopics;
+    }
     return standardTopics;
   };
   const selectedTopic = () => getTopics().find((topic) => topic.id === state.topic) || getTopics()[0];
@@ -59,19 +69,19 @@
   }
   function checkInToday() {
     const record = rewards(), today = dayKey();
-    if (record.lastCheckIn === today) { toast('今天已完成打卡，明天再見。'); return; }
+    if (record.lastCheckIn === today) { toast('今天已蓋上學習印記，明天再繼續。'); return; }
     record.streak = record.lastCheckIn === previousDay() ? (record.streak || 0) + 1 : 1;
     record.lastCheckIn = today; record.dates = [...new Set([...(record.dates || []), today])].slice(-31);
     const before = new Set(record.badges || []); unlockBadges(record); saveRewards(record);
     const unlocked = record.badges.find((badge) => !before.has(badge));
-    renderRewards(); toast(unlocked ? `打卡成功，解鎖「${badgeDefinitions.find((badge) => badge.id === unlocked).title}」！` : `打卡成功，已連續 ${record.streak} 日。`);
+    renderRewards(); toast(unlocked ? `已蓋上印記，解鎖「${badgeDefinitions.find((badge) => badge.id === unlocked).title}」！` : `已蓋上印記，累積 ${record.streak} 日練習。`);
   }
   function renderRewards() {
     const record = unlockBadges(rewards()); saveRewards(record);
     const dates = Array.from({ length: 7 }, (_, index) => { const date = new Date(); date.setDate(date.getDate() - (6 - index)); return dayKey(date); });
     $('#streak-total').textContent = record.streak || 0;
-    $('#checkin-status').textContent = record.lastCheckIn === dayKey() ? '今天的學習印記已蓋上，明天再繼續。' : '每日完成一次打卡，累積你的學習節奏。';
-    $('#checkin-button').textContent = record.lastCheckIn === dayKey() ? '今天已打卡' : '今天打卡'; $('#checkin-button').disabled = record.lastCheckIn === dayKey();
+    $('#checkin-status').textContent = record.lastCheckIn === dayKey() ? '今天的學習印記已蓋上，明天再繼續。' : '完成一次練習，為今天蓋上學習印記。';
+    $('#checkin-button').textContent = record.lastCheckIn === dayKey() ? '今天已蓋印' : '蓋上今日印記'; $('#checkin-button').disabled = record.lastCheckIn === dayKey();
     $('#week-dots').innerHTML = dates.map((date, index) => `<i class="${record.dates?.includes(date) ? 'done' : ''} ${date === dayKey() ? 'today' : ''}">${index + 1}</i>`).join('');
     $('#badge-list').innerHTML = badgeDefinitions.map((badge) => { const unlocked = record.badges.includes(badge.id); return `<article class="badge ${unlocked ? 'unlocked' : 'locked'}"><span class="badge-mark">${badge.mark}</span><strong>${badge.title}</strong><small>${unlocked ? '已解鎖' : badge.rule}</small></article>`; }).join('');
   }
@@ -143,27 +153,45 @@
     ['adventure', 'an exciting experience'], ['brave', 'ready to face danger'], ['curious', 'wanting to know more'], ['discover', 'find something for the first time'], ['generous', 'willing to share'], ['improve', 'make something better'], ['knowledge', 'information that you know'], ['patient', 'able to wait calmly'], ['prepare', 'get ready for something'], ['protect', 'keep safe from harm'], ['recycle', 'use a material again'], ['responsible', 'doing what you should do'], ['compare', 'look at two things closely'], ['creative', 'able to make new ideas'], ['environment', 'the world around us'], ['healthy', 'good for your body'], ['imagine', 'make a picture in your mind'], ['measure', 'find the size or amount'], ['predict', 'say what may happen'], ['prefer', 'like one thing more'], ['achieve', 'succeed in doing something'], ['challenge', 'something difficult that tests you'], ['community', 'people living in one area'], ['contribute', 'give something to help'], ['essential', 'completely necessary']
   ];
   function createVocabulary() {
-    const result = [];
+    const scope = window.HK_PRIMARY_ENGLISH_SCOPE[gradeNumber()], result = [];
+    const frames = ['Choose the correctly spelt word:', 'Which word belongs to this grade-level word set?', 'Choose the word with the same spelling as the target:', 'Which word should be kept in your spelling notebook?', 'Choose the word shown in lowercase letters:'];
     for (let index = 0; index < MAX_PER_TOPIC; index += 1) {
-      const [word, meaning] = wordBank[(index + gradeNumber()) % wordBank.length];
-      const distractors = randomize(wordBank.filter(([item]) => item !== word).map(([item]) => item)).slice(0, 3);
-      const options = randomize([word, ...distractors]);
-      result.push(question(`vocabulary-${gradeNumber()}-${index}`, '字詞運用', 'english', `選出最符合以下意思的英文詞彙：${meaning}。`, word, `${word} 的意思是 ${meaning}。`, options));
+      const word = scope.words[index % scope.words.length], distractors = randomize(scope.words.filter((item) => item !== word)).slice(0, 3);
+      const typo = word.length > 4 ? `${word.slice(0, -2)}${word.at(-1)}${word.at(-2)}` : `${word}e`;
+      const options = index % 5 === 0 ? randomize([word, typo, ...distractors.slice(0, 2)]) : randomize([word, ...distractors]);
+      result.push(question(`vocabulary-${gradeNumber()}-${index}`, '分級字詞與拼寫', 'english', `${frames[index % frames.length]} ${index % 5 === 0 ? `(${typo} / ${word})` : `Target word: ${word}`}`, word, `「${word}」是${state.grade}${scope.band}的分級字詞。`, options));
     }
     return result;
   }
 
   function createGrammar() {
-    const result = [], subjects = ['I', 'You', 'We', 'They', 'He', 'She', 'Tom', 'My sister', 'The teacher', 'The dog'], verbs = ['play', 'watch', 'study', 'carry', 'wash', 'go', 'read', 'write', 'help', 'have'];
-    const past = { play: 'played', watch: 'watched', study: 'studied', carry: 'carried', wash: 'washed', go: 'went', read: 'read', write: 'wrote', help: 'helped', have: 'had' };
-    const singular = (verb) => verb === 'have' ? 'has' : verb === 'go' ? 'goes' : verb.endsWith('y') ? `${verb.slice(0, -1)}ies` : `${verb}s`;
+    const scope = window.HK_PRIMARY_ENGLISH_SCOPE[gradeNumber()], result = [];
+    const transformations = [
+      (sentence) => sentence.replace(/\bam\b/g, 'are').replace(/\bis\b/g, 'are').replace(/\bare\b/g, 'is'),
+      (sentence) => sentence.replace(/\bhas\b/g, 'have').replace(/\bhave\b/g, 'has'),
+      (sentence) => sentence.replace(/\bwill\b/g, 'would').replace(/\bwould\b/g, 'will'),
+      (sentence) => sentence.replace(/\bwas\b/g, 'were').replace(/\bwere\b/g, 'was'),
+      (sentence) => sentence.replace(/\bto\b/g, 'for').replace(/\bfor\b/g, 'to')
+    ];
     for (let index = 0; index < MAX_PER_TOPIC; index += 1) {
-      const subject = subjects[index % subjects.length], verb = verbs[Math.floor(index / 10) % verbs.length], isSingle = ['He', 'She', 'Tom', 'My sister', 'The teacher', 'The dog'].includes(subject);
-      let prompt, answer, explanation;
-      if (gradeNumber() <= 3) { answer = isSingle ? singular(verb) : verb; prompt = `把括號內的動詞改成正確形式：${subject} ___ (${verb}) after school.`; explanation = `${subject} 在一般現在式要配合 ${answer}。`; }
-      else if (gradeNumber() <= 5) { answer = past[verb]; prompt = `把括號內的動詞改成正確過去式：Yesterday, ${subject} ___ (${verb}) at school.`; explanation = `Yesterday 表示過去時間，正確形式是 ${answer}。`; }
-      else { const participle = { ...past, go: 'gone', write: 'written' }[verb], helper = isSingle ? 'has' : 'have'; answer = `${helper} ${participle}`; prompt = `完成現在完成式：${subject} ___ already ___ (${verb}) the task.`; explanation = `${subject} 要配合 ${helper}，過去分詞是 ${participle}。`; }
-      result.push(question(`grammar-${gradeNumber()}-${index}`, '文法基礎', 'english', prompt, answer, explanation));
+      const [ruleId, ruleName, model] = scope.grammar[index % scope.grammar.length];
+      const correct = model, wrong = transformations[index % transformations.length](correct);
+      const options = randomize([correct, wrong === correct ? `${correct} not.` : wrong, correct.replace(/\.$/, '?'), `${scope.words[index % scope.words.length]} ${correct.toLowerCase()}`]);
+      result.push(question(`grammar-${gradeNumber()}-${ruleId}-${index}`, '文法與句型', 'english', `Choose the sentence that correctly shows ${ruleName}.`, correct, `正確示範：${correct}`, options));
+    }
+    return result;
+  }
+
+  function createSentencePatterns() {
+    const scope = window.HK_PRIMARY_ENGLISH_SCOPE[gradeNumber()], result = [];
+    const subjects = gradeNumber() <= 2 ? ['I', 'You', 'He', 'She', 'We', 'They'] : ['Amy', 'Ben', 'My friends', 'The class', 'Our teacher', 'The Eco Club'];
+    const verbs = gradeNumber() <= 2 ? ['like', 'have', 'play', 'read', 'see', 'want'] : ['enjoy', 'visited', 'will join', 'has completed', 'should protect', 'can explain'];
+    const endings = gradeNumber() <= 2 ? ['a red ball.', 'a book.', 'at school.', 'in the park.', 'every day.', 'with my friend.'] : ['the project carefully.', 'the library after school.', 'a useful report today.', 'the environment together.', 'the new reading book.', 'the activity next week.'];
+    for (let index = 0; index < MAX_PER_TOPIC; index += 1) {
+      const sentence = `${subjects[index % subjects.length]} ${verbs[Math.floor(index / subjects.length) % verbs.length]} ${endings[Math.floor(index / 12) % endings.length]}`;
+      const chunks = sentence.replace(/[.]/g, '').split(' ');
+      const promptChunks = randomize(chunks).join(' / ');
+      result.push(question(`sentence-${gradeNumber()}-${index}`, '句子結構', 'english', `Put these words in the correct order: ${promptChunks}`, sentence, `句子要有清楚的主語、動詞和完整意思：${sentence}`));
     }
     return result;
   }
@@ -252,14 +280,39 @@
     return result;
   }
 
+  function createJuniorReading() {
+    const scope = window.HK_PRIMARY_ENGLISH_SCOPE[gradeNumber()], result = [];
+    const names = ['Amy', 'Ben', 'Cindy', 'David', 'Eva', 'Fred', 'Grace', 'Harry', 'Ivy', 'Jack'];
+    const places = ['the park', 'the library', 'the school garden', 'the playground', 'the market'];
+    const actions = ['reads a book', 'plays with a ball', 'helps a friend', 'draws a picture', 'looks after a plant'];
+    for (let index = 0; index < MAX_PER_TOPIC; index += 1) {
+      const name = names[index % names.length], place = places[Math.floor(index / 5) % places.length], action = actions[Math.floor(index / 10) % actions.length], word = scope.words[index % scope.words.length];
+      const text = gradeNumber() <= 2
+        ? `${name} is at ${place}. ${name} has a ${word}. ${name} ${action}. ${name} is happy.`
+        : gradeNumber() === 3
+          ? `Last Saturday, ${name} went to ${place}. ${name} had a ${word}. ${name} ${action} and helped a friend. ${name} enjoyed the day.`
+          : `${name} is going to visit ${place} this weekend. ${name} will bring a ${word}. ${name} wants to ${action} and learn something new.`;
+      const prompts = [
+        [`Where is ${name}?`, [place, 'at the airport', 'in a hospital', 'at the beach'], 0, `The passage says that ${name} is at ${place}.`],
+        [`What does ${name} have or bring?`, [`a ${word}`, 'a computer game', 'a ticket', 'a bicycle'], 0, `The passage mentions a ${word}.`],
+        [`What does ${name} do or want to do?`, [action, 'sleep all day', 'watch a film at home', 'leave early'], 0, `The passage says that ${name} ${action}.`],
+        [`How does ${name} feel?`, [gradeNumber() <= 2 ? 'happy' : 'excited about the activity', 'angry', 'bored', 'worried'], 0, 'The final sentence shows a positive feeling about the activity.'],
+        ['Which title best matches the passage?', [`${name}'s Day`, 'A Lost Animal', 'A Long Flight', 'A Stormy Night'], 0, `The passage is about ${name}'s activity.`]
+      ];
+      prompts.forEach(([prompt, options, answer, explanation], number) => result.push(question(`junior-reading-${gradeNumber()}-${index}-${number}`, '閱讀理解', 'english', prompt, answer, explanation, options, { title: `${name}'s Story`, text })));
+    }
+    return result;
+  }
+
   function getBank() {
     if (state.topic === 'operations') return createOperations();
     if (state.topic === 'fractions') return createFractions();
     if (state.topic === 'word-problems') return createWordProblems();
     if (state.topic === 'vocabulary') return createVocabulary();
     if (state.topic === 'grammar') return createGrammar();
+    if (state.topic === 'sentence-patterns') return createSentencePatterns();
     if (state.topic === 'visual-reading') return createVisualReading();
-    return createReading();
+    return gradeNumber() <= 4 ? createJuniorReading() : createReading();
   }
 
   function selectSessionQuestions(bank, total) {
@@ -293,7 +346,8 @@
   }
   function renderHome() {
     $('#grade-display').textContent = state.grade;
-    $('#grade-note').textContent = isHigh() ? '高小已開放英文閱讀理解和數學長題目應用題。' : '升讀小五後，即可挑戰閱讀理解和長題目應用題。';
+    const scope = window.HK_PRIMARY_ENGLISH_SCOPE?.[gradeNumber()];
+    $('#grade-note').textContent = state.subject === 'english' && scope ? `英文範疇：${scope.band} — ${scope.note}` : isHigh() ? '高小已開放英文閱讀理解和數學長題目應用題。' : '升讀小五後，即可挑戰高小進階閱讀和長題目應用題。';
     $$('.grade-btn').forEach((button) => button.classList.toggle('selected', button.dataset.grade === state.grade));
     $$('.subject-tab').forEach((button) => button.classList.toggle('selected', button.dataset.subject === state.subject));
     renderTopicList();
