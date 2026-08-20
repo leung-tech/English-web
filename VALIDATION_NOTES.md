@@ -77,3 +77,5 @@ The P1 Apply route showed four modules, including the new Phonics & story game a
 The P2 Word Match activity showed a Word Match label, hidden clue panel, Chinese meaning and English clue after reveal, plus a self-check. The P6 Advanced reading workshop showed the Magazine article genre, a long-form original passage and four answer options. After checking an answer, it displayed bilingual feedback and a three-part model analysis with text clue, model answer and reading-strategy explanation.
 
 The P3 Phonics & story game loaded six replayable game questions. The P4 Advanced reading workshop launched a School news report session, while P5 launched a Travel blog session; each displayed four questions, the bilingual genre label and the selected year level.
+
+The public deployment was checked after the update. The P1 Apply route displayed Vocabulary, Grammar, Phonics & story game and Word Match. The P6 Read route displayed Advanced reading workshop, which launched a Magazine article with the model-analysis flow available after answer checking.
