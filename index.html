@@ -1,1 +1,512 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#167D78" />
+    <meta
+      name="description"
+      content="香港小一至小六數學與英文練習題目網，支援個人化練習、答案核對及學習計畫。" />
+    <title>小學全方位練習網｜香港小一至小六</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&family=Nunito+Sans:opsz,wght@6..12,600;6..12,700;6..12,800&display=swap"
+      rel="stylesheet" />
+    <style>
+      /* Design reminder — 讀寫工作簿：暖象牙白、深墨藍、綠松石，左側索引＋右側工作區；每項細節必須提升清晰度與可列印性。 */
+      :root {
+        --paper: #fbfaf5;
+        --paper-deep: #f4f0e4;
+        --ink: #182a38;
+        --ink-soft: #63707a;
+        --teal: #167d78;
+        --teal-dark: #0d625d;
+        --teal-pale: #e3f2ef;
+        --coral: #dc795e;
+        --coral-pale: #fcebe5;
+        --blue: #526f92;
+        --blue-pale: #e9f0f7;
+        --line: #dedbd1;
+        --shadow: 0 16px 40px rgba(24, 42, 56, 0.08);
+        --shadow-soft: 0 8px 22px rgba(24, 42, 56, 0.06);
+        --radius: 18px;
+      }
 
+      * { box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        min-width: 320px;
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 0% 0%, rgba(22, 125, 120, 0.06), transparent 20rem),
+          linear-gradient(90deg, rgba(24, 42, 56, 0.018) 1px, transparent 1px),
+          var(--paper);
+        background-size: auto, 28px 28px, auto;
+        font-family: "Noto Sans TC", system-ui, sans-serif;
+        line-height: 1.5;
+      }
+
+      button, select, input { font: inherit; }
+      button { border: 0; }
+      button, select, input[type="range"] { cursor: pointer; }
+      button:focus-visible, select:focus-visible, a:focus-visible, input:focus-visible {
+        outline: 3px solid rgba(22, 125, 120, 0.35);
+        outline-offset: 3px;
+      }
+      a { color: inherit; text-decoration: none; }
+
+      .page-shell { max-width: 1480px; min-height: 100vh; margin: 0 auto; padding: 22px; }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 2px 4px 22px;
+      }
+
+      .brand { display: inline-flex; align-items: center; gap: 12px; }
+      .brand-mark { width: 48px; height: 48px; object-fit: contain; }
+      .brand-name { display: block; font-size: 18px; font-weight: 800; letter-spacing: -0.04em; }
+      .brand-subtitle { display: block; margin-top: 1px; color: var(--ink-soft); font-family: "Nunito Sans", sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+
+      .top-actions { display: flex; align-items: center; gap: 10px; }
+      .print-button, .profile-button {
+        min-height: 40px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.78);
+        color: var(--ink);
+        border-radius: 11px;
+        padding: 0 14px;
+        font-size: 13px;
+        font-weight: 700;
+        transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms ease, border-color 160ms ease;
+      }
+      .print-button:hover, .profile-button:hover { border-color: rgba(22, 125, 120, 0.55); box-shadow: var(--shadow-soft); transform: translateY(-1px); }
+      .print-button:active, .profile-button:active, .primary-button:active { transform: scale(0.97); }
+      .profile-button { display: inline-flex; align-items: center; gap: 8px; padding-right: 10px; }
+      .profile-dot { width: 23px; height: 23px; border-radius: 50%; background: var(--teal-pale); color: var(--teal-dark); display: grid; place-items: center; font-family: "Nunito Sans", sans-serif; font-size: 12px; }
+
+      .app-layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 26px; }
+
+      .sidebar {
+        position: sticky;
+        top: 18px;
+        height: calc(100vh - 40px);
+        min-height: 580px;
+        display: flex;
+        flex-direction: column;
+        padding: 20px 14px 15px;
+        border: 1px solid rgba(222, 219, 209, 0.8);
+        background: rgba(255, 255, 255, 0.68);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-soft);
+        backdrop-filter: blur(10px);
+      }
+
+      .nav-label { margin: 2px 11px 9px; color: var(--ink-soft); font-family: "Nunito Sans", sans-serif; font-size: 10px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; }
+      .side-nav { display: grid; gap: 3px; }
+      .nav-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-height: 44px;
+        padding: 0 11px;
+        color: #53616c;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+      }
+      .nav-item::before { width: 19px; color: currentColor; text-align: center; font-size: 16px; }
+      .nav-item:hover { background: #f4f6f4; color: var(--teal-dark); transform: translateX(2px); }
+      .nav-item.active { background: var(--teal-pale); color: var(--teal-dark); }
+      .nav-item.active::after { position: absolute; left: -14px; width: 4px; height: 24px; background: var(--teal); border-radius: 0 4px 4px 0; content: ""; }
+      .nav-item.home::before { content: "⌂"; }
+      .nav-item.math::before { content: "＋"; }
+      .nav-item.english::before { content: "Aa"; font-family: "Nunito Sans", sans-serif; font-size: 13px; font-weight: 800; }
+      .nav-item.plan::before { content: "◴"; }
+      .nav-item.record::before { content: "✓"; }
+
+      .sidebar-progress {
+        margin-top: auto;
+        padding: 15px 13px 14px;
+        border: 1px solid #d8ebe8;
+        background: linear-gradient(135deg, #f5fbfa, #e8f4f1);
+        border-radius: 14px;
+      }
+      .sidebar-progress p { margin: 0; }
+      .progress-kicker { color: var(--teal-dark); font-family: "Nunito Sans", sans-serif; font-size: 10px; font-weight: 800; letter-spacing: 0.14em; }
+      .progress-title { margin-top: 4px !important; font-size: 14px; font-weight: 800; }
+      .mini-progress { height: 6px; margin: 12px 0 8px; overflow: hidden; border-radius: 999px; background: #cce3df; }
+      .mini-progress > span { display: block; width: 38%; height: 100%; background: var(--teal); border-radius: inherit; }
+      .progress-caption { color: var(--ink-soft); font-size: 12px; }
+
+      .main-content { min-width: 0; padding-bottom: 40px; }
+
+      .hero {
+        position: relative;
+        min-height: 282px;
+        overflow: hidden;
+        display: flex;
+        align-items: flex-end;
+        padding: 33px 40px;
+        border: 1px solid #e4ddcd;
+        border-radius: 22px;
+        background-color: #f7f2e7;
+        box-shadow: var(--shadow);
+      }
+      .hero::after { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(251,250,245,0.96) 0%, rgba(251,250,245,0.9) 39%, rgba(251,250,245,0.18) 77%, rgba(251,250,245,0.02)); content: ""; }
+      .hero-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+      .hero-content { position: relative; z-index: 1; max-width: 660px; }
+      .eyebrow { display: flex; align-items: center; gap: 9px; margin: 0 0 10px; color: var(--teal-dark); font-family: "Nunito Sans", sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.13em; text-transform: uppercase; }
+      .eyebrow::before { width: 30px; height: 2px; background: var(--teal); content: ""; }
+      h1 { max-width: 560px; margin: 0; font-size: clamp(28px, 3.3vw, 42px); line-height: 1.22; letter-spacing: -0.06em; }
+      .hero-copy { max-width: 540px; margin: 12px 0 0; color: #3e4e59; font-size: 15px; line-height: 1.75; }
+      .hero-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
+      .meta-pill { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border: 1px solid rgba(24,42,56,0.12); background: rgba(255,255,255,0.72); border-radius: 999px; color: #4e5e67; font-size: 12px; font-weight: 700; }
+      .meta-pill:first-child { border-color: transparent; background: var(--teal); color: white; }
+
+      .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 35px 3px 14px; }
+      .section-heading h2 { margin: 0; font-size: 21px; line-height: 1.25; letter-spacing: -0.04em; }
+      .section-heading p { margin: 0; color: var(--ink-soft); font-size: 13px; }
+
+      .setup-card {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1.1fr 1fr 1fr auto;
+        gap: 0;
+        align-items: stretch;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.88);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-soft);
+      }
+      .setup-field { min-width: 0; padding: 21px 23px; border-right: 1px solid var(--line); }
+      .setup-field:last-of-type { border-right: 0; }
+      .field-label { display: block; margin-bottom: 9px; color: var(--ink-soft); font-family: "Nunito Sans", sans-serif; font-size: 10px; font-weight: 800; letter-spacing: 0.13em; text-transform: uppercase; }
+      .select-wrap { position: relative; }
+      .select-wrap::after { position: absolute; top: 10px; right: 0; width: 7px; height: 7px; border-right: 2px solid var(--teal); border-bottom: 2px solid var(--teal); transform: rotate(45deg); pointer-events: none; content: ""; }
+      select { width: 100%; appearance: none; padding: 0 18px 2px 0; outline: 0; border: 0; background: transparent; color: var(--ink); font-size: 15px; font-weight: 800; }
+      .count-line { display: flex; align-items: center; gap: 12px; }
+      .count-line strong { min-width: 41px; color: var(--teal-dark); font-family: "Nunito Sans", sans-serif; font-size: 24px; line-height: 1; }
+      input[type="range"] { width: 100%; height: 5px; appearance: none; border-radius: 99px; outline: none; background: linear-gradient(to right, var(--teal) 0 11%, #d7e3e1 11% 100%); }
+      input[type="range"]::-webkit-slider-thumb { width: 18px; height: 18px; appearance: none; border: 3px solid white; border-radius: 50%; background: var(--teal); box-shadow: 0 2px 6px rgba(22, 125, 120, 0.25); }
+      .setup-action { display: grid; align-items: center; padding: 14px; background: #f8faf9; }
+      .primary-button { min-height: 48px; padding: 0 18px; border-radius: 11px; background: var(--teal); color: white; box-shadow: 0 8px 16px rgba(22, 125, 120, 0.2); font-size: 14px; font-weight: 800; transition: background 160ms ease, transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms ease; white-space: nowrap; }
+      .primary-button:hover { background: var(--teal-dark); box-shadow: 0 10px 21px rgba(22, 125, 120, 0.28); transform: translateY(-1px); }
+
+      .topic-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
+      .topic-card {
+        position: relative;
+        min-height: 195px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 22px;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-soft);
+        transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 180ms ease;
+      }
+      .topic-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+      .topic-card::after { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(251,250,245,0.98) 10%, rgba(251,250,245,0.72) 45%, rgba(251,250,245,0.03) 90%); content: ""; }
+      .topic-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .topic-content { position: relative; z-index: 1; }
+      .subject-tag { display: inline-flex; align-items: center; min-height: 25px; padding: 0 8px; border-radius: 6px; font-family: "Nunito Sans", sans-serif; font-size: 10px; font-weight: 800; letter-spacing: 0.1em; }
+      .math-card .subject-tag { background: var(--coral-pale); color: #a54d3a; }
+      .english-card .subject-tag { background: var(--blue-pale); color: #395a7b; }
+      .topic-card h3 { margin: 9px 0 3px; font-size: 20px; letter-spacing: -0.045em; }
+      .topic-card p { margin: 0; color: #56636d; font-size: 13px; }
+      .topic-arrow { position: absolute; z-index: 1; right: 18px; bottom: 18px; display: grid; width: 33px; height: 33px; place-items: center; border: 1px solid rgba(24,42,56,0.15); border-radius: 50%; background: rgba(255,255,255,0.84); font-family: "Nunito Sans", sans-serif; font-size: 18px; font-weight: 800; transition: background 160ms ease, color 160ms ease; }
+      .topic-card:hover .topic-arrow { background: var(--teal); color: white; }
+
+      .workspace-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(255px, 0.75fr); gap: 18px; }
+      .paper-card { overflow: hidden; border: 1px solid var(--line); background: rgba(255,255,255,0.9); border-radius: var(--radius); box-shadow: var(--shadow-soft); }
+      .paper-header { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 18px 21px 14px; border-bottom: 1px solid var(--line); }
+      .paper-heading { display: flex; align-items: center; gap: 11px; }
+      .paper-number { display: grid; width: 27px; height: 27px; place-items: center; border-radius: 50%; background: var(--teal-pale); color: var(--teal-dark); font-family: "Nunito Sans", sans-serif; font-size: 12px; font-weight: 800; }
+      .paper-heading h3 { margin: 0; font-size: 16px; letter-spacing: -0.035em; }
+      .paper-heading p { margin: 1px 0 0; color: var(--ink-soft); font-size: 12px; }
+      .status-pill { padding: 5px 9px; border-radius: 999px; background: #f4f2eb; color: var(--ink-soft); font-size: 11px; font-weight: 800; white-space: nowrap; }
+      .question-list { padding: 5px 21px 12px; }
+      .question-preview { display: grid; grid-template-columns: 30px 1fr 104px; gap: 10px; align-items: center; min-height: 58px; border-bottom: 1px dashed #e7e4db; }
+      .question-preview:last-child { border-bottom: 0; }
+      .question-no { color: var(--ink-soft); font-family: "Nunito Sans", sans-serif; font-size: 12px; font-weight: 800; }
+      .question-line { color: #2c3d49; font-size: 14px; font-weight: 600; }
+      .answer-blank { height: 30px; border-bottom: 2px solid #bbc7c6; color: var(--ink-soft); font-family: "Nunito Sans", sans-serif; font-size: 12px; text-align: center; }
+      .review-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 21px; border-top: 1px solid var(--line); background: #fbfcfa; }
+      .answer-hint { display: flex; align-items: center; gap: 7px; color: var(--ink-soft); font-size: 12px; }
+      .answer-hint::before { width: 9px; height: 9px; border-radius: 50%; background: var(--coral); content: ""; }
+      .text-button { padding: 5px 0; background: transparent; color: var(--teal-dark); font-size: 12px; font-weight: 800; }
+      .text-button:hover { color: var(--teal); text-decoration: underline; text-underline-offset: 3px; }
+
+      .plan-card { position: relative; min-height: 100%; overflow: hidden; padding: 20px; background: #f2f7f7; }
+      .plan-card::before { position: absolute; inset: 0; background: linear-gradient(160deg, rgba(242,247,247,0.18), rgba(242,247,247,0.96) 58%); content: ""; }
+      .plan-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.68; }
+      .plan-content { position: relative; z-index: 1; }
+      .plan-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+      .plan-topline h3 { margin: 0; font-size: 17px; letter-spacing: -0.04em; }
+      .calendar-mark { color: var(--teal-dark); font-family: "Nunito Sans", sans-serif; font-size: 11px; font-weight: 800; }
+      .plan-card > .plan-content > p { margin: 8px 0 16px; color: #52616a; font-size: 13px; line-height: 1.65; }
+      .plan-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid rgba(24,42,56,0.12); }
+      .plan-row:first-of-type { border-top: 0; }
+      .plan-date { width: 36px; color: var(--teal-dark); font-family: "Nunito Sans", sans-serif; font-size: 11px; font-weight: 800; line-height: 1.1; }
+      .plan-task { flex: 1; font-size: 12px; font-weight: 700; }
+      .plan-state { width: 17px; height: 17px; border: 2px solid #91bcb7; border-radius: 50%; }
+      .plan-state.done { display: grid; place-items: center; border-color: var(--teal); background: var(--teal); color: white; font-family: "Nunito Sans", sans-serif; font-size: 10px; }
+      .plan-link { display: inline-block; margin-top: 10px; color: var(--teal-dark); font-size: 12px; font-weight: 800; }
+      .plan-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+      .footer-note { display: flex; align-items: center; gap: 8px; margin: 24px 5px 0; color: var(--ink-soft); font-size: 12px; }
+      .footer-note span { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+
+      @media (max-width: 1050px) {
+        .app-layout { grid-template-columns: 210px minmax(0, 1fr); gap: 18px; }
+        .setup-card { grid-template-columns: 1fr 1fr; }
+        .setup-field:nth-child(2) { border-right: 0; }
+        .setup-field:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+        .setup-action { grid-column: span 2; }
+        .workspace-grid { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 780px) {
+        .page-shell { padding: 13px; }
+        .topbar { padding-bottom: 14px; }
+        .profile-button { padding: 0; width: 40px; justify-content: center; }
+        .profile-button > span:last-child { display: none; }
+        .print-button { display: none; }
+        .app-layout { display: block; }
+        .sidebar { position: relative; top: auto; width: 100%; height: auto; min-height: 0; margin-bottom: 16px; padding: 10px; }
+        .sidebar .nav-label, .sidebar-progress { display: none; }
+        .side-nav { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+        .nav-item { min-height: 47px; justify-content: center; padding: 0; font-size: 0; }
+        .nav-item::before { font-size: 19px; }
+        .nav-item.active::after { left: 50%; bottom: -10px; width: 25px; height: 3px; transform: translateX(-50%); border-radius: 4px 4px 0 0; }
+        .hero { min-height: 290px; padding: 25px; align-items: flex-start; }
+        .hero::after { background: linear-gradient(90deg, rgba(251,250,245,0.97), rgba(251,250,245,0.81) 66%, rgba(251,250,245,0.25)); }
+        .hero-copy { font-size: 14px; }
+        .section-heading { align-items: start; flex-direction: column; gap: 5px; margin-top: 26px; }
+        .topic-grid { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 540px) {
+        .brand-mark { width: 41px; height: 41px; }
+        .brand-name { font-size: 16px; }
+        .brand-subtitle { font-size: 9px; }
+        .hero { min-height: 312px; padding: 22px; }
+        h1 { font-size: 29px; }
+        .setup-card { grid-template-columns: 1fr; }
+        .setup-field, .setup-field:nth-child(2) { padding: 17px 18px; border-right: 0; border-bottom: 1px solid var(--line); }
+        .setup-action { grid-column: auto; padding: 12px; }
+        .question-preview { grid-template-columns: 24px 1fr 78px; gap: 7px; }
+        .question-list { padding-inline: 15px; }
+        .paper-header, .review-bar { padding-inline: 15px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+
+      @media print {
+        body { background: white; }
+        .page-shell { max-width: none; padding: 0; }
+        .topbar, .sidebar, .hero, .setup-card, .topic-grid, .plan-card, .footer-note { display: none; }
+        .main-content { padding: 0; }
+        .section-heading { margin-top: 0; }
+        .paper-card { border: 0; border-radius: 0; box-shadow: none; }
+      }
+    </style>
+    <style>
+      /* Design reminder — 讀寫工作簿的印刷版式：以尺規、雙頁邊、頁碼與批改印記建立層級，而不是 SaaS 卡片陰影。 */
+      .hero,.setup-card,.topic-card,.paper-card{border-radius:8px!important;box-shadow:0 2px 0 rgba(24,42,56,.12)!important}.hero{border-color:#c9c3b4!important}.hero::before,.setup-card::before,.topic-card::before,.paper-card:not(.plan-card)::before{position:absolute;z-index:5;top:12px;bottom:12px;left:10px;width:5px;border-left:1px solid rgba(22,125,120,.5);border-right:1px solid rgba(22,125,120,.24);content:"";pointer-events:none}.hero-content{z-index:2!important}.hero::after{z-index:1}.hero-image{z-index:0}.setup-card{position:relative;background-image:linear-gradient(to bottom,transparent 91%,rgba(24,42,56,.04) 91%)!important;background-size:100% 52px!important}.setup-field{border-color:#cfc9ba!important}.section-heading{position:relative;margin-bottom:12px!important;padding-bottom:10px;border-bottom:2px solid #182a38!important}.section-heading h2::before{display:inline-block;margin-right:9px;color:#167d78;font:800 10px "Nunito Sans",sans-serif;letter-spacing:2px;vertical-align:3px;content:"● ● ●"}.topic-card{border-color:#c9c3b4!important}.topic-card::after{background:linear-gradient(0deg,rgba(251,250,245,.99) 18%,rgba(251,250,245,.74) 55%,rgba(251,250,245,.05) 90%)!important}.subject-tag,.status-pill{border:1px solid currentColor!important;border-radius:2px!important;box-shadow:2px 2px 0 rgba(24,42,56,.12)}.status-pill{background:#fbfaf5!important}.paper-header{border-top:5px solid #182a38!important;background:repeating-linear-gradient(0deg,#fff 0,#fff 29px,#edf1ef 30px)!important}.paper-heading h3{letter-spacing:-.055em}.plan-card{border-left:5px double #167d78!important;border-radius:8px!important;box-shadow:0 2px 0 rgba(24,42,56,.12)!important}.plan-card::before{background:linear-gradient(160deg,rgba(242,247,247,.1),rgba(242,247,247,.98) 58%)!important}.sidebar-progress{border-radius:4px!important;box-shadow:inset 0 0 0 3px rgba(255,255,255,.6)}.mini-progress{background:radial-gradient(circle at 4px 50%,#cce3df 3px,transparent 3.5px) 0 0/14px 6px!important}.mini-progress>span{background:repeating-linear-gradient(90deg,#167d78 0,#167d78 8px,#0d625d 8px,#0d625d 11px)!important}.nav-item.active{border-left:3px solid #167d78!important}.nav-item.active::after{display:none}@media(max-width:780px){.nav-item.active{border-left:0!important;border-bottom:3px solid #167d78!important}.section-heading h2::before{font-size:8px}}
+    </style>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="#practice" aria-label="返回小學全方位練習網首頁">
+          <img class="brand-mark" src="/manus-storage/hk-primary-workbook-logo_2fe0abfa.png" alt="工作簿勾號圖示" />
+          <span>
+            <span class="brand-name">小學全方位練習網</span>
+            <span class="brand-subtitle">Primary Practice Workbook</span>
+          </span>
+        </a>
+        <div class="top-actions">
+          <button class="print-button" type="button" onclick="window.print()">列印這份練習</button>
+          <button class="profile-button" type="button" aria-label="學生帳戶">
+            <span class="profile-dot">小</span><span>我的學習</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="app-layout">
+        <aside class="sidebar" aria-label="主要導覽">
+          <p class="nav-label">學習目錄</p>
+          <nav class="side-nav">
+            <a class="nav-item home active" href="#practice" aria-current="page">今日練習</a>
+            <a class="nav-item math" href="#subjects">數學</a>
+            <a class="nav-item english" href="#subjects">英文</a>
+            <a class="nav-item plan" href="#study-plan">學習計畫</a>
+            <a class="nav-item record" href="#record">完成紀錄</a>
+          </nav>
+          <section class="sidebar-progress" aria-label="本週進度">
+            <p class="progress-kicker">本週進度</p>
+            <p class="progress-title">已完成 3 個練習</p>
+            <div class="mini-progress" aria-label="38% 已完成"><span></span></div>
+            <p class="progress-caption">距離本週目標還有 5 個。</p>
+          </section>
+        </aside>
+
+        <main class="main-content">
+          <section class="hero" aria-labelledby="hero-title">
+            <img class="hero-image" src="/manus-storage/hk-primary-workbook-hero_3d130609.jpg" alt="整齊的工作簿與文具" />
+            <div class="hero-content">
+              <p class="eyebrow">香港小一至小六</p>
+              <h1 id="hero-title">每日一小頁，讓學習更有方向。</h1>
+              <p class="hero-copy">選擇年級、科目和題量，立即建立適合你的數學或英文練習。完成後可核對答案、查看分數，再安排下一次溫習。</p>
+              <div class="hero-meta" aria-label="網站特點">
+                <span class="meta-pill">可列印練習紙</span>
+                <span class="meta-pill">隱藏式答案</span>
+                <span class="meta-pill">學習進度</span>
+              </div>
+            </div>
+          </section>
+
+          <section id="practice" aria-labelledby="setup-heading">
+            <div class="section-heading">
+              <div>
+                <h2 id="setup-heading">建立今次練習</h2>
+                <p>先選擇內容，系統會為你準備一份清晰的工作紙。</p>
+              </div>
+              <p>第 1 步，共 3 步</p>
+            </div>
+            <div class="setup-card">
+              <label class="setup-field">
+                <span class="field-label">年級</span>
+                <span class="select-wrap">
+                  <select id="grade" aria-label="選擇年級">
+                    <option>小一</option>
+                    <option>小二</option>
+                    <option selected>小三</option>
+                    <option>小四</option>
+                    <option>小五</option>
+                    <option>小六</option>
+                  </select>
+                </span>
+              </label>
+              <label class="setup-field">
+                <span class="field-label">科目與課題</span>
+                <span class="select-wrap">
+                  <select id="topic" aria-label="選擇科目與課題">
+                    <option selected>數學 · 四則運算</option>
+                    <option>數學 · 分數與小數</option>
+                    <option>英文 · 字詞運用</option>
+                    <option>英文 · 文法基礎</option>
+                  </select>
+                </span>
+              </label>
+              <div class="setup-field">
+                <span class="field-label">題目數量</span>
+                <div class="count-line">
+                  <strong id="count-value">10</strong>
+                  <input id="count" type="range" min="5" max="30" value="10" step="5" aria-label="選擇題目數量" />
+                </div>
+              </div>
+              <div class="setup-action">
+                <button class="primary-button" id="generate" type="button">建立練習紙</button>
+              </div>
+            </div>
+          </section>
+
+          <section id="subjects" aria-labelledby="subject-heading">
+            <div class="section-heading">
+              <div>
+                <h2 id="subject-heading">從課題開始</h2>
+                <p>由淺入深，按香港小學常見的學習節奏練習。</p>
+              </div>
+            </div>
+            <div class="topic-grid">
+              <a class="topic-card math-card" href="#practice">
+                <img class="topic-image" src="/manus-storage/hk-primary-math-visual_4d40559d.jpg" alt="數學分數圓形和幾何工具拼貼" />
+                <div class="topic-content">
+                  <span class="subject-tag">MATHEMATICS</span>
+                  <h3>數學練習</h3>
+                  <p>四則運算、分數小數、圖形與量度</p>
+                </div>
+                <span class="topic-arrow" aria-hidden="true">→</span>
+              </a>
+              <a class="topic-card english-card" href="#practice">
+                <img class="topic-image" src="/manus-storage/hk-primary-english-visual_a48bc630.jpg" alt="英文詞彙筆記本和對話圖形拼貼" />
+                <div class="topic-content">
+                  <span class="subject-tag">ENGLISH</span>
+                  <h3>英文練習</h3>
+                  <p>字詞、文法、句子與閱讀理解</p>
+                </div>
+                <span class="topic-arrow" aria-hidden="true">→</span>
+              </a>
+            </div>
+          </section>
+
+          <section id="record" aria-labelledby="preview-heading">
+            <div class="section-heading">
+              <div>
+                <h2 id="preview-heading">工作紙預覽</h2>
+                <p>先完成題目；答案會保持收起，方便自行作答及家長批改。</p>
+              </div>
+              <p>預覽模式</p>
+            </div>
+            <div class="workspace-grid">
+              <article class="paper-card" aria-label="四則運算練習預覽">
+                <header class="paper-header">
+                  <div class="paper-heading">
+                    <span class="paper-number">01</span>
+                    <div>
+                      <h3>四則運算小練習</h3>
+                      <p>小三 · 10 題 · 約 10 分鐘</p>
+                    </div>
+                  </div>
+                  <span class="status-pill">尚未開始</span>
+                </header>
+                <div class="question-list">
+                  <div class="question-preview"><span class="question-no">1.</span><span class="question-line">把答案寫在橫線上。</span><span class="answer-blank">你的答案</span></div>
+                  <div class="question-preview"><span class="question-no">2.</span><span class="question-line">依照題目提示完成計算。</span><span class="answer-blank">你的答案</span></div>
+                  <div class="question-preview"><span class="question-no">3.</span><span class="question-line">仔細閱讀後，再寫下答案。</span><span class="answer-blank">你的答案</span></div>
+                </div>
+                <footer class="review-bar">
+                  <span class="answer-hint">答案會在完成後顯示</span>
+                  <button class="text-button" type="button">查看題目設定</button>
+                </footer>
+              </article>
+
+              <aside class="paper-card plan-card" id="study-plan" aria-label="本週學習計畫">
+                <img class="plan-image" src="/manus-storage/hk-primary-plan-visual_949ceded.jpg" alt="學習計畫紙卡和完成勾號" />
+                <div class="plan-content">
+                  <div class="plan-topline">
+                    <h3>本週小計畫</h3>
+                    <span class="calendar-mark">8 月 · 第 3 週</span>
+                  </div>
+                  <p>每次只安排一小份練習，完成後把較難的題目留待溫習。</p>
+                  <div class="plan-row"><span class="plan-date">一<br />18</span><span class="plan-task">英文 · 字詞運用</span><span class="plan-state done">✓</span></div>
+                  <div class="plan-row"><span class="plan-date">三<br />20</span><span class="plan-task">數學 · 四則運算</span><span class="plan-state"></span></div>
+                  <div class="plan-row"><span class="plan-date">五<br />22</span><span class="plan-task">英文 · 句子重組</span><span class="plan-state"></span></div>
+                  <a class="plan-link" href="#practice">制訂我的學習計畫 →</a>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <p class="footer-note"><span></span> 題目、答案、評分和個人學習計畫功能將按你選擇的課題開啟。</p>
+        </main>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
