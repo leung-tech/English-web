@@ -3,7 +3,7 @@
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
   const MAX_PER_TOPIC = 100;
-  const KEYS = { wrong: 'hk-primary-wrongbook-v2', stats: 'hk-primary-stats-v2', used: 'hk-primary-used-v2', rewards: 'hk-primary-rewards-v1' };
+  const KEYS = { wrong: 'hk-primary-wrongbook-v2', stats: 'hk-primary-stats-v2', used: 'hk-primary-used-v2', rewards: 'hk-primary-rewards-v1', grammarAnalysis: 'hk-primary-grammar-analysis-v1' };
   const state = { grade: '小五', subject: 'math', topic: 'operations', session: null, filter: 'all' };
 
   const safeGet = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
@@ -14,6 +14,8 @@
   const saveWrongbook = (value) => safeSet(KEYS.wrong, value);
   const rewards = () => safeGet(KEYS.rewards, { lastCheckIn: '', streak: 0, dates: [], badges: [], visualQuestions: 0 });
   const saveRewards = (value) => safeSet(KEYS.rewards, value);
+  const grammarAnalysis = () => safeGet(KEYS.grammarAnalysis, {});
+  const saveGrammarAnalysis = (value) => safeSet(KEYS.grammarAnalysis, value);
   const gradeNumber = () => ({ 小一: 1, 小二: 2, 小三: 3, 小四: 4, 小五: 5, 小六: 6 }[state.grade] || Number(state.grade.replace(/\D/g, '')) || 5);
   const escape = (value) => String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
   const normalize = (value) => String(value ?? '').trim().toLowerCase().replace(/[.,!?，。！？]/g, '').replace(/\s+/g, ' ');
@@ -41,6 +43,8 @@
         { id: 'vocabulary', title: '分級字詞與拼寫', description: scope ? `${scope.band}：${scope.words.slice(0, 3).join(' · ')}…` : '按年級的高頻字詞與拼寫', icon: 'Aa', kind: 'english', sessions: 8 },
         { id: 'grammar', title: '文法與句型', description: scope ? `${scope.grammar[0][1]}、${scope.grammar[1][1]} 等` : '按年級的基礎文法', icon: '✓', kind: 'english', sessions: 8 },
         { id: 'sentence-patterns', title: '句子結構', description: '依年級重組及完成正確英文句子', icon: '↔', kind: 'english', sessions: 8 },
+        { id: 'writing-order', title: '短寫作：句子排序', description: '把詞語排成通順句子，練習寫作基本結構', icon: '✎', kind: 'english', sessions: 6 },
+        { id: 'writing-edit', title: '短寫作：改錯練習', description: '找出句子錯誤，改寫成正確英文', icon: '⌕', kind: 'english', sessions: 6 },
         { id: 'reading', title: '閱讀理解', description: scope ? scope.reading : '閱讀短文、推論重點與回答問題', icon: '⌁', kind: 'english', sessions: gradeNumber() <= 2 ? 4 : 5 }
       ];
       if (isHigh()) englishTopics.push({ id: 'visual-reading', title: '圖像與圖表閱讀', description: '結合圖片、資料圖表與英文短文', icon: '◫', kind: 'english', sessions: 5, advanced: true });
@@ -49,7 +53,7 @@
     return standardTopics;
   };
   const selectedTopic = () => getTopics().find((topic) => topic.id === state.topic) || getTopics()[0];
-  const question = (id, topic, subject, prompt, answer, explanation, options = null, passage = null, visual = null) => ({ id, topic, subject, prompt, answer: String(answer), explanation, options, passage, visual });
+  const question = (id, topic, subject, prompt, answer, explanation, options = null, passage = null, visual = null, meta = {}) => ({ id, topic, subject, prompt, answer: String(answer), explanation, options, passage, visual, ...meta });
   const gcd = (a, b) => { while (b) [a, b] = [b, a % b]; return Math.abs(a); };
   const fraction = (top, bottom) => { const divisor = gcd(top, bottom); return `${top / divisor}/${bottom / divisor}`; };
   const dayKey = (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -177,7 +181,7 @@
       const [ruleId, ruleName, model] = scope.grammar[index % scope.grammar.length];
       const correct = model, wrong = transformations[index % transformations.length](correct);
       const options = randomize([correct, wrong === correct ? `${correct} not.` : wrong, correct.replace(/\.$/, '?'), `${scope.words[index % scope.words.length]} ${correct.toLowerCase()}`]);
-      result.push(question(`grammar-${gradeNumber()}-${ruleId}-${index}`, '文法與句型', 'english', `Choose the sentence that correctly shows ${ruleName}.`, correct, `正確示範：${correct}`, options));
+      result.push(question(`grammar-${gradeNumber()}-${ruleId}-${index}`, '文法與句型', 'english', `Choose the sentence that correctly shows ${ruleName}.`, correct, `正確示範：${correct}`, options, null, null, { grammarRule: ruleId, grammarLabel: ruleName }));
     }
     return result;
   }
@@ -192,6 +196,34 @@
       const chunks = sentence.replace(/[.]/g, '').split(' ');
       const promptChunks = randomize(chunks).join(' / ');
       result.push(question(`sentence-${gradeNumber()}-${index}`, '句子結構', 'english', `Put these words in the correct order: ${promptChunks}`, sentence, `句子要有清楚的主語、動詞和完整意思：${sentence}`));
+    }
+    return result;
+  }
+
+  function createWritingOrder() {
+    const level = gradeNumber(), result = [];
+    const basicTuples = [['I', 'like', 'my new book'], ['She', 'has', 'a red bag'], ['We', 'play', 'in the park'], ['He', 'reads', 'a story'], ['They', 'have', 'a music lesson'], ['Ben', 'draws', 'a picture'], ['Amy', 'writes', 'her name'], ['The cat', 'sleeps', 'under the chair'], ['My friends', 'walk', 'to school'], ['You', 'can help', 'your teacher']];
+    const middleTuples = [['Amy', 'visited', 'the library'], ['We', 'played', 'a game'], ['Ben', 'will join', 'the art club'], ['The class', 'is going to plant', 'some flowers'], ['My sister', 'can recycle', 'the bottles'], ['The pupils', 'should keep', 'the classroom clean'], ['Our teacher', 'will read', 'a story'], ['I', 'enjoy', 'the science lesson'], ['They', 'are making', 'a poster'], ['The team', 'has finished', 'the project']];
+    const times = level <= 2 ? ['today', 'after school', 'every day', 'in the morning', 'with my friend', 'at home', 'on Monday', 'now', 'at the park', 'in class'] : ['yesterday', 'after school', 'next week', 'this afternoon', 'during the project', 'at the library', 'for the class', 'before lunch', 'with great care', 'at the school fair'];
+    const tuples = level <= 2 ? basicTuples : middleTuples;
+    for (let index = 0; index < MAX_PER_TOPIC; index += 1) {
+      const [subject, verb, object] = tuples[index % tuples.length], time = times[Math.floor(index / tuples.length) % times.length];
+      const correct = `${subject} ${verb} ${object} ${time}.`, chunks = correct.replace('.', '').split(' ');
+      const ordered = [...chunks.slice(index % chunks.length), ...chunks.slice(0, index % chunks.length)].join(' / ');
+      result.push(question(`writing-order-${level}-${index}`, '短寫作：句子排序', 'english', `Put the words in the correct order, then write the full sentence: ${ordered}`, correct, `寫作時先寫主語，再加動詞和完整意思：${correct}`, null, null, null, { writingSkill: 'order' }));
+    }
+    return result;
+  }
+
+  function createWritingEditing() {
+    const level = gradeNumber(), result = [];
+    const early = [['She are my friend.', 'She is my friend.'], ['I has a blue pen.', 'I have a blue pen.'], ['They is happy.', 'They are happy.'], ['He have two books.', 'He has two books.'], ['This are my bag.', 'This is my bag.'], ['The cats is under the table.', 'The cats are under the table.'], ['I likes milk.', 'I like milk.'], ['She play football.', 'She plays football.'], ['These is apples.', 'These are apples.'], ['An book is on the desk.', 'A book is on the desk.']];
+    const middle = [['Yesterday, Ben go to the library.', 'Yesterday, Ben went to the library.'], ['Amy is play the piano now.', 'Amy is playing the piano now.'], ['A lion is more big than a cat.', 'A lion is bigger than a cat.'], ['We goes to school by bus.', 'We go to school by bus.'], ['They was happy at the picnic.', 'They were happy at the picnic.'], ['I stayed home because it rain.', 'I stayed home because it rained.'], ['He has two bicycle.', 'He has two bicycles.'], ['My sister do her homework every day.', 'My sister does her homework every day.'], ['The red small bag is mine.', 'The small red bag is mine.'], ['We walk at the road carefully.', 'We walk across the road carefully.']];
+    const upper = [['The pupils is going to visit the museum.', 'The pupils are going to visit the museum.'], ['You must to wear a helmet.', 'You must wear a helmet.'], ['She have finished her homework.', 'She has finished her homework.'], ['Paper collect every Friday.', 'Paper is collected every Friday.'], ['If we will hurry, we will catch the bus.', 'If we hurry, we will catch the bus.'], ['The book who I borrowed is useful.', 'The book that I borrowed is useful.'], ['Could you tell me where is the library?', 'Could you tell me where the library is?'], ['We went out for buy food.', 'We went out to buy food.'], ['If I was you, I would ask for help.', 'If I were you, I would ask for help.'], ['I enjoy to read after school.', 'I enjoy reading after school.']];
+    const pairs = level <= 2 ? early : level <= 3 ? middle : upper;
+    for (let index = 0; index < MAX_PER_TOPIC; index += 1) {
+      const [incorrect, correct] = pairs[index % pairs.length];
+      result.push(question(`writing-edit-${level}-${index}`, '短寫作：改錯練習', 'english', `This sentence has one grammar mistake. Write the corrected sentence: ${incorrect}`, correct, `正確句子：${correct}`, null, null, null, { writingSkill: 'editing' }));
     }
     return result;
   }
@@ -311,6 +343,8 @@
     if (state.topic === 'vocabulary') return createVocabulary();
     if (state.topic === 'grammar') return createGrammar();
     if (state.topic === 'sentence-patterns') return createSentencePatterns();
+    if (state.topic === 'writing-order') return createWritingOrder();
+    if (state.topic === 'writing-edit') return createWritingEditing();
     if (state.topic === 'visual-reading') return createVisualReading();
     return gradeNumber() <= 4 ? createJuniorReading() : createReading();
   }
@@ -358,6 +392,23 @@
     renderStats(); renderRewards();
   }
 
+  function renderAnalysis() {
+    const scope = window.HK_PRIMARY_ENGLISH_SCOPE?.[gradeNumber()], stored = grammarAnalysis();
+    if (!scope) return;
+    const rows = scope.grammar.map(([rule, label]) => {
+      const item = stored[`${state.grade}-${rule}`] || { grade: state.grade, rule, label, attempted: 0, correct: 0, incorrect: 0 };
+      return { ...item, accuracy: item.attempted ? Math.round((item.correct / item.attempted) * 100) : null };
+    });
+    const attempted = rows.reduce((sum, row) => sum + row.attempted, 0), incorrect = rows.reduce((sum, row) => sum + row.incorrect, 0), accuracy = attempted ? Math.round(((attempted - incorrect) / attempted) * 100) : null;
+    const weakest = rows.filter((row) => row.attempted > 0).sort((first, second) => second.incorrect - first.incorrect || first.accuracy - second.accuracy)[0];
+    $('#analysis-title').textContent = `${state.grade} · 文法範疇`;
+    $('#analysis-total-wrong').textContent = incorrect;
+    $('#analysis-summary').innerHTML = `<article class="analysis-metric"><small>文法作答</small><strong>${attempted}</strong><span>已核對題目</span></article><article class="analysis-metric"><small>累積錯題</small><strong>${incorrect}</strong><span>優先回顧錯題本</span></article><article class="analysis-metric"><small>整體正確率</small><strong>${accuracy === null ? '—' : `${accuracy}%`}</strong><span>${weakest ? `先溫習：${escape(weakest.label)}` : '完成文法題後顯示弱點'}</span></article>`;
+    if (!attempted) { $('#grammar-bars').innerHTML = `<div class="analysis-empty">尚未有${state.grade}文法作答紀錄。完成「文法與句型」後，這裡會按範疇顯示錯題分佈。</div>`; return; }
+    const maximum = Math.max(1, ...rows.map((row) => row.incorrect));
+    $('#grammar-bars').innerHTML = rows.map((row) => `<article class="grammar-bar-row"><div class="grammar-bar-label"><strong>${escape(row.label)}</strong><small>${row.attempted ? `作答 ${row.attempted} 題 · 正確率 ${row.accuracy}%` : '尚未作答'}</small></div><div class="grammar-track"><div class="grammar-fill" style="width:${row.incorrect ? Math.max(8, Math.round((row.incorrect / maximum) * 100)) : 0}%"></div></div><div class="grammar-bar-value">${row.incorrect} 題錯</div></article>`).join('');
+  }
+
   function updateSessionProgress() {
     const session = state.session, done = session.results.filter(Boolean).length, index = session.index;
     $('#session-subtitle').textContent = `第 ${index + 1} 題，共 ${session.questions.length} 題`;
@@ -380,10 +431,11 @@
     $('#question-topic').textContent = item.subject === 'math' ? 'MATHS PRACTICE' : 'ENGLISH PRACTICE';
     const visual = renderVisual(item.visual);
     const passage = item.passage ? `<article class="passage"><strong>${escape(item.passage.title)}</strong><br>${escape(item.passage.text)}</article>` : '';
+    const writingGuide = item.writingSkill ? `<div class="writing-guide ${item.writingSkill === 'editing' ? 'editing' : 'ordering'}"><span>${item.writingSkill === 'editing' ? '改錯提示' : '排序提示'}</span><p>${item.writingSkill === 'editing' ? '找出一個文法錯誤，輸入改正後的完整句子。' : '把所有詞語按主語、動詞、其他資料的次序組合，再輸入完整句子。'}</p></div>` : '';
     const body = item.options
       ? `<div class="choices">${item.options.map((choice, index) => `<button class="choice ${session.drafts[session.index] === String(index) ? 'selected' : ''}" data-choice="${index}"><span class="choice-letter">${String.fromCharCode(65 + index)}</span><span>${escape(choice)}</span></button>`).join('')}</div>`
-      : `<div class="answer-area"><input class="answer-field" id="answer-field" autocomplete="off" inputmode="text" placeholder="在此輸入答案" value="${escape(session.drafts[session.index] || '')}"></div>`;
-    $('#question-content').innerHTML = `${visual}${passage}<h1>${escape(item.prompt)}</h1>${body}`;
+      : `<div class="answer-area ${item.writingSkill ? 'short-writing-area' : ''}"><input class="answer-field" id="answer-field" autocomplete="off" inputmode="text" placeholder="${item.writingSkill ? '在此輸入完整英文句子' : '在此輸入答案'}" value="${escape(session.drafts[session.index] || '')}"></div>`;
+    $('#question-content').innerHTML = `${visual}${passage}<h1>${escape(item.prompt)}</h1>${writingGuide}${body}`;
     const feedback = $('#feedback');
     feedback.className = `feedback ${currentResult ? `show ${currentResult.correct ? 'correct' : 'wrong'}` : ''}`;
     feedback.innerHTML = currentResult ? `<strong>${currentResult.correct ? '答對了。' : '這一題先放進錯題本。'}</strong> ${escape(item.explanation)}` : '';
@@ -402,12 +454,19 @@
     saveWrongbook(list.slice(0, 200));
   }
   function removeWrong(id) { saveWrongbook(wrongbook().filter((entry) => entry.id !== id)); }
+  function recordGrammarResult(item, correct) {
+    if (item.subject !== 'english' || !item.grammarRule) return;
+    const data = grammarAnalysis(), key = `${state.grade}-${item.grammarRule}`;
+    const entry = data[key] || { grade: state.grade, rule: item.grammarRule, label: item.grammarLabel, attempted: 0, correct: 0, incorrect: 0 };
+    entry.attempted += 1; if (correct) entry.correct += 1; else entry.incorrect += 1;
+    data[key] = entry; saveGrammarAnalysis(data);
+  }
   function checkCurrent() {
     const session = state.session, item = currentQuestion(), answer = session.drafts[session.index];
     if (answer === undefined || String(answer).trim() === '') { toast('請先選擇或輸入答案。'); return; }
     const correct = item.options ? String(answer) === item.answer : normalize(answer) === normalize(item.answer);
     session.results[session.index] = { correct, answer };
-    const data = stats(); data.completed += 1; if (correct) data.correct += 1; saveStats(data);
+    const data = stats(); data.completed += 1; if (correct) data.correct += 1; saveStats(data); recordGrammarResult(item, correct);
     const rewardRecord = rewards(); if (item.visual) rewardRecord.visualQuestions = (rewardRecord.visualQuestions || 0) + 1; saveRewards(unlockBadges(rewardRecord));
     if (correct) { removeWrong(item.id); toast('答對了，繼續保持！'); } else { addWrong(item, answer); toast('已加入錯題本，之後可再挑戰。'); }
     renderQuestion(); renderStats();
@@ -443,7 +502,7 @@
     $$('.grade-btn').forEach((button) => button.addEventListener('click', () => { state.grade = button.dataset.grade; if (!isHigh() && ['word-problems', 'reading'].includes(state.topic)) state.topic = state.subject === 'math' ? 'operations' : 'vocabulary'; renderHome(); }));
     $$('.subject-tab').forEach((button) => button.addEventListener('click', () => { state.subject = button.dataset.subject; state.topic = getTopics()[0].id; renderHome(); }));
     $('#start-practice').addEventListener('click', startPractice); $('#home-brand').addEventListener('click', () => { showView('home'); renderHome(); }); $('#back-home').addEventListener('click', () => { showView('home'); renderHome(); });
-    $$('.side-nav button, .top-actions [data-nav]').forEach((button) => button.addEventListener('click', () => { const view = button.dataset.nav; if (view === 'wrongbook') { renderWrongbook(); showView('wrongbook'); } else { showView('home'); renderHome(); } }));
+    $$('.side-nav button, .top-actions [data-nav]').forEach((button) => button.addEventListener('click', () => { const view = button.dataset.nav; if (view === 'wrongbook') { renderWrongbook(); showView('wrongbook'); } else if (view === 'analysis') { renderAnalysis(); showView('analysis'); } else { showView('home'); renderHome(); } }));
     $('#check-question').addEventListener('click', checkCurrent); $('#next-question').addEventListener('click', nextQuestion); $('#previous-question').addEventListener('click', () => { if (state.session.index > 0) { state.session.index -= 1; renderQuestion(); } });
     $('#save-later').addEventListener('click', () => { showView('home'); renderHome(); toast('進度暫時保留在這個瀏覽器分頁。'); }); $('#result-home').addEventListener('click', () => { showView('home'); renderHome(); }); $('#result-wrongbook').addEventListener('click', () => { renderWrongbook(); showView('wrongbook'); });
     $('#checkin-button').addEventListener('click', checkInToday);
