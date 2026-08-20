@@ -61,3 +61,9 @@ The public GitHub Pages URL opened successfully. Its initial cached page still s
 After GitHub Pages reported a successful build, the public page loaded the new senior-oral data file but still used a cached earlier app.js, causing the generic P6 speaking card to appear despite the data object being present. The page will be updated with versioned script URLs to force the browser to retrieve the matching current application logic.
 
 Final public deployment verification succeeded after versioned script URLs were published. The live P6 oral-presentation page loaded the senior oral library, showed the correct P6 proposal title, replayable model-audio control, 90–120 second duration label and all four presentation-plan steps. The online practice link is ready for student use.
+
+## Listening vocabulary, quick checks and role-play validation
+
+The P4 Listening vocabulary module opened as an eight-card session. A card initially showed only the English target word and revealed the Chinese meaning plus context sentence only after the reveal control was used.
+
+The P5 Listening quick check loaded six replayable items with four answer choices. A correct response displayed immediate bilingual feedback and the short transcript. The P6 Role-play module loaded a bilingual goal, six A/B dialogue lines, separate Role A and Role B audio controls, four useful phrases and a speaking self-check.

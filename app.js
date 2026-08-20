@@ -49,7 +49,10 @@
       tip: '利用準備時間先看選項，預測可能聽到的人物、地點、數字或動作。',
       modules: [
         { id: 'listening', symbol: 'L', title: 'Listening lab', titleZh: '聆聽練習室', description: 'Replayable dialogues and short stories', descriptionZh: '可重播的短對話與故事', sessions: 4 },
-        { id: 'speaking', symbol: 'S', title: 'Speak aloud', titleZh: '朗讀與表達', description: 'Listen to a model, then build your own talk', descriptionZh: '聽示範後按計劃完成個人短講', sessions: 2 }
+        { id: 'speaking', symbol: 'S', title: 'Speak aloud', titleZh: '朗讀與表達', description: 'Listen to a model, then build your own talk', descriptionZh: '聽示範後按計劃完成個人短講', sessions: 2 },
+        { id: 'listening-vocab', symbol: 'V', title: 'Listening vocabulary', titleZh: '聆聽詞彙卡', description: 'Reveal, hear and use key listening words', descriptionZh: '翻開、聆聽及運用聆聽重點詞彙', sessions: 8, minGrade: 4 },
+        { id: 'listening-check', symbol: 'Q', title: 'Listening quick check', titleZh: '聽後小測', description: 'Short replayable clips with instant feedback', descriptionZh: '可重播短句配合即時中英回饋', sessions: 6, minGrade: 4 },
+        { id: 'roleplay', symbol: 'R', title: 'Role-play practice', titleZh: '角色對話', description: 'Take both roles in useful school-life dialogues', descriptionZh: '在實用校園情境中練習 A、B 角色對話', sessions: 2, minGrade: 4 }
       ]
     },
     language: {
@@ -326,6 +329,40 @@
     });
   }
 
+  function createListeningFlashcards() {
+    const cards = (window.LISTENING_SPEAKING_EXTENSION || {}).flashcards?.[state.grade] || [];
+    return cards.map(([word, chinese, definition, example], index) => question(`listening-vocab-${state.grade}-${word}`, 'listen', 'Listening vocabulary', `Reveal the card, listen to “${word}”, then say its example sentence aloud.`, 'known', 'Strong work. You have previewed a key word before listening. Try using it again when you hear the longer script.', null, {
+      selfCheck: `I revealed “${word}” and said the example sentence aloud. · 我已翻開「${word}」並朗讀例句。`,
+      audioText: word,
+      flashcard: { word, chinese, definition, example },
+      hint: 'Preview the word before listening. Connect it to its meaning and to the full sentence. 先預習詞彙，把意思與完整句子連結起來。'
+    }));
+  }
+
+  function createListeningChecks() {
+    const checks = (window.LISTENING_SPEAKING_EXTENSION || {}).checks?.[state.grade] || [];
+    return checks.map(([id, audioText, prompt, promptZh, options, answer, explanation, explanationZh]) => {
+      const shuffled = randomize(options);
+      return question(id, 'listen', 'Listening quick check', prompt, shuffled.indexOf(options[answer]), explanation, shuffled, {
+        audioText, promptZh, explanationZh,
+        quickCheck: true,
+        hint: 'Read the question first. Replay the short extract and listen for the one detail that answers it. 先讀題目；重播短句，集中聽回答問題的一個細節。'
+      });
+    });
+  }
+
+  function createRoleplays() {
+    const roleplays = (window.LISTENING_SPEAKING_EXTENSION || {}).roleplays?.[state.grade] || [];
+    return roleplays.map((activity) => question(`roleplay-${state.grade}-${activity.id}`, 'listen', `Role-play · ${activity.title}`, activity.goal, 'spoken', 'Excellent. Try the dialogue again and change one detail so that the conversation becomes your own.', null, {
+      audioText: activity.dialogue.map(([speaker, line]) => `Role ${speaker}: ${line}`).join(' '),
+      promptZh: activity.goalZh,
+      selfCheck: activity.selfCheck,
+      speaking: true,
+      roleplay: activity,
+      hint: 'Practise both roles. Pause after a question and answer it with a complete sentence. 練習兩個角色；問題後稍作停頓，再用完整句子回答。'
+    }));
+  }
+
   function createSpeaking() {
     const seniorOral = (window.SENIOR_ORAL_LIBRARY || {})[state.grade];
     if (seniorOral) {
@@ -351,6 +388,9 @@
     if (state.module === 'writing-plan') return createWritingPlan();
     if (state.module === 'listening') return createListening();
     if (state.module === 'speaking') return createSpeaking();
+    if (state.module === 'listening-vocab') return createListeningFlashcards();
+    if (state.module === 'listening-check') return createListeningChecks();
+    if (state.module === 'roleplay') return createRoleplays();
     if (state.module === 'reading-details') return createKeyDetails();
     return createReading();
   }
@@ -584,6 +624,8 @@
     const passage = item.passage ? `<article class="passage"><strong>${escape(item.passage.title)}</strong>${escape(item.passage.text)}</article>` : '';
     const audio = item.audioText ? `<section class="listen-player"><div><strong>${item.oralActivity ? 'Listen to the model, then build your own talk.' : item.speaking ? 'Listen, then say it aloud.' : 'Listen first. You may replay the audio.'}</strong><span>${item.oralActivity ? '按播放鍵聽示範，然後按照四步計劃準備個人短講。' : item.speaking ? '按播放鍵聽示範，然後用自己的資料完成句子。' : '核對答案後可查看英文逐字稿。'}</span></div><button class="play-audio" id="play-audio">Play audio · 播放錄音</button></section>${currentResult && !item.speaking ? `<p class="transcript"><strong>${escape(item.scriptTitle ? `${item.scriptTitle} · Transcript` : 'Transcript')}:</strong> ${escape(item.audioText)}</p>` : ''}` : '';
     const oralPlan = item.oralActivity ? `<section class="oral-plan"><header><p class="eyebrow">P4–P6 ORAL PRACTICE · 高小聆聽與口語</p><div><strong>${escape(item.oralActivity.title)}<small>${escape(item.oralActivity.titleZh)}</small></strong><span>${escape(item.oralActivity.duration)}</span></div></header><div class="oral-frames">${item.oralActivity.frames.map(([label, labelZh, frame, frameZh], index) => `<article><i>${index + 1}</i><div><b>${escape(label)}<small>${escape(labelZh)}</small></b><p>${escape(frame)}</p><span>${escape(frameZh)}</span></div></article>`).join('')}</div><footer><strong>Key language · 實用語句</strong><p>${item.oralActivity.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>` : '';
+    const flashcard = item.flashcard ? `<section class="flashcard ${session.revealed?.[session.index] ? 'revealed' : ''}"><div class="flashcard-front"><p class="eyebrow">LISTENING VOCABULARY · 聆聽詞彙卡</p><strong>${escape(item.flashcard.word)}</strong><span>Preview the word, then listen and use it. · 預習詞彙，然後聆聽及運用。</span></div><div class="flashcard-actions"><button class="secondary" id="flash-reveal">${session.revealed?.[session.index] ? 'Meaning revealed · 已顯示意思' : 'Reveal meaning · 顯示意思'}</button><button class="secondary" id="flash-audio">Play word · 播放字詞</button></div><div class="flashcard-back ${session.revealed?.[session.index] ? 'show' : ''}"><strong>${escape(item.flashcard.chinese)}</strong><p>${escape(item.flashcard.definition)}</p><blockquote>${escape(item.flashcard.example)}</blockquote></div></section>` : '';
+    const roleplay = item.roleplay ? `<section class="roleplay-card"><header><p class="eyebrow">ROLE-PLAY PRACTICE · 角色對話</p><strong>${escape(item.roleplay.title)}<small>${escape(item.roleplay.titleZh)}</small></strong><span>${escape(item.roleplay.roles[0])}</span><span>${escape(item.roleplay.roles[1])}</span></header><div class="roleplay-actions"><button class="secondary" data-role-audio="A">Listen to A · 聽 A 角色</button><button class="secondary" data-role-audio="B">Listen to B · 聽 B 角色</button></div><div class="roleplay-lines">${item.roleplay.dialogue.map(([speaker, line]) => `<p class="role-${speaker.toLowerCase()}"><b>${speaker}</b><span>${escape(line)}</span></p>`).join('')}</div><footer><strong>Useful phrases · 實用語句</strong><p>${item.roleplay.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>` : '';
     const writingGuide = item.writing ? `<section class="writing-guide"><strong>${item.selfCheck ? 'Writing reminder' : 'Writing check'}</strong><p>${item.selfCheck ? '先完成你的想法，再讀一次，確保每句都有清楚的意思。' : '輸入完整英文句子。留意大寫字母、主語、動詞和句號。'}</p></section>` : '';
     let response = '';
     if (item.selfCheck) {
@@ -596,7 +638,7 @@
       response = `<input class="answer-field" id="answer-field" autocomplete="off" inputmode="text" placeholder="Write your answer in English" value="${escape(session.drafts[session.index] || '')}">`;
     }
 
-    $('#question-content').innerHTML = `${audio}${passage}<h1>${escape(item.prompt)}${item.promptZh ? `<small class="question-zh">${escape(item.promptZh)}</small>` : ''}</h1>${oralPlan}${writingGuide}${response}`;
+    $('#question-content').innerHTML = `${audio}${passage}<h1>${escape(item.prompt)}${item.promptZh ? `<small class="question-zh">${escape(item.promptZh)}</small>` : ''}</h1>${flashcard}${oralPlan}${roleplay}${writingGuide}${response}`;
     const feedback = $('#feedback');
     feedback.className = `feedback ${currentResult ? `show ${currentResult.correct ? 'correct' : 'wrong'}` : ''}`;
     feedback.innerHTML = currentResult ? `<strong>${currentResult.correct ? 'Good work.' : 'Keep this one for review.'}</strong> ${escape(item.explanation)}${item.explanationZh ? `<small>${escape(item.explanationZh)}</small>` : ''}` : '';
@@ -605,12 +647,15 @@
     $('#previous-question').disabled = session.index === 0;
 
     $('#play-audio')?.addEventListener('click', () => speak(item.audioText));
+    $('#flash-audio')?.addEventListener('click', () => speak(item.flashcard.word));
+    $('#flash-reveal')?.addEventListener('click', () => { session.revealed ||= []; session.revealed[session.index] = true; renderQuestion(); });
+    $$('[data-role-audio]').forEach((button) => button.addEventListener('click', () => { const role = button.dataset.roleAudio; speak(item.roleplay.dialogue.filter(([speaker]) => speaker === role).map(([, line]) => line).join(' ')); }));
     $$('[data-choice]').forEach((button) => button.addEventListener('click', () => {
       if (currentResult) return;
       session.drafts[session.index] = button.dataset.choice;
       $$('.choice').forEach((choice) => choice.classList.toggle('selected', choice === button));
     }));
-    $('#self-check')?.addEventListener('change', (event) => { session.drafts[session.index] = event.target.checked ? 'confirmed' : ''; });
+    $('#self-check')?.addEventListener('change', (event) => { if (item.flashcard && event.target.checked && !session.revealed?.[session.index]) { event.target.checked = false; toast('Reveal the meaning first · 請先顯示字詞意思。'); return; } session.drafts[session.index] = event.target.checked ? 'confirmed' : ''; });
     $('#answer-field')?.addEventListener('input', (event) => { session.drafts[session.index] = event.target.value; });
     updateSessionProgress();
   }
