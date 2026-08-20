@@ -39,3 +39,11 @@ After the heading correction, the P4 library was re-opened and verified with one
 The P6 proposal model was opened through the P4–P6 model library. Its new learning layer displayed three bilingual tabs—Common mistakes, Vocabulary builder and Sentence patterns—along with three genre-specific correction cards and an original-sentence practice box.
 
 The P6 proposal page was visually checked with the Sentence patterns panel selected. It showed three adaptable English–Chinese frames, a model-specific original-writing prompt and a visible textarea, while preserving the full model composition and five-part scoring panel. Vocabulary and sentence-pattern tab switching was also confirmed programmatically.
+
+## Interactive error-correction quiz validation
+
+The P4 informal-email model was opened in the completed writing-support library. Its Quick correction quiz panel rendered with a bilingual question heading, a three-question progress label and three selectable correction choices.
+
+The P4 quiz was tested with an incorrect first response. The panel marked the selected wrong option, revealed the correct option and displayed a bilingual grammar explanation. The remaining questions were completed successfully enough to reach the completion state, which showed a 2/3 practice score and a restart control. This confirms answer marking, feedback, progression, scoring and restart behaviour.
+
+The complete writing-support preview also covered P5 and P6. The P5 formal-email model displayed three sentence-pattern cards and the five-part scoring panel. The P6 magazine-article model displayed a distinct three-question bilingual correction quiz, confirming that P4, P5 and P6 each load genre-specific models, writing-support resources, scoring guidance and quiz content.

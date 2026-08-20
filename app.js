@@ -10,7 +10,7 @@
     used: 'primary-english-studio-used-v1'
   };
 
-  const state = { grade: 3, route: 'read', module: 'reading', session: null, modelGrade: 4, modelId: null, studyTab: 'mistakes' };
+  const state = { grade: 3, route: 'read', module: 'reading', session: null, modelGrade: 4, modelId: null, studyTab: 'mistakes', quiz: { modelId: null, index: 0, selected: null, results: [] } };
   const safeGet = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
   const safeSet = (key, value) => localStorage.setItem(key, JSON.stringify(value));
   const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
@@ -448,7 +448,8 @@
     const tabs = [
       { id: 'mistakes', en: 'Common mistakes', zh: '常見錯誤' },
       { id: 'vocabulary', en: 'Vocabulary builder', zh: '詞彙擴展' },
-      { id: 'patterns', en: 'Sentence patterns', zh: '高分句式' }
+      { id: 'patterns', en: 'Sentence patterns', zh: '高分句式' },
+      { id: 'quiz', en: 'Quick correction quiz', zh: '快速改錯小測' }
     ];
     if (!tabs.some((tab) => tab.id === state.studyTab)) state.studyTab = 'mistakes';
     $('#writing-study-tabs').innerHTML = tabs.map((tab) => `<button class="study-tab ${state.studyTab === tab.id ? 'active' : ''}" data-study-tab="${tab.id}">${tab.en} · ${tab.zh}</button>`).join('');
@@ -458,11 +459,51 @@
       content = `<div class="mistake-grid">${support.mistakes.map((item) => `<article class="mistake-card"><div class="mistake-lines"><div class="mistake-line bad"><small>COMMON ERROR · 常見錯誤</small>${escape(item.bad)}</div><div class="mistake-line better"><small>BETTER VERSION · 較佳寫法</small>${escape(item.better)}</div></div><p class="mistake-tip">${escape(item.tip)}<small>${escape(item.tipZh)}</small></p></article>`).join('')}</div>${tryBox}`;
     } else if (state.studyTab === 'vocabulary') {
       content = `<div class="vocab-grid">${support.vocab.map((item) => `<article class="vocab-card"><span class="basic-word">${escape(item.basic)}</span><strong>→ ${escape(item.strong)}</strong><small>${escape(item.zh)}</small></article>`).join('')}</div>${tryBox}`;
-    } else {
+    } else if (state.studyTab === 'patterns') {
       content = `<div class="pattern-grid">${support.patterns.map((item) => `<article class="pattern-card"><strong>${escape(item.en)}</strong><small>${escape(item.zh)}</small></article>`).join('')}</div>${tryBox}`;
+    } else {
+      content = renderWritingQuiz(selected);
     }
     $('#writing-study-content').innerHTML = content;
     $$('[data-study-tab]').forEach((button) => button.addEventListener('click', () => { state.studyTab = button.dataset.studyTab; renderWritingStudy(selected); }));
+    bindWritingQuiz(selected);
+  }
+
+  function renderWritingQuiz(selected) {
+    const questions = (window.WRITING_ERROR_QUIZZES || {})[selected.id] || [];
+    const quiz = state.quiz;
+    if (quiz.modelId !== selected.id) state.quiz = { modelId: selected.id, index: 0, selected: null, results: [] };
+    const activeQuiz = state.quiz;
+    if (!questions.length) return '<p class="quiz-empty">Quiz content is being prepared. 小測內容準備中。</p>';
+    if (activeQuiz.index >= questions.length) {
+      const score = activeQuiz.results.filter((item) => item.correct).length;
+      return `<section class="quiz-complete"><p class="eyebrow">QUIZ COMPLETE · 小測完成</p><strong>${score} / ${questions.length}</strong><h4>${score === questions.length ? 'Excellent editing!' : 'Keep improving!'}</h4><p>${score === questions.length ? 'You corrected every sentence accurately.' : 'Read the feedback, then try another model or repeat this quiz.'}<br>${score === questions.length ? '你已正確改正所有句子。' : '閱讀回饋後，可再挑戰此小測或另一篇範文。'}</p><button class="secondary" data-quiz-restart>Try again · 再做一次</button></section>`;
+    }
+    const item = questions[activeQuiz.index];
+    const result = activeQuiz.results[activeQuiz.index];
+    const selectedChoice = result ? result.selected : activeQuiz.selected;
+    const choices = item.options.map((option, index) => {
+      const isCorrect = result && index === item.answer;
+      const isWrong = result && index === result.selected && !result.correct;
+      return `<button class="quiz-choice ${selectedChoice === index ? 'selected' : ''} ${isCorrect ? 'correct' : ''} ${isWrong ? 'wrong' : ''}" data-quiz-choice="${index}" ${result ? 'disabled' : ''}><span>${String.fromCharCode(65 + index)}</span>${escape(option)}</button>`;
+    }).join('');
+    const feedback = result ? `<div class="quiz-feedback ${result.correct ? 'correct' : 'wrong'}"><strong>${result.correct ? 'Correct · 答對了' : 'Check the correction · 查看改正'}</strong><p>${escape(item.explanation)}<br><small>${escape(item.explanationZh)}</small></p></div>` : '';
+    const action = result ? `<button class="primary" data-quiz-next>${activeQuiz.index === questions.length - 1 ? 'See result · 查看成績 →' : 'Next correction · 下一題 →'}</button>` : `<button class="primary" data-quiz-check>Check correction · 核對改正</button>`;
+    return `<section class="quiz-card"><header><p class="eyebrow">QUESTION ${activeQuiz.index + 1} OF ${questions.length} · 第 ${activeQuiz.index + 1} 題，共 ${questions.length} 題</p><h4>Find the best correction <small>選出最佳改正句</small></h4></header><div class="quiz-weak"><strong>COMMON ERROR · 常見錯誤</strong><p>${escape(item.bad)}</p></div><p class="quiz-prompt">${escape(item.prompt)}<small>${escape(item.promptZh)}</small></p><div class="quiz-choices">${choices}</div>${feedback}<footer class="quiz-footer"><span>${activeQuiz.results.filter(Boolean).length} / ${questions.length} checked · 已核對題數</span>${action}</footer></section>`;
+  }
+
+  function bindWritingQuiz(selected) {
+    const questions = (window.WRITING_ERROR_QUIZZES || {})[selected.id] || [];
+    $$('[data-quiz-choice]').forEach((button) => button.addEventListener('click', () => { state.quiz.selected = Number(button.dataset.quizChoice); renderWritingStudy(selected); }));
+    $('[data-quiz-check]')?.addEventListener('click', () => {
+      if (state.quiz.selected === null) { toast('Choose one correction first · 請先選擇一個改正句。'); return; }
+      const item = questions[state.quiz.index];
+      state.quiz.results[state.quiz.index] = { selected: state.quiz.selected, correct: state.quiz.selected === item.answer };
+      state.quiz.selected = null;
+      renderWritingStudy(selected);
+    });
+    $('[data-quiz-next]')?.addEventListener('click', () => { state.quiz.index += 1; state.quiz.selected = null; renderWritingStudy(selected); });
+    $('[data-quiz-restart]')?.addEventListener('click', () => { state.quiz = { modelId: selected.id, index: 0, selected: null, results: [] }; renderWritingStudy(selected); });
   }
 
   function renderScopePage() {
