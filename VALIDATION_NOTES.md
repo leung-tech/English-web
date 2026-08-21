@@ -241,3 +241,7 @@ The standalone S2 reading answer flow marked the correct choice, displayed Engli
 The standalone S2 writing page displayed the bilingual task, planning panel, long-response input and 100-word minimum. A local interaction test at exactly 100 words accepted the checked self-reflection and displayed a completion-only message; it did not claim to evaluate writing quality. The standalone browser-only progress store then contained the additional completed task.
 
 The standalone S2 speaking page loaded the bilingual 45–60 second task, replay-model control and self-check. A local completion interaction displayed a completion-only message. The page did not show any automated spoken-English quality score or assessment claim, preserving the required student safeguard.
+
+## Gemini-editable standalone HTML pages — Public deployment verification
+
+GitHub Pages workflow `32443116010` for commit `224b232` completed successfully. The public Gemini workspace at <https://leung-tech.github.io/English-web/gemini-pages/> displayed six S2 standalone HTML lesson cards and the link to the editing guide. The public standalone reading URL loaded its original-practice notice, bilingual paired-text reading content, two purpose blocks, four interactive answer choices and the local-only progress description. The multi-page HTML workspace is publicly available without changing the original full learning platform.
