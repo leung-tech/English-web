@@ -4,7 +4,7 @@ const vm = require('vm');
 const ctx = { window: {}, console };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
-for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 's1-bridge-school-routines.js']) {
+for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js']) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: file });
 }
 
@@ -75,6 +75,20 @@ expect((s1Bridge?.questions || []).length === 16, 'S1 Bridge school-life unit sh
 expect((s1Bridge?.questions || []).every((item) => item.id && item.contextTitle && item.context && item.prompt && item.promptZh && item.explanation && item.explanationZh && item.hint && Array.isArray(item.options) && item.options.length === 4 && Number.isInteger(item.answer) && item.answer >= 0 && item.answer < item.options.length), 'S1 Bridge items require context, bilingual fields, hint and a valid four-option answer');
 expect(new Set((s1Bridge?.questions || []).map((item) => item.id)).size === (s1Bridge?.questions || []).length, 'S1 Bridge question IDs must be unique');
 expect(new Set((s1Bridge?.questions || []).map((item) => item.contextTitle)).size >= 4, 'S1 Bridge unit should contain at least four school-life text contexts');
+
+const s1Skills = ctx.window.S1_BRIDGE_SKILLS;
+const s1ReadingCloze = s1Skills?.readingCloze;
+expect((s1ReadingCloze?.questions || []).length === 10, 'S1 Bridge reading and cloze unit should contain 10 questions');
+expect((s1ReadingCloze?.questions || []).filter((item) => item.section === 'Reading comprehension').length === 4, 'S1 Bridge reading unit should contain four reading-comprehension questions');
+expect((s1ReadingCloze?.questions || []).filter((item) => item.section === 'Integrated cloze').length === 6, 'S1 Bridge reading unit should contain six integrated-cloze questions');
+expect((s1ReadingCloze?.questions || []).every((item) => item.contextTitle && item.context && item.promptZh && item.explanationZh && item.hint && Array.isArray(item.options) && item.options.length === 4 && Number.isInteger(item.answer) && item.answer >= 0 && item.answer < 4), 'S1 Bridge reading and cloze items require context, bilingual support, hint and valid options');
+expect(new Set((s1ReadingCloze?.questions || []).map((item) => item.id)).size === (s1ReadingCloze?.questions || []).length, 'S1 Bridge reading and cloze item IDs must be unique');
+const s1Vocabulary = s1Skills?.vocabulary?.items || [];
+expect(s1Vocabulary.length === 12, 'S1 Bridge vocabulary unit should contain 12 items');
+expect(s1Vocabulary.every((item) => Array.isArray(item) && item.length === 7 && item[0] && item[1] && item[2] && item[3] && item[4] && item[5] && Array.isArray(item[6]) && item[6].length === 4 && item[6].includes(item[5])), 'S1 Bridge vocabulary items require word, bilingual meaning, model, prompt, answer and four options');
+const s1Listening = s1Skills?.listening?.scripts || [];
+expect(s1Listening.length === 2 && s1Listening.every((script) => script.id && script.title && script.titleZh && script.script && script.questions?.length === 4), 'S1 Bridge listening unit should contain two bilingual scripts with four questions each');
+expect(s1Listening.flatMap((script) => script.questions).every((item) => item[0] && item[1] && Array.isArray(item[2]) && item[2].length === 4 && Number.isInteger(item[3]) && item[3] >= 0 && item[3] < 4 && item[4] && item[5]), 'S1 Bridge listening questions require bilingual prompts, options and explanations');
 
 const preS1Guide = ctx.window.PRE_S1_REVIEW_GUIDE;
 expect(preS1Guide?.title && preS1Guide?.titleZh, 'Pre-S1 revision guide titles are missing');

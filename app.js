@@ -70,7 +70,8 @@
       modules: [
         { id: 'reading', symbol: 'R', title: 'Reading comprehension', titleZh: '閱讀理解', description: 'Stories, notices and main ideas', descriptionZh: '短文、故事與主旨理解', sessions: 10 },
         { id: 'reading-details', symbol: 'K', title: 'Key detail hunter', titleZh: '關鍵細節搜尋', description: 'People, places, times and actions', descriptionZh: '人物、地點、時間與細節', sessions: 10 },
-        { id: 'advanced-reading', symbol: '★', title: 'Advanced reading workshop', titleZh: '進階閱讀工作坊', description: 'P4–P6 genres, inference and model analysis', descriptionZh: '小四至小六多體裁閱讀、推論及範例解析', sessions: 5, minGrade: 4 }
+        { id: 'advanced-reading', symbol: '★', title: 'Advanced reading workshop', titleZh: '進階閱讀工作坊', description: 'P4–P6 genres, inference and model analysis', descriptionZh: '小四至小六多體裁閱讀、推論及範例解析', sessions: 5, minGrade: 4 },
+        { id: 's1-bridge-reading-cloze', symbol: 'S1', title: 'S1 Bridge: Reading & cloze', titleZh: '中一銜接：閱讀與綜合填空', description: 'Original school-life reading and grammar-in-context', descriptionZh: '原創校園生活閱讀及語境綜合填空', sessions: 10, minGrade: 6, s1Bridge: true }
       ]
     },
     write: {
@@ -93,7 +94,8 @@
         { id: 'speaking', symbol: 'S', title: 'Speak aloud', titleZh: '朗讀與表達', descriptionZh: '聽示範後按計劃完成個人短講', description: 'Listen to a model, then build your own talk', sessions: 5 },
         { id: 'listening-vocab', symbol: 'V', title: 'Listening vocabulary', titleZh: '聆聽詞彙卡', description: 'Reveal, hear and use key listening words', descriptionZh: '翻開、聆聽及運用聆聽重點詞彙', sessions: 10, minGrade: 4 },
         { id: 'listening-check', symbol: 'Q', title: 'Listening quick check', titleZh: '聽後小測', description: 'Short replayable clips with instant feedback', descriptionZh: '可重播短句配合即時中英回饋', sessions: 7, minGrade: 4 },
-        { id: 'roleplay', symbol: 'R', title: 'Role-play practice', titleZh: '角色對話', description: 'Take both roles in useful school-life dialogues', descriptionZh: '在實用校園情境中練習 A、B 角色對話', sessions: 3, minGrade: 4 }
+        { id: 'roleplay', symbol: 'R', title: 'Role-play practice', titleZh: '角色對話', description: 'Take both roles in useful school-life dialogues', descriptionZh: '在實用校園情境中練習 A、B 角色對話', sessions: 3, minGrade: 4 },
+        { id: 's1-bridge-listening', symbol: 'S1', title: 'S1 Bridge: School life listening', titleZh: '中一銜接：校園生活聆聽', description: 'Replayable announcements and planning dialogues', descriptionZh: '可重播的校園公告與策劃對話', sessions: 8, minGrade: 6, s1Bridge: true }
       ]
     },
     language: {
@@ -107,7 +109,8 @@
         { id: 'word-match', symbol: '↔', title: 'Word Match', titleZh: '單字配對', description: 'Reveal word clues and build everyday vocabulary', descriptionZh: '翻開單字線索，建立生活英語詞彙', sessions: 6, maxGrade: 3 },
         { id: 'pre-s1-mock', symbol: '◎', title: 'Pre-S1 readiness mock', titleZh: '中一分班試英語模擬', description: 'Original P6 practice in listening, reading, language use and writing', descriptionZh: '原創小六升中銜接：聆聽、閱讀、語言運用及寫作', sessions: 12, minGrade: 6, assessmentMock: true },
         { id: 'pre-s1-review', symbol: '✓', title: 'Pre-S1 vocabulary & grammar review', titleZh: '中一分班試詞彙與文法重點複習', description: 'A bilingual checklist with examples and editing reminders', descriptionZh: '附例句及改錯提醒的雙語重點清單', sessions: 20, minGrade: 6, reviewGuide: true },
-        { id: 's1-bridge-grammar', symbol: 'S1', title: 'S1 Bridge: School Life & Routines', titleZh: '中一銜接：校園生活與日常作息', description: 'Original grammar in familiar school-life texts', descriptionZh: '透過熟悉校園文本學習原創中一基礎文法', sessions: 12, minGrade: 6, s1Bridge: true }
+        { id: 's1-bridge-grammar', symbol: 'S1', title: 'S1 Bridge: School Life & Routines', titleZh: '中一銜接：校園生活與日常作息', description: 'Original grammar in familiar school-life texts', descriptionZh: '透過熟悉校園文本學習原創中一基礎文法', sessions: 12, minGrade: 6, s1Bridge: true },
+        { id: 's1-bridge-vocabulary', symbol: 'S1', title: 'S1 Bridge: School life vocabulary', titleZh: '中一銜接：校園生活詞彙', description: 'Learn and use useful words for secondary-school routines', descriptionZh: '學習及運用中學日常生活實用詞彙', sessions: 12, minGrade: 6, s1Bridge: true }
       ]
     }
   };
@@ -343,6 +346,58 @@
     });
   }
 
+  function createS1BridgeReadingCloze() {
+    const unit = window.S1_BRIDGE_SKILLS?.readingCloze;
+    if (!unit?.questions) return [];
+    return unit.questions.map((item) => {
+      const shuffled = randomize(item.options);
+      const correct = item.options[item.answer];
+      return question(item.id, 'read', `S1 Bridge · ${unit.title}`, item.prompt, shuffled.indexOf(correct), item.explanation, shuffled, {
+        promptZh: item.promptZh,
+        explanationZh: item.explanationZh,
+        hint: item.hint,
+        passage: { title: `${item.contextTitle} · ${item.section}`, text: item.context },
+        s1Bridge: true,
+        integratedCloze: item.section === 'Integrated cloze',
+        originalPractice: true
+      });
+    });
+  }
+
+  function createS1BridgeVocabulary() {
+    const unit = window.S1_BRIDGE_SKILLS?.vocabulary;
+    if (!unit?.items) return [];
+    return unit.items.map(([word, chinese, definition, example, prompt, answer, options], index) => {
+      const shuffled = randomize(options);
+      return question(`s1-vocabulary-${index}-${word}`, 'language', `S1 Bridge · ${unit.title}`, prompt, shuffled.indexOf(answer), `“${word}” means ${definition}. Example: ${example}`, shuffled, {
+        promptZh: `哪個校園生活詞彙最適合這個情境？重點詞語：${chinese}。`,
+        explanationZh: `「${word}」的意思是「${chinese}」。例句：${example}`,
+        hint: `Read the situation, then connect the English word with its meaning: ${chinese}。先讀情境，再把英文詞語與意思「${chinese}」連結。`,
+        s1Bridge: true,
+        originalPractice: true
+      });
+    });
+  }
+
+  function createS1BridgeListening() {
+    const unit = window.S1_BRIDGE_SKILLS?.listening;
+    if (!unit?.scripts) return [];
+    return unit.scripts.flatMap((script) => script.questions.map(([prompt, promptZh, options, answer, explanation, explanationZh], index) => {
+      const shuffled = randomize(options);
+      const correct = options[answer];
+      return question(`s1-listening-${script.id}-${index}`, 'listen', `S1 Bridge · ${script.title}`, prompt, shuffled.indexOf(correct), explanation, shuffled, {
+        audioText: script.script,
+        scriptTitle: script.title,
+        scriptTitleZh: script.titleZh,
+        promptZh,
+        explanationZh,
+        s1Bridge: true,
+        originalPractice: true,
+        hint: 'Read the question first. Listen once for the main purpose, then replay for a person, time, place, reason or action. 先看題目；先聽主旨，再重播找人物、時間、地點、原因或行動。'
+      });
+    }));
+  }
+
   function createReading() {
     const items = [];
     expanded('reading', readingLibrary[state.grade]).forEach((passage, passageIndex) => {
@@ -451,6 +506,9 @@
     if (state.module === 'vocabulary') return createVocabulary();
     if (state.module === 'grammar') return createGrammar();
     if (state.module === 's1-bridge-grammar') return createS1BridgeGrammar();
+    if (state.module === 's1-bridge-reading-cloze') return createS1BridgeReadingCloze();
+    if (state.module === 's1-bridge-vocabulary') return createS1BridgeVocabulary();
+    if (state.module === 's1-bridge-listening') return createS1BridgeListening();
     if (state.module === 'sentence-builder') return createSentenceBuilder();
     if (state.module === 'proofreading') return createProofreading();
     if (state.module === 'writing-plan') return createWritingPlan();

@@ -177,3 +177,15 @@ The desktop session view was visually reviewed. The passage, two-line bilingual 
 At a 390px viewport, the P6 rail, S1 Bridge session title, progress indicator and Library Helper Email context remained readable without horizontal overflow. The responsive one-column practice layout preserved the content flow for the passage, bilingual prompt and answer choices.
 
 The published website was verified after deployment. The P6 Apply route contained the S1 Bridge module, and the live page loaded all 16 original items across four school-life contexts. It generated a 12-question practice session with a bilingual prompt and four answer controls.
+
+## S1 Bridge — Reading, Cloze, Vocabulary and Listening
+
+The local P6 Read route displayed the S1 Bridge Reading & cloze module with its bilingual S1 transition description. The module loaded ten original items and began a ten-question session. A sampled Club Sampler comprehension question displayed the full school-life text, four options and bilingual prompt. A correct response returned immediate English feedback with a Traditional Chinese explanation and enabled question navigation.
+
+A sampled integrated-cloze item showed the full A More Organised Morning message, numbered blanks, bilingual prompt and four context-appropriate connector choices. The S1 Bridge School life vocabulary module loaded all 12 items into a 12-question session; a sampled volunteer item showed the English scenario, a Traditional Chinese meaning cue and four selectable answers.
+
+The S1 Bridge School life listening module loaded two scripts and eight questions into an eight-question session. A sampled Lunchtime Planning Meeting item displayed the Play audio control, four choices and bilingual question. The replay control and transcript reveal control were both available; opening the transcript made the English script panel visible.
+
+The desktop listening view was visually reviewed. The audio panel, bilingual question, four answer controls, checking action, navigation and eight-question progress path were readable without clipping or overlap.
+
+At a 390px viewport, the P6 rail, S1 Bridge Reading & cloze session title, ten-question progress indicator and A More Organised Morning integrated-cloze text remained readable without horizontal overflow. The one-column mobile layout preserved the long text flow for the bilingual practice experience.
