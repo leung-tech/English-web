@@ -4,7 +4,7 @@ const vm = require('vm');
 const ctx = { window: {}, console };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
-for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js']) {
+for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js', 's1-core-path.js']) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: file });
 }
 
@@ -90,6 +90,33 @@ const s1Listening = s1Skills?.listening?.scripts || [];
 expect(s1Listening.length === 2 && s1Listening.every((script) => script.id && script.title && script.titleZh && script.script && script.questions?.length === 4), 'S1 Bridge listening unit should contain two bilingual scripts with four questions each');
 expect(s1Listening.flatMap((script) => script.questions).every((item) => item[0] && item[1] && Array.isArray(item[2]) && item[2].length === 4 && Number.isInteger(item[3]) && item[3] >= 0 && item[3] < 4 && item[4] && item[5]), 'S1 Bridge listening questions require bilingual prompts, options and explanations');
 
+const s1Core = ctx.window.S1_CORE_PATH;
+const s1CoreGrammar = s1Core?.grammar?.questions || [];
+expect(s1CoreGrammar.length === 16, 'S1 Core grammar should contain 16 contextual questions');
+expect(s1CoreGrammar.every((item) => Array.isArray(item) && item.length === 9 && item[0] && item[1] && item[2] && item[3] && Array.isArray(item[4]) && item[4].length === 4 && Number.isInteger(item[5]) && item[5] >= 0 && item[5] < item[4].length && item[6] && item[7] && item[8]), 'S1 Core grammar questions require ID, bilingual prompt/explanation, context, hint and four valid options');
+expect(new Set(s1CoreGrammar.map((item) => item[0])).size === s1CoreGrammar.length, 'S1 Core grammar question IDs must be unique');
+
+const s1CoreVocabulary = s1Core?.vocabulary?.items || [];
+expect(s1CoreVocabulary.length === 18, 'S1 Core vocabulary should contain 18 items');
+expect(s1CoreVocabulary.every((item) => Array.isArray(item) && item.length === 7 && item[0] && item[1] && item[2] && item[3] && item[4] && item[5] && Array.isArray(item[6]) && item[6].length === 4 && item[6].includes(item[5])), 'S1 Core vocabulary items require bilingual meaning, model, prompt, answer and four options');
+expect(new Set(s1CoreVocabulary.map((item) => item[0])).size === s1CoreVocabulary.length, 'S1 Core vocabulary words must be unique');
+
+const s1CoreReading = s1Core?.reading?.questions || [];
+expect(s1CoreReading.length === 12, 'S1 Core reading workshop should contain 12 questions');
+expect(s1CoreReading.every((item) => Array.isArray(item) && item.length === 10 && item[0] && item[1] && item[2] && item[3] && item[4] && Array.isArray(item[5]) && item[5].length === 4 && Number.isInteger(item[6]) && item[6] >= 0 && item[6] < item[5].length && item[7] && item[8] && item[9]), 'S1 Core reading questions require bilingual prompt/explanation, passage, hint and four valid options');
+expect(new Set(s1CoreReading.map((item) => item[0])).size === s1CoreReading.length, 'S1 Core reading question IDs must be unique');
+expect(new Set(s1CoreReading.map((item) => item[1])).size >= 3, 'S1 Core reading workshop should use at least three original text titles');
+
+const s1CoreListening = s1Core?.listening?.scripts || [];
+expect(s1CoreListening.length === 2 && s1CoreListening.every((script) => script.id && script.title && script.titleZh && script.script && script.questions?.length === 4), 'S1 Core listening should contain two bilingual scripts with four questions each');
+expect(s1CoreListening.flatMap((script) => script.questions).every((item) => Array.isArray(item) && item[0] && item[1] && Array.isArray(item[2]) && item[2].length === 4 && Number.isInteger(item[3]) && item[3] >= 0 && item[3] < item[2].length && item[4] && item[5]), 'S1 Core listening questions require bilingual prompts, options and explanations');
+
+const s1CoreWriting = s1Core?.writing || [];
+expect(s1CoreWriting.length === 3 && s1CoreWriting.every((item) => item.id && item.title && item.titleZh && item.prompt && item.promptZh && item.plan && item.selfCheck), 'S1 Core writing workshop should contain three bilingual tasks with planning and self-check prompts');
+const s1CoreSpeaking = s1Core?.speaking || [];
+expect(s1CoreSpeaking.length === 3 && s1CoreSpeaking.every((item) => item.id && item.title && item.titleZh && item.prompt && item.promptZh && item.model && item.selfCheck), 'S1 Core speaking studio should contain three bilingual tasks with a model and self-check prompt');
+expect(new Set([...s1CoreWriting, ...s1CoreSpeaking].map((item) => item.id)).size === s1CoreWriting.length + s1CoreSpeaking.length, 'S1 Core writing and speaking task IDs must be unique');
+
 const preS1Guide = ctx.window.PRE_S1_REVIEW_GUIDE;
 expect(preS1Guide?.title && preS1Guide?.titleZh, 'Pre-S1 revision guide titles are missing');
 expect((preS1Guide?.vocabulary || []).length === 3, 'Pre-S1 revision guide should contain three vocabulary groups');
@@ -108,5 +135,6 @@ info.push(`Writing models checked: ${models.length}`);
 info.push(`Writing quiz items checked: ${models.reduce((sum, model) => sum + (ctx.window.WRITING_ERROR_QUIZZES?.[model.id]?.length || 0), 0)}`);
 info.push(`Pre-S1 mock items checked: ${preS1?.questions?.length || 0}`);
 info.push(`Pre-S1 revision items checked: ${(preS1Guide?.vocabulary || []).flatMap((group) => group.items || []).length + (preS1Guide?.grammar || []).length}`);
+info.push(`S1 Core items checked: ${s1CoreGrammar.length + s1CoreVocabulary.length + s1CoreReading.length + s1CoreListening.flatMap((script) => script.questions).length + s1CoreWriting.length + s1CoreSpeaking.length}`);
 console.log(JSON.stringify({ status: issues.length ? 'issues_found' : 'passed', info, issues }, null, 2));
 process.exitCode = issues.length ? 1 : 0;

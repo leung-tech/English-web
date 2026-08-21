@@ -191,3 +191,17 @@ The desktop listening view was visually reviewed. The audio panel, bilingual que
 At a 390px viewport, the P6 rail, S1 Bridge Reading & cloze session title, ten-question progress indicator and A More Organised Morning integrated-cloze text remained readable without horizontal overflow. The one-column mobile layout preserved the long text flow for the bilingual practice experience.
 
 The published site was checked after deployment. The P6 language route contained the S1 Bridge School life vocabulary module and loaded 12 vocabulary items. The P6 listening route contained the S1 Bridge School life listening module and loaded two scripts with eight total questions. The P6 Read route contained the S1 Bridge Reading & cloze module; it loaded ten items into a 10-question session with a full Club Sampler text, bilingual prompt and four answer controls.
+
+## S1 Core Path — Complete four-skills practice
+
+The local P6 Read route displayed the new **S1 Core: Reading workshop · 中一核心：閱讀工作坊** card with the visible **S1 CORE · 原創練習** label. It loaded all 12 original questions across a student profile, a friendly email and a blog entry. A sampled task displayed the full text, four answer choices and an English-first question with Traditional Chinese support.
+
+The local P6 Apply route loaded the 16-question **S1 Core: Grammar in context** module and the 18-question **S1 Core: Vocabulary builder** module. The grammar task displayed a school-life context, four answer choices and a bilingual sentence-completion prompt. The vocabulary task displayed a learning-habit or school-community situation, four options and a Chinese meaning cue. Both modules correctly used the existing immediate-feedback practice flow.
+
+The local P6 Listen route loaded the eight-item **S1 Core: Listening lab** module. A sampled Timetable Change Announcement question showed a replayable audio control, four options and a bilingual question. The separate three-task **S1 Core: Speaking studio** loaded a model-audio control, an English-first/Traditional-Chinese task prompt and a spoken self-check.
+
+The local P6 Write route loaded three **S1 Core: Writing workshop** tasks: friendly email, short recount and school-improvement notice response. Each task displayed the explicit **S1 CORE WRITING · 原創練習** label, a bilingual task, planning/self-check prompts, a long-response input field and an 80-word minimum writing self-check. The interface explicitly states that it records a completion self-check rather than issuing an automated language-quality score.
+
+JavaScript syntax checks for `app.js` and `s1-core-path.js` passed. The updated `node .quality-audit.js` run passed all platform thresholds and validated 60 S1 Core items: 16 grammar, 18 vocabulary, 12 reading, 8 listening, 3 writing and 3 speaking tasks.
+
+**Deployment follow-up:** Publish the S1 Core Path release, then perform the same P6 route checks on the GitHub Pages URL after the Pages build completes.
