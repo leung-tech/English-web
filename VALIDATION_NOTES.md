@@ -217,3 +217,11 @@ The local P6 page displayed six new **S2 Develop · 中二發展** modules, each
 A local S2 Compare and Connect session opened successfully with a pair of original texts. The reading panel showed the S2 original-paired-text label, both labelled source texts, each text’s stated English and Traditional Chinese purpose, and four answer choices. This confirms that the new paired-text renderer is connected to the normal practice flow.
 
 The remaining S2 local checks also passed. Grammar in context opened with a contextual sentence, bilingual prompt and four options; Vocabulary choices opened with four word-choice options and Traditional Chinese meaning support. Listening choices showed four options and the replay-audio control. Speaking choices showed both model-audio replay and a spoken self-check. Writing choices showed the **S2 DEVELOP WRITING · 原創練習** label, planning/self-check panels, a long-response text area and the explicit 100-word minimum self-check statement.
+
+## S2 Develop — Public deployment follow-up
+
+GitHub Pages workflow `32441759166` for commit `13e4dd4` completed successfully. However, the first public P6 page check still displayed the previous five Read-route modules and did not show the S2 Develop reading card. This is treated as a deployment/cache verification issue; the published HTML and versioned asset URLs must be checked before marking S2 public verification complete.
+
+Repository and network checks confirm that commit `13e4dd4` is on the GitHub Pages `main` source and that the public `index.html` response already references `s2-experiences-and-choices.js?v=20260821-s2develop1` and `app.js?v=20260821-s2develop1`. The browser-rendered module list remained stale even after cache-busted page URLs, so the next diagnostic checks the runtime-loaded script content rather than the published HTML alone.
+
+Runtime diagnostics found that the public document referenced the S2-versioned data and application scripts, the S2 data object existed, and a fresh network fetch of `app.js?v=20260821-s2develop1` contained the S2 routes. The rendered route still lacked S2 cards, which is consistent with an already loaded stale script resource in the validation browser. The release will therefore use a new, never-before-requested asset version for both the S2 data and application script before the final public check.
