@@ -4,7 +4,7 @@ const vm = require('vm');
 const ctx = { window: {}, console };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
-for (const file of ['english-scope.js', 'writing-models.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js']) {
+for (const file of ['english-scope.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js']) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: file });
 }
 
@@ -37,7 +37,13 @@ for (const grade of grades) {
 }
 
 const models = ctx.window.WRITING_MODELS || [];
-expect(models.length === 6, 'Writing model library should contain six models');
+expect(models.length === 7, 'Writing model library should contain seven models');
+const preS1WritingModel = models.find((model) => model.id === 'p6-pre-s1-calm-start');
+expect(preS1WritingModel?.preS1 === true, 'Pre-S1 writing model is missing its readiness label');
+expect(preS1WritingModel?.rubric?.length === 5, 'Pre-S1 writing model should contain five rubric criteria');
+expect(preS1WritingModel?.model && preS1WritingModel?.task && preS1WritingModel?.taskZh, 'Pre-S1 writing model requires a bilingual task and exemplar');
+expect((ctx.window.WRITING_MODEL_SUPPORT?.['p6-pre-s1-calm-start']?.patterns || []).length >= 4, 'Pre-S1 writing model requires four sentence patterns');
+
 models.forEach((model) => {
   const quiz = ctx.window.WRITING_ERROR_QUIZZES?.[model.id] || [];
   expect(quiz.length === 4, `${model.id}: error-correction quiz should contain four questions`);

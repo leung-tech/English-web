@@ -578,13 +578,14 @@
     $('#models-grade-note').textContent = state.modelGrade === 4 ? 'Practise clear formats, story sequence and complete task points. 練習清晰格式、故事次序與完整回應。' : state.modelGrade === 5 ? 'Notice developed reasons, paragraphs and purpose-driven language. 留意理由發展、段落安排與寫作目的。' : 'Study formal structure, persuasion and more varied sentence patterns. 學習正式結構、說服技巧與較多句式變化。';
     $('#model-picker').innerHTML = gradeModels.map((model) => `<button class="model-picker-btn ${model.id === state.modelId ? 'active' : ''}" data-model-id="${model.id}"><strong>${escape(model.genre)}</strong><small>${escape(model.genreZh)}</small><span>${escape(model.title)}</span></button>`).join('');
     if (!selected) return;
-    $('#model-genre').textContent = `${selected.genre.toUpperCase()} · ${selected.genreZh}`;
+    const activeRubric = selected.rubric || rubric;
+    $('#model-genre').textContent = `${selected.genre.toUpperCase()} · ${selected.genreZh}${selected.preS1 ? ' · ORIGINAL PRE-S1 PRACTICE' : ''}`;
     $('#model-title').innerHTML = `${escape(selected.title)}<small>${escape(selected.titleZh)}</small>`;
     $('#model-words').textContent = `${selected.words} · 建議篇幅`;
     $('#model-task').textContent = selected.task;
     $('#model-task-zh').textContent = selected.taskZh;
     $('#model-copy').textContent = selected.model;
-    $('#rubric-list').innerHTML = rubric.map((item) => `<article class="rubric-item"><strong>${escape(item.title)}</strong><small>${escape(item.titleZh)}</small><p>${escape(item.strong)}<br>${escape(item.strongZh)}</p></article>`).join('');
+    $('#rubric-list').innerHTML = activeRubric.map((item) => `<article class="rubric-item"><strong>${escape(item.title)}</strong><small>${escape(item.titleZh)}</small><p>${escape(item.strong)}<br>${escape(item.strongZh)}</p></article>`).join('');
     $('#model-focus').innerHTML = `<h3>Why it works <small>閱卷重點</small></h3><ul>${selected.focus.map((item, index) => `<li>${escape(item)}<small>${escape(selected.focusZh[index])}</small></li>`).join('')}</ul>`;
     renderWritingStudy(selected);
     $$('[data-model-grade]').forEach((button) => button.addEventListener('click', () => { state.modelGrade = Number(button.dataset.modelGrade); state.modelId = null; renderWritingModels(); }));
