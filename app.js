@@ -15,6 +15,7 @@
   const safeSet = (key, value) => localStorage.setItem(key, JSON.stringify(value));
   const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
   const normalize = (value) => String(value ?? '').trim().toLowerCase().replace(/[.,!?]/g, '').replace(/\s+/g, ' ');
+  const wordCount = (value) => String(value ?? '').trim().split(/\s+/).filter(Boolean).length;
   const randomize = (items) => [...items].sort(() => Math.random() - 0.5);
   const scope = () => scopeMap[state.grade];
   const stats = () => safeGet(KEYS.stats, { completed: 0, correct: 0, skills: { read: 0, write: 0, listen: 0, language: 0 } });
@@ -64,7 +65,8 @@
         { id: 'vocabulary', symbol: 'V', title: 'Vocabulary & spelling', titleZh: '字詞與拼寫', description: 'Core words, spelling and useful topics', descriptionZh: '核心字詞、拼寫與主題詞彙', sessions: 12 },
         { id: 'grammar', symbol: 'G', title: 'Grammar & patterns', titleZh: '文法與句型', description: 'Tenses, patterns and language use', descriptionZh: '時態、句型與語言運用', sessions: 8 },
         { id: 'junior-game', symbol: '♪', title: 'Phonics & story game', titleZh: '拼音與故事遊戲', description: 'Hear a word or clue, then make a playful choice', descriptionZh: '聽字詞或故事線索，再作有趣選擇', sessions: 8, maxGrade: 3 },
-        { id: 'word-match', symbol: '↔', title: 'Word Match', titleZh: '單字配對', description: 'Reveal word clues and build everyday vocabulary', descriptionZh: '翻開單字線索，建立生活英語詞彙', sessions: 6, maxGrade: 3 }
+        { id: 'word-match', symbol: '↔', title: 'Word Match', titleZh: '單字配對', description: 'Reveal word clues and build everyday vocabulary', descriptionZh: '翻開單字線索，建立生活英語詞彙', sessions: 6, maxGrade: 3 },
+        { id: 'pre-s1-mock', symbol: '◎', title: 'Pre-S1 readiness mock', titleZh: '中一分班試英語模擬', description: 'Original P6 practice in listening, reading, language use and writing', descriptionZh: '原創小六升中銜接：聆聽、閱讀、語言運用及寫作', sessions: 12, minGrade: 6, assessmentMock: true }
       ]
     }
   };
@@ -402,6 +404,7 @@
     if (state.module === 'word-match') return createJuniorWordMatch();
     if (state.module === 'advanced-reading') return createAdvancedReading();
     if (state.module === 'reading-details') return createKeyDetails();
+    if (state.module === 'pre-s1-mock') return createPreS1Mock();
     return createReading();
   }
 
@@ -445,6 +448,28 @@
       prompt: index % 2 === 0 ? `Find the key detail. ${item.prompt}` : item.prompt,
       hint: 'Look for a name, a place, a time, a number or an action. The answer should be stated clearly in the passage.'
     }));
+  }
+
+  function createPreS1Mock() {
+    const mock = window.PRE_S1_ENGLISH_MOCK;
+    if (!mock || state.grade !== 6) return [];
+    return mock.questions.map((item, index) => {
+      const options = item.options ? randomize(item.options) : null;
+      const correct = item.options ? options.indexOf(item.options[item.answer]) : 'draft';
+      return question(`pre-s1-${item.id || index}`, item.route, `Pre-S1 mock · ${item.section}`, item.prompt, correct, item.explanation, options, {
+        promptZh: item.promptZh,
+        explanationZh: item.explanationZh,
+        passage: item.passage,
+        audioText: item.audioText,
+        scriptTitle: item.scriptTitle,
+        scriptTitleZh: item.scriptTitleZh,
+        writingTask: item.writingTask,
+        writing: Boolean(item.writingTask),
+        multiline: Boolean(item.writingTask),
+        preS1Mock: true,
+        hint: item.hint
+      });
+    });
   }
 
   function selectSessionQuestions(bank, total) {
@@ -500,11 +525,11 @@
     if (!modules.some((module) => module.id === state.module)) state.module = modules[0].id;
     $('#route-title').innerHTML = bilingual(route.title, route.titleZh);
     $('#route-description').innerHTML = bilingual(route.description, route.descriptionZh);
-    $('#module-list').innerHTML = modules.map((module) => `<button class="module-card ${state.module === module.id ? 'selected' : ''}" data-module="${module.id}"><i class="module-symbol">${module.symbol}</i><span><strong>${bilingual(module.title, module.titleZh)}</strong><span class="module-en">${escape(module.description)}</span><span class="module-zh">${escape(module.descriptionZh)}</span>${module.assessment ? '<span class="assessment-chip">P4–P6 ASSESSMENT · 呈分試</span>' : ''}</span></button>`).join('');
+    $('#module-list').innerHTML = modules.map((module) => `<button class="module-card ${state.module === module.id ? 'selected' : ''}" data-module="${module.id}"><i class="module-symbol">${module.symbol}</i><span><strong>${bilingual(module.title, module.titleZh)}</strong><span class="module-en">${escape(module.description)}</span><span class="module-zh">${escape(module.descriptionZh)}</span>${module.assessment ? '<span class="assessment-chip">P4–P6 ASSESSMENT · 呈分試</span>' : module.assessmentMock ? '<span class="assessment-chip">PRE-S1 STYLE · 原創銜接</span>' : ''}</span></button>`).join('');
     $$('[data-module]').forEach((button) => button.addEventListener('click', () => { state.module = button.dataset.module; renderHome(); }));
     const module = selectedModule();
     const activeCount = module.assessment ? 'P4–6' : (getBank().length || module.sessions);
-    $('#session-mark').textContent = module.assessment ? 'MODEL LIBRARY · 範文庫' : `${activeCount} QUESTIONS · ${activeCount} 題`;
+    $('#session-mark').textContent = module.assessment ? 'MODEL LIBRARY · 範文庫' : module.assessmentMock ? 'PRE-S1 STYLE · 原創銜接' : `${activeCount} QUESTIONS · ${activeCount} 題`;
     $('#scope-session-count').textContent = activeCount;
     $('#selected-module-note').innerHTML = `${bilingual(module.title, module.titleZh)}<span class="selected-note-detail">${escape(module.descriptionZh)}</span>`;
   }
@@ -669,9 +694,12 @@
     const oralPlan = item.oralActivity ? `<section class="oral-plan"><header><p class="eyebrow">P4–P6 ORAL PRACTICE · 高小聆聽與口語</p><div><strong>${escape(item.oralActivity.title)}<small>${escape(item.oralActivity.titleZh)}</small></strong><span>${escape(item.oralActivity.duration)}</span></div></header><div class="oral-frames">${item.oralActivity.frames.map(([label, labelZh, frame, frameZh], index) => `<article><i>${index + 1}</i><div><b>${escape(label)}<small>${escape(labelZh)}</small></b><p>${escape(frame)}</p><span>${escape(frameZh)}</span></div></article>`).join('')}</div><footer><strong>Key language · 實用語句</strong><p>${item.oralActivity.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>` : '';
     const flashcard = item.flashcard ? `<section class="flashcard ${session.revealed?.[session.index] ? 'revealed' : ''}"><div class="flashcard-front"><p class="eyebrow">${item.flashcardType === 'match' ? 'WORD MATCH · 單字配對' : 'LISTENING VOCABULARY · 聆聽詞彙卡'}</p><strong>${escape(item.flashcard.word)}</strong><span>Preview the word, then listen and use it. · 預習詞彙，然後聆聽及運用。</span></div><div class="flashcard-actions"><button class="secondary" id="flash-reveal">${session.revealed?.[session.index] ? 'Meaning revealed · 已顯示意思' : 'Reveal meaning · 顯示意思'}</button><button class="secondary" id="flash-audio">Play word · 播放字詞</button></div><div class="flashcard-back ${session.revealed?.[session.index] ? 'show' : ''}"><strong>${escape(item.flashcard.chinese)}</strong><p>${escape(item.flashcard.definition)}</p><blockquote>${escape(item.flashcard.example)}</blockquote></div></section>` : '';
     const roleplay = item.roleplay ? `<section class="roleplay-card"><header><p class="eyebrow">ROLE-PLAY PRACTICE · 角色對話</p><strong>${escape(item.roleplay.title)}<small>${escape(item.roleplay.titleZh)}</small></strong><span>${escape(item.roleplay.roles[0])}</span><span>${escape(item.roleplay.roles[1])}</span></header><div class="roleplay-actions"><button class="secondary" data-role-audio="A">Listen to A · 聽 A 角色</button><button class="secondary" data-role-audio="B">Listen to B · 聽 B 角色</button></div><div class="roleplay-lines">${item.roleplay.dialogue.map(([speaker, line]) => `<p class="role-${speaker.toLowerCase()}"><b>${speaker}</b><span>${escape(line)}</span></p>`).join('')}</div><footer><strong>Useful phrases · 實用語句</strong><p>${item.roleplay.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>` : '';
-    const writingGuide = item.writing ? `<section class="writing-guide"><strong>${item.selfCheck ? 'Writing reminder' : 'Writing check'}</strong><p>${item.selfCheck ? '先完成你的想法，再讀一次，確保每句都有清楚的意思。' : '輸入完整英文句子。留意大寫字母、主語、動詞和句號。'}</p></section>` : '';
+    const writingGuide = item.writing ? `<section class="writing-guide"><strong>${item.selfCheck ? 'Writing reminder' : item.writingTask ? 'PRE-S1-STYLE WRITING · 原創銜接寫作' : 'Writing check'}</strong><p>${item.selfCheck ? '先完成你的想法，再讀一次，確保每句都有清楚的意思。' : item.writingTask ? '這是自我檢查寫作題；系統只會確認已達最低字數，並不會自動評核內容質素。' : '輸入完整英文句子。留意大寫字母、主語、動詞和句號。'}</p></section>` : '';
+    const mockWritingPlan = item.writingTask ? `<section class="writing-guide"><strong>Plan before you write · 先規劃再寫</strong><p>${item.writingTask.plan.map(([label, detail]) => `<b>${escape(label)}</b><br>${escape(detail)}`).join('<br><br>')}</p></section>` : '';
     let response = '';
-    if (item.selfCheck) {
+    if (item.writingTask) {
+      response = `${mockWritingPlan}<textarea class="answer-field" id="answer-field" rows="10" placeholder="Write your English response here... · 在此寫下你的英文答案" style="padding:12px;resize:vertical">${escape(session.drafts[session.index] || '')}</textarea><p class="question-zh">Target: ${escape(item.writingTask.target)} · 目標篇幅；at least ${item.writingTask.minWords} words are needed to complete this self-check. · 最少 ${item.writingTask.minWords} 字才可完成自我檢查。</p>`;
+    } else if (item.selfCheck) {
       response = `<label class="choice ${session.drafts[session.index] === 'confirmed' ? 'selected' : ''}" for="self-check"><input id="self-check" type="checkbox" ${session.drafts[session.index] === 'confirmed' ? 'checked' : ''} style="accent-color:#214d7a;width:17px;height:17px"><span>${escape(item.selfCheck)}</span></label>`;
     } else if (item.options) {
       response = `<div class="choices">${item.options.map((choice, index) => `<button class="choice ${session.drafts[session.index] === String(index) ? 'selected' : ''}" data-choice="${index}"><i class="choice-token">${String.fromCharCode(65 + index)}</i><span>${escape(choice)}</span></button>`).join('')}</div>`;
@@ -685,7 +713,7 @@
     $('#question-content').innerHTML = `${audio}${passage}<h1>${escape(item.prompt)}${item.promptZh ? `<small class="question-zh">${escape(item.promptZh)}</small>` : ''}</h1>${flashcard}${oralPlan}${roleplay}${writingGuide}${response}${modelAnalysis}`;
     const feedback = $('#feedback');
     feedback.className = `feedback ${currentResult ? `show ${currentResult.correct ? 'correct' : 'wrong'}` : ''}`;
-    feedback.innerHTML = currentResult ? `<strong>${currentResult.correct ? 'Good work.' : 'Keep this one for review.'}</strong> ${escape(item.explanation)}${item.explanationZh ? `<small>${escape(item.explanationZh)}</small>` : ''}` : '';
+    feedback.innerHTML = currentResult ? `<strong>${item.writingTask ? (currentResult.correct ? 'Writing draft recorded.' : `Keep writing: add at least ${item.writingTask.minWords} words.`) : currentResult.correct ? 'Good work.' : 'Keep this one for review.'}</strong> ${escape(item.explanation)}${item.explanationZh ? `<small>${escape(item.explanationZh)}</small>` : ''}` : '';
     $('#check-question').classList.toggle('hidden', Boolean(currentResult));
     $('#next-question').classList.toggle('hidden', !currentResult);
     $('#previous-question').disabled = session.index === 0;
@@ -719,8 +747,10 @@
     const item = currentQuestion();
     const answer = session.drafts[session.index];
     if (!answer || String(answer).trim() === '') { toast(item.selfCheck ? '完成朗讀後，請勾選確認。' : '請先選擇或輸入答案。'); return; }
+    if (item.writingTask && wordCount(answer) < item.writingTask.minWords) { toast(`請再加入一些內容，完成最少 ${item.writingTask.minWords} 字。`); return; }
     let correct;
     if (item.selfCheck) correct = answer === 'confirmed';
+    else if (item.writingTask) correct = wordCount(answer) >= item.writingTask.minWords;
     else if (item.options) correct = String(answer) === item.answer;
     else correct = normalize(answer) === normalize(item.answer);
     session.results[session.index] = { correct, answer };
@@ -730,8 +760,8 @@
     record.skills ||= { read: 0, write: 0, listen: 0, language: 0 };
     record.skills[item.route] = (record.skills[item.route] || 0) + 1;
     saveStats(record);
-    if (!item.selfCheck && !correct) { addReview(item, answer); toast('這題已加入溫習清單，稍後可以再挑戰。'); }
-    else { removeReview(item.id); toast(correct ? '答對了，繼續保持。' : '已完成這項練習。'); }
+    if (!item.selfCheck && !item.writingTask && !correct) { addReview(item, answer); toast('這題已加入溫習清單，稍後可以再挑戰。'); }
+    else { removeReview(item.id); toast(item.writingTask ? (correct ? '已完成寫作自我檢查。' : `請再加入一些內容，完成最少 ${item.writingTask.minWords} 字。`) : correct ? '答對了，繼續保持。' : '已完成這項練習。'); }
     renderSidebar();
     renderQuestion();
   }
@@ -746,8 +776,8 @@
       return;
     }
     const bank = getBank();
-    const questions = selectSessionQuestions(bank, module.sessions);
-    state.session = { questions, index: 0, drafts: Array(questions.length).fill(''), results: Array(questions.length).fill(null), review: false };
+    const questions = module.assessmentMock ? bank : selectSessionQuestions(bank, module.sessions);
+    state.session = { questions, index: 0, drafts: Array(questions.length).fill(''), results: Array(questions.length).fill(null), review: false, mock: Boolean(module.assessmentMock) };
     showView('session');
     renderQuestion();
   }
@@ -763,9 +793,21 @@
     const total = results.length;
     const score = Math.round(correct / total * 100);
     const incorrect = total - correct;
-    $('#result-score').textContent = `${score}%`;
-    $('#result-title').textContent = score >= 80 ? 'A strong practice session.' : 'Practice complete. Keep building.';
-    $('#result-copy').textContent = incorrect ? `你完成了 ${total} 題，答對 ${correct} 題。未掌握的題目已保留在溫習清單；回顧提示後再試一次會更有把握。` : `你答對全部 ${total} 題。下一次可試試另一個技能路線，讓讀、寫、聽、說一起進步。`;
+    if (state.session.mock) {
+      const objectiveIndexes = state.session.questions.map((item, index) => item.writingTask ? null : index).filter((index) => index !== null);
+      const objectiveCorrect = objectiveIndexes.filter((index) => results[index]?.correct).length;
+      const objectiveTotal = objectiveIndexes.length;
+      const writingItem = state.session.questions.find((item) => item.writingTask);
+      const writingIndex = state.session.questions.findIndex((item) => item.writingTask);
+      const writingComplete = writingIndex >= 0 && Boolean(results[writingIndex]?.correct);
+      $('#result-score').textContent = `${objectiveCorrect}/${objectiveTotal}`;
+      $('#result-title').textContent = objectiveCorrect >= Math.ceil(objectiveTotal * 0.8) ? 'Pre-S1-style readiness complete.' : 'Pre-S1-style practice complete.';
+      $('#result-copy').textContent = `你已完成原創中一分班試英語銜接模擬：客觀題答對 ${objectiveCorrect}／${objectiveTotal} 題；寫作自我檢查${writingComplete ? '已完成' : '尚未完成'}。本單元並非教育局官方試卷，客觀題分數不包含寫作內容評核。${writingItem ? ` 寫作目標為 ${writingItem.writingTask.target}。` : ''}`;
+    } else {
+      $('#result-score').textContent = `${score}%`;
+      $('#result-title').textContent = score >= 80 ? 'A strong practice session.' : 'Practice complete. Keep building.';
+      $('#result-copy').textContent = incorrect ? `你完成了 ${total} 題，答對 ${correct} 題。未掌握的題目已保留在溫習清單；回顧提示後再試一次會更有把握。` : `你答對全部 ${total} 題。下一次可試試另一個技能路線，讓讀、寫、聽、說一起進步。`;
+    }
     $('#result-review').classList.toggle('hidden', reviewItems().length === 0);
     showView('result');
     renderSidebar();

@@ -119,3 +119,13 @@ A new original P1–P6 Hong Kong learning-cycle bank was added for school, trans
 The revised content audit loaded both the original expansion and the Hong Kong learning-cycle bank. It passed all P1–P6 coverage thresholds and JavaScript syntax checks. In a local browser run, P6 Advanced Reading loaded seven active questions and opened an interactive passage with four answer options and bilingual question support.
 
 A direct browser check confirmed that the new P6 Proposal extract, “A Safer Path to the Community Centre”, contains two questions with Chinese prompts, explanations and model-analysis text. The loaded expansion bank now provides every grade with 12 added vocabulary words, 4 grammar questions, 3 reading passages, 5 writing prompts and 5 speaking prompts. P1–P3 each have 4 added listening items, while P4–P6 each have 2 added senior listening scripts.
+
+## P1–P3 games and Pre-S1 readiness mock expansion
+
+A local P1 check confirmed that the expanded Phonics & story game lists 18 available questions. A launched game item displayed a replay-audio control, one English-first prompt with Traditional Chinese support and four selectable choices. The content audit also confirmed that each P1–P3 expansion bank now holds at least 12 phonics/story-game items and 10 listening items.
+
+The new P6 Pre-S1 readiness mock appeared under Language use with a visible “PRE-S1 STYLE · 原創銜接” label and a description of its listening, reading, language-use and writing coverage. Its first item launched as Question 1 of 12 and displayed replayable audio, an English-first/Traditional-Chinese question and four answer choices. The unit explicitly identifies itself as original P6-to-S1 readiness practice rather than an official Education Bureau paper.
+
+The writing item opened as Question 12 of 12 with a long-response textarea, a bilingual content plan and a stated 80–100 word target. A 55-word test draft was accepted as a completed self-check and showed feedback that clearly distinguishes the word-count completion from any automatic content or quality score.
+
+The local result screen was visually reviewed. It displayed the objective score as a fraction, separately stated the writing self-check status, included the original-practice disclaimer and showed both return and review controls without clipping or overlap.

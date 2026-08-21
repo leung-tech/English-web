@@ -4,7 +4,7 @@ const vm = require('vm');
 const ctx = { window: {}, console };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
-for (const file of ['english-scope.js', 'writing-models.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js']) {
+for (const file of ['english-scope.js', 'writing-models.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js']) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: file });
 }
 
@@ -24,8 +24,8 @@ for (const grade of grades) {
   expect((ctx.window.QUESTION_BANK_EXPANSION?.writing?.[grade] || []).length >= 5, `P${grade}: fewer than 5 new writing prompts`);
   expect((ctx.window.QUESTION_BANK_EXPANSION?.speaking?.[grade] || []).length >= 5, `P${grade}: fewer than 5 new speaking prompts`);
   if (grade <= 3) {
-    expect((ctx.window.QUESTION_BANK_EXPANSION?.juniorListening?.[grade] || []).length >= 4, `P${grade}: fewer than 4 added junior listening questions`);
-    expect((ctx.window.QUESTION_BANK_EXPANSION?.juniorGame?.[grade] || []).length >= 4, `P${grade}: fewer than 4 added junior game questions`);
+    expect((ctx.window.QUESTION_BANK_EXPANSION?.juniorListening?.[grade] || []).length >= 10, `P${grade}: fewer than 10 added junior listening questions`);
+    expect((ctx.window.QUESTION_BANK_EXPANSION?.juniorGame?.[grade] || []).length >= 12, `P${grade}: fewer than 12 added junior game questions`);
     expect((ctx.window.QUESTION_BANK_EXPANSION?.juniorMatch?.[grade] || []).length >= 6, `P${grade}: fewer than 6 added word-match cards`);
   } else {
     expect((ctx.window.QUESTION_BANK_EXPANSION?.seniorListening?.[grade] || []).length >= 2, `P${grade}: fewer than 2 added senior listening scripts`);
@@ -47,6 +47,13 @@ models.forEach((model) => {
   });
 });
 
+const preS1 = ctx.window.PRE_S1_ENGLISH_MOCK;
+expect(preS1?.id === 'pre-s1-english-readiness', 'Pre-S1 readiness mock is missing');
+expect(preS1?.questions?.length === 12, 'Pre-S1 readiness mock should contain 12 items');
+expect(new Set((preS1?.questions || []).map((item) => item.section)).size === 4, 'Pre-S1 readiness mock should contain four sections');
+expect((preS1?.questions || []).filter((item) => item.options).every((item) => item.options.length === 4 && Number.isInteger(item.answer) && item.answer >= 0 && item.answer < item.options.length), 'Pre-S1 objective items require four valid options');
+expect((preS1?.questions || []).filter((item) => item.writingTask).length === 1, 'Pre-S1 readiness mock should contain one writing self-check task');
+
 for (const grade of [4, 5, 6]) {
   const scripts = ctx.window.SENIOR_LISTENING_LIBRARY?.[grade] || [];
   const oral = ctx.window.SENIOR_ORAL_LIBRARY?.[grade] || [];
@@ -57,5 +64,6 @@ for (const grade of [4, 5, 6]) {
 info.push(`Grades checked: ${grades.length}`);
 info.push(`Writing models checked: ${models.length}`);
 info.push(`Writing quiz items checked: ${models.reduce((sum, model) => sum + (ctx.window.WRITING_ERROR_QUIZZES?.[model.id]?.length || 0), 0)}`);
+info.push(`Pre-S1 mock items checked: ${preS1?.questions?.length || 0}`);
 console.log(JSON.stringify({ status: issues.length ? 'issues_found' : 'passed', info, issues }, null, 2));
 process.exitCode = issues.length ? 1 : 0;
