@@ -4,7 +4,7 @@ const vm = require('vm');
 const ctx = { window: {}, console };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
-for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js']) {
+for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 's1-bridge-school-routines.js']) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: file });
 }
 
@@ -68,6 +68,13 @@ expect((preS1?.questions || []).filter((item) => item.writingTask).length === 1,
 expect((preS1?.questions || []).filter((item) => item.section === 'Section D · Extended reading').length === 4, 'Pre-S1 readiness mock should contain four extended-reading questions');
 expect((preS1?.questions || []).filter((item) => item.section === 'Section E · Integrated cloze').length === 6, 'Pre-S1 readiness mock should contain six integrated-cloze questions');
 expect((preS1?.questions || []).filter((item) => item.section === 'Section E · Integrated cloze').every((item) => item.passage?.title && item.promptZh && item.explanationZh), 'Integrated-cloze items require a passage and bilingual support');
+
+const s1Bridge = ctx.window.S1_BRIDGE_GRAMMAR;
+expect(s1Bridge?.id === 's1-school-life-routines', 'S1 Bridge school-life unit is missing its expected ID');
+expect((s1Bridge?.questions || []).length === 16, 'S1 Bridge school-life unit should contain 16 interactive grammar questions');
+expect((s1Bridge?.questions || []).every((item) => item.id && item.contextTitle && item.context && item.prompt && item.promptZh && item.explanation && item.explanationZh && item.hint && Array.isArray(item.options) && item.options.length === 4 && Number.isInteger(item.answer) && item.answer >= 0 && item.answer < item.options.length), 'S1 Bridge items require context, bilingual fields, hint and a valid four-option answer');
+expect(new Set((s1Bridge?.questions || []).map((item) => item.id)).size === (s1Bridge?.questions || []).length, 'S1 Bridge question IDs must be unique');
+expect(new Set((s1Bridge?.questions || []).map((item) => item.contextTitle)).size >= 4, 'S1 Bridge unit should contain at least four school-life text contexts');
 
 const preS1Guide = ctx.window.PRE_S1_REVIEW_GUIDE;
 expect(preS1Guide?.title && preS1Guide?.titleZh, 'Pre-S1 revision guide titles are missing');

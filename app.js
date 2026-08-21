@@ -106,7 +106,8 @@
         { id: 'junior-game', symbol: '♪', title: 'Phonics & story game', titleZh: '拼音與故事遊戲', description: 'Hear a word or clue, then make a playful choice', descriptionZh: '聽字詞或故事線索，再作有趣選擇', sessions: 8, maxGrade: 3 },
         { id: 'word-match', symbol: '↔', title: 'Word Match', titleZh: '單字配對', description: 'Reveal word clues and build everyday vocabulary', descriptionZh: '翻開單字線索，建立生活英語詞彙', sessions: 6, maxGrade: 3 },
         { id: 'pre-s1-mock', symbol: '◎', title: 'Pre-S1 readiness mock', titleZh: '中一分班試英語模擬', description: 'Original P6 practice in listening, reading, language use and writing', descriptionZh: '原創小六升中銜接：聆聽、閱讀、語言運用及寫作', sessions: 12, minGrade: 6, assessmentMock: true },
-        { id: 'pre-s1-review', symbol: '✓', title: 'Pre-S1 vocabulary & grammar review', titleZh: '中一分班試詞彙與文法重點複習', description: 'A bilingual checklist with examples and editing reminders', descriptionZh: '附例句及改錯提醒的雙語重點清單', sessions: 20, minGrade: 6, reviewGuide: true }
+        { id: 'pre-s1-review', symbol: '✓', title: 'Pre-S1 vocabulary & grammar review', titleZh: '中一分班試詞彙與文法重點複習', description: 'A bilingual checklist with examples and editing reminders', descriptionZh: '附例句及改錯提醒的雙語重點清單', sessions: 20, minGrade: 6, reviewGuide: true },
+        { id: 's1-bridge-grammar', symbol: 'S1', title: 'S1 Bridge: School Life & Routines', titleZh: '中一銜接：校園生活與日常作息', description: 'Original grammar in familiar school-life texts', descriptionZh: '透過熟悉校園文本學習原創中一基礎文法', sessions: 12, minGrade: 6, s1Bridge: true }
       ]
     }
   };
@@ -325,6 +326,23 @@
     });
   }
 
+  function createS1BridgeGrammar() {
+    const unit = window.S1_BRIDGE_GRAMMAR;
+    if (!unit?.questions) return [];
+    return unit.questions.map((item) => {
+      const shuffled = randomize(item.options);
+      const correct = item.options[item.answer];
+      return question(item.id, 'language', `S1 Bridge · ${unit.title}`, item.prompt, shuffled.indexOf(correct), item.explanation, shuffled, {
+        promptZh: item.promptZh,
+        explanationZh: item.explanationZh,
+        hint: item.hint,
+        passage: { title: `${item.contextTitle} · S1 Bridge`, text: item.context },
+        s1Bridge: true,
+        originalPractice: true
+      });
+    });
+  }
+
   function createReading() {
     const items = [];
     expanded('reading', readingLibrary[state.grade]).forEach((passage, passageIndex) => {
@@ -432,6 +450,7 @@
   function getBank() {
     if (state.module === 'vocabulary') return createVocabulary();
     if (state.module === 'grammar') return createGrammar();
+    if (state.module === 's1-bridge-grammar') return createS1BridgeGrammar();
     if (state.module === 'sentence-builder') return createSentenceBuilder();
     if (state.module === 'proofreading') return createProofreading();
     if (state.module === 'writing-plan') return createWritingPlan();

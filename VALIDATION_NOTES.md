@@ -167,3 +167,11 @@ The desktop reward board was visually reviewed. Its three summary cards, six bad
 At a 390px viewport, the top navigation and Parent / Teacher header wrapped without clipping; the local-record and return controls remained distinct and reachable. The reward board's narrow-screen grid uses the dedicated one-column summary and single-column badge rules.
 
 The published website was verified after deployment. The live build loaded the 10-star-correct / 3-star-attempt rules, six badge definitions, three reward-summary cards and six badge cards in the Parent / Teacher view. The S1–S3 to DSE foundation roadmap was included as a published project document.
+
+## S1 Bridge — School Life and Routines
+
+The local P6 Apply route displayed the S1 Bridge: School Life & Routines module with its bilingual S1 transition description. The module loaded 16 original items and began a 12-question session. A sampled Library Helper Email question displayed its full school-life context, four options and bilingual prompt. A correct response produced immediate English grammar feedback and adjacent Traditional Chinese explanation, then enabled question navigation.
+
+The desktop session view was visually reviewed. The passage, two-line bilingual prompt, all four answer controls, feedback block and 12-question navigation were readable without clipping or overlap.
+
+At a 390px viewport, the P6 rail, S1 Bridge session title, progress indicator and Library Helper Email context remained readable without horizontal overflow. The responsive one-column practice layout preserved the content flow for the passage, bilingual prompt and answer choices.
