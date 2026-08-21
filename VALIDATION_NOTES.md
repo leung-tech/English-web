@@ -155,3 +155,5 @@ The published website was verified after deployment. The live mock exposed all s
 The local P6 writing library opened the new “Three Smart Habits for a Calm Start” Pre-S1 readiness article. The selected item displayed the explicit original-practice label, five model-specific 4/4 rubric criteria and all four writing-support study tabs.
 
 The desktop writing page was visually reviewed: the model selector, task, exemplar, five rubric cards and writing-support area were readable without clipping or overlap. The Quick correction quiz opened as Question 1 of 4 with three answer options and bilingual support.
+
+The published website was verified after deployment. It loaded the original Pre-S1 writing model with its explicit label, five rubric criteria, four sentence patterns and four correction-quiz questions.
