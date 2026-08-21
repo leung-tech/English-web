@@ -165,3 +165,5 @@ The local Parent / Teacher panel displayed three reward-summary cards and six lo
 The desktop reward board was visually reviewed. Its three summary cards, six badges, earned-versus-progress states, star values and private-to-this-browser notice remained readable without overlap or clipping.
 
 At a 390px viewport, the top navigation and Parent / Teacher header wrapped without clipping; the local-record and return controls remained distinct and reachable. The reward board's narrow-screen grid uses the dedicated one-column summary and single-column badge rules.
+
+The published website was verified after deployment. The live build loaded the 10-star-correct / 3-star-attempt rules, six badge definitions, three reward-summary cards and six badge cards in the Parent / Teacher view. The S1–S3 to DSE foundation roadmap was included as a published project document.
