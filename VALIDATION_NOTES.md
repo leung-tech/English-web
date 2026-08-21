@@ -189,3 +189,5 @@ The S1 Bridge School life listening module loaded two scripts and eight question
 The desktop listening view was visually reviewed. The audio panel, bilingual question, four answer controls, checking action, navigation and eight-question progress path were readable without clipping or overlap.
 
 At a 390px viewport, the P6 rail, S1 Bridge Reading & cloze session title, ten-question progress indicator and A More Organised Morning integrated-cloze text remained readable without horizontal overflow. The one-column mobile layout preserved the long text flow for the bilingual practice experience.
+
+The published site was checked after deployment. The P6 language route contained the S1 Bridge School life vocabulary module and loaded 12 vocabulary items. The P6 listening route contained the S1 Bridge School life listening module and loaded two scripts with eight total questions. The P6 Read route contained the S1 Bridge Reading & cloze module; it loaded ten items into a 10-question session with a full Club Sampler text, bilingual prompt and four answer controls.
