@@ -205,3 +205,7 @@ The local P6 Write route loaded three **S1 Core: Writing workshop** tasks: frien
 JavaScript syntax checks for `app.js` and `s1-core-path.js` passed. The updated `node .quality-audit.js` run passed all platform thresholds and validated 60 S1 Core items: 16 grammar, 18 vocabulary, 12 reading, 8 listening, 3 writing and 3 speaking tasks.
 
 **Deployment follow-up:** Publish the S1 Core Path release, then perform the same P6 route checks on the GitHub Pages URL after the Pages build completes.
+
+## S1 Core Path — Public deployment verification
+
+GitHub Pages build run `32441225262` for commit `41632c8` completed successfully. The public P6 page at <https://leung-tech.github.io/English-web/> displayed all six S1 Core modules with the required **S1 CORE · 原創練習** label: Grammar in context (16), Vocabulary builder (18), Reading workshop (12), Listening lab (8), Writing workshop (3) and Speaking studio (3). The public Read route selected the S1 Core Reading workshop correctly and reported **12 QUESTIONS · 12 題**, confirming that the versioned data and application scripts were deployed together.
