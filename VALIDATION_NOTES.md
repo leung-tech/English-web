@@ -231,3 +231,13 @@ After the updated asset-version deployment, the public P6 Read route rendered al
 The final public session checks passed for S2 paired reading and listening. The reading workshop displayed its original-practice label, two source texts, two bilingual-purpose blocks, four answer choices and a Traditional Chinese question prompt. The listening workshop opened the School Trip Planning Meeting with a replay-audio control, four choices and a Traditional Chinese question prompt.
 
 The final public writing and speaking checks passed. The writing workshop opened the recommendation-email task with the **S2 DEVELOP WRITING · 原創練習** label, a long-response input, bilingual 100–120 word target and writing self-check support. The speaking workshop opened a 45–60 second comparison task with English-first wording, Traditional Chinese support, a replayable model-audio control and a speaking self-check. All six S2 Develop modules have now been verified publicly.
+
+## Gemini-editable standalone HTML pages — Local verification
+
+The new `gemini-pages/index.html` displayed the six S2 standalone lesson cards and clear navigation back to the existing full platform. The independent `s2/s2_read_compare_connect.html` page loaded without the legacy single-page application. It rendered the original-practice notice, bilingual title, two labelled reading texts with English/Traditional Chinese purpose statements, four answer choices, standalone progress information and an editing note that identifies the data file.
+
+The standalone S2 reading answer flow marked the correct choice, displayed English and Traditional Chinese feedback, and recorded one completion in the standalone browser-only progress store. The separate standalone listening page loaded a bilingual listening prompt, four choices and the replay-model control for the School Trip Planning Meeting, confirming that the shared lesson engine works across different HTML pages.
+
+The standalone S2 writing page displayed the bilingual task, planning panel, long-response input and 100-word minimum. A local interaction test at exactly 100 words accepted the checked self-reflection and displayed a completion-only message; it did not claim to evaluate writing quality. The standalone browser-only progress store then contained the additional completed task.
+
+The standalone S2 speaking page loaded the bilingual 45–60 second task, replay-model control and self-check. A local completion interaction displayed a completion-only message. The page did not show any automated spoken-English quality score or assessment claim, preserving the required student safeguard.
