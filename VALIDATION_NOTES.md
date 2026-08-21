@@ -147,3 +147,5 @@ A local P6 Pre-S1 mock session launched as Question 1 of 22 with 22 visible ques
 The extended-reading item appeared as Question 12 of 22 with its full magazine article, English-first/Traditional-Chinese question and four answer choices. The integrated-cloze item appeared as Question 16 of 22 with the complete six-blank passage, a clearly numbered blank prompt, bilingual support and four answer choices.
 
 A correct integrated-cloze response produced immediate English and Traditional-Chinese grammar feedback and a visible Next control. The desktop question screen was visually reviewed: the passage, four choices, answer feedback, 22-question navigation path and action controls all remained readable without overlap or clipping.
+
+The published website was verified after deployment. The live mock exposed all six sections and the expected 22 items, including four extended-reading questions and six integrated-cloze questions.
