@@ -175,3 +175,5 @@ The local P6 Apply route displayed the S1 Bridge: School Life & Routines module 
 The desktop session view was visually reviewed. The passage, two-line bilingual prompt, all four answer controls, feedback block and 12-question navigation were readable without clipping or overlap.
 
 At a 390px viewport, the P6 rail, S1 Bridge session title, progress indicator and Library Helper Email context remained readable without horizontal overflow. The responsive one-column practice layout preserved the content flow for the passage, bilingual prompt and answer choices.
+
+The published website was verified after deployment. The P6 Apply route contained the S1 Bridge module, and the live page loaded all 16 original items across four school-life contexts. It generated a 12-question practice session with a bilingual prompt and four answer controls.
