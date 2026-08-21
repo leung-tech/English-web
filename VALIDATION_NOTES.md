@@ -137,3 +137,5 @@ A local P6 check opened the new Pre-S1 vocabulary & grammar review from the Lang
 The Parent / Teacher panel opened with a clear device-only privacy notice, three summary measures and six P1–P3 skill rows. After one P1 Phonics & story game answer and one P1 Listening lab answer, the panel immediately showed two local attempts, separate P1 phonics/listening records, accuracy figures and the latest local activity date. No student name, account, cloud sync or external transmission is used.
 
 The desktop tracker panel was visually reviewed: summary cards, P1–P3 skill rows, local-record controls and privacy copy were readable without overlap or clipping. The P6 revision screen also rendered all 12 vocabulary cards and all 8 grammar cards. The P6 screen’s two-column vocabulary/grammar layout was visually checked and remained readable; a page reload retained the device-local junior progress record.
+
+The published website was verified after deployment. It loaded the 12-item vocabulary / 8-item grammar Pre-S1 revision guide and opened the Parent / Teacher panel with all six P1–P3 skills rows.
