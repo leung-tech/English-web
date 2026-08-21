@@ -7,7 +7,8 @@
   const KEYS = {
     stats: 'primary-english-studio-stats-v1',
     review: 'primary-english-studio-review-v1',
-    used: 'primary-english-studio-used-v1'
+    used: 'primary-english-studio-used-v1',
+    juniorProgress: 'primary-english-studio-junior-progress-v1'
   };
 
   const state = { grade: 3, route: 'read', module: 'reading', session: null, modelGrade: 4, modelId: null, studyTab: 'mistakes', quiz: { modelId: null, index: 0, selected: null, results: [] } };
@@ -22,6 +23,18 @@
   const reviewItems = () => safeGet(KEYS.review, []);
   const saveStats = (value) => safeSet(KEYS.stats, value);
   const saveReview = (value) => safeSet(KEYS.review, value);
+  const emptyJuniorProgress = () => ({ version: 1, updatedAt: null, grades: { 1: { phonics: { attempted: 0, correct: 0, lastAttempt: null }, listening: { attempted: 0, correct: 0, lastAttempt: null } }, 2: { phonics: { attempted: 0, correct: 0, lastAttempt: null }, listening: { attempted: 0, correct: 0, lastAttempt: null } }, 3: { phonics: { attempted: 0, correct: 0, lastAttempt: null }, listening: { attempted: 0, correct: 0, lastAttempt: null } } } });
+  const juniorProgress = () => {
+    const stored = safeGet(KEYS.juniorProgress, emptyJuniorProgress());
+    const fallback = emptyJuniorProgress();
+    [1, 2, 3].forEach((grade) => {
+      stored.grades ||= {};
+      stored.grades[grade] ||= fallback.grades[grade];
+      ['phonics', 'listening'].forEach((kind) => { stored.grades[grade][kind] ||= fallback.grades[grade][kind]; });
+    });
+    return stored;
+  };
+  const saveJuniorProgress = (value) => safeSet(KEYS.juniorProgress, value);
 
   const routes = {
     read: {
@@ -66,7 +79,8 @@
         { id: 'grammar', symbol: 'G', title: 'Grammar & patterns', titleZh: '文法與句型', description: 'Tenses, patterns and language use', descriptionZh: '時態、句型與語言運用', sessions: 8 },
         { id: 'junior-game', symbol: '♪', title: 'Phonics & story game', titleZh: '拼音與故事遊戲', description: 'Hear a word or clue, then make a playful choice', descriptionZh: '聽字詞或故事線索，再作有趣選擇', sessions: 8, maxGrade: 3 },
         { id: 'word-match', symbol: '↔', title: 'Word Match', titleZh: '單字配對', description: 'Reveal word clues and build everyday vocabulary', descriptionZh: '翻開單字線索，建立生活英語詞彙', sessions: 6, maxGrade: 3 },
-        { id: 'pre-s1-mock', symbol: '◎', title: 'Pre-S1 readiness mock', titleZh: '中一分班試英語模擬', description: 'Original P6 practice in listening, reading, language use and writing', descriptionZh: '原創小六升中銜接：聆聽、閱讀、語言運用及寫作', sessions: 12, minGrade: 6, assessmentMock: true }
+        { id: 'pre-s1-mock', symbol: '◎', title: 'Pre-S1 readiness mock', titleZh: '中一分班試英語模擬', description: 'Original P6 practice in listening, reading, language use and writing', descriptionZh: '原創小六升中銜接：聆聽、閱讀、語言運用及寫作', sessions: 12, minGrade: 6, assessmentMock: true },
+        { id: 'pre-s1-review', symbol: '✓', title: 'Pre-S1 vocabulary & grammar review', titleZh: '中一分班試詞彙與文法重點複習', description: 'A bilingual checklist with examples and editing reminders', descriptionZh: '附例句及改錯提醒的雙語重點清單', sessions: 20, minGrade: 6, reviewGuide: true }
       ]
     }
   };
@@ -525,11 +539,11 @@
     if (!modules.some((module) => module.id === state.module)) state.module = modules[0].id;
     $('#route-title').innerHTML = bilingual(route.title, route.titleZh);
     $('#route-description').innerHTML = bilingual(route.description, route.descriptionZh);
-    $('#module-list').innerHTML = modules.map((module) => `<button class="module-card ${state.module === module.id ? 'selected' : ''}" data-module="${module.id}"><i class="module-symbol">${module.symbol}</i><span><strong>${bilingual(module.title, module.titleZh)}</strong><span class="module-en">${escape(module.description)}</span><span class="module-zh">${escape(module.descriptionZh)}</span>${module.assessment ? '<span class="assessment-chip">P4–P6 ASSESSMENT · 呈分試</span>' : module.assessmentMock ? '<span class="assessment-chip">PRE-S1 STYLE · 原創銜接</span>' : ''}</span></button>`).join('');
+    $('#module-list').innerHTML = modules.map((module) => `<button class="module-card ${state.module === module.id ? 'selected' : ''}" data-module="${module.id}"><i class="module-symbol">${module.symbol}</i><span><strong>${bilingual(module.title, module.titleZh)}</strong><span class="module-en">${escape(module.description)}</span><span class="module-zh">${escape(module.descriptionZh)}</span>${module.assessment ? '<span class="assessment-chip">P4–P6 ASSESSMENT · 呈分試</span>' : module.assessmentMock ? '<span class="assessment-chip">PRE-S1 STYLE · 原創銜接</span>' : module.reviewGuide ? '<span class="assessment-chip">PRE-S1 REVIEW · 重點複習</span>' : ''}</span></button>`).join('');
     $$('[data-module]').forEach((button) => button.addEventListener('click', () => { state.module = button.dataset.module; renderHome(); }));
     const module = selectedModule();
-    const activeCount = module.assessment ? 'P4–6' : (getBank().length || module.sessions);
-    $('#session-mark').textContent = module.assessment ? 'MODEL LIBRARY · 範文庫' : module.assessmentMock ? 'PRE-S1 STYLE · 原創銜接' : `${activeCount} QUESTIONS · ${activeCount} 題`;
+    const activeCount = module.assessment ? 'P4–6' : module.reviewGuide ? module.sessions : (getBank().length || module.sessions);
+    $('#session-mark').textContent = module.assessment ? 'MODEL LIBRARY · 範文庫' : module.assessmentMock ? 'PRE-S1 STYLE · 原創銜接' : module.reviewGuide ? 'P6 REVIEW · 重點複習' : `${activeCount} QUESTIONS · ${activeCount} 題`;
     $('#scope-session-count').textContent = activeCount;
     $('#selected-module-note').innerHTML = `${bilingual(module.title, module.titleZh)}<span class="selected-note-detail">${escape(module.descriptionZh)}</span>`;
   }
@@ -639,6 +653,51 @@
     });
     $('[data-quiz-next]')?.addEventListener('click', () => { state.quiz.index += 1; state.quiz.selected = null; renderWritingStudy(selected); });
     $('[data-quiz-restart]')?.addEventListener('click', () => { state.quiz = { modelId: selected.id, index: 0, selected: null, results: [] }; renderWritingStudy(selected); });
+  }
+
+  function renderPreS1Review() {
+    const guide = window.PRE_S1_REVIEW_GUIDE;
+    if (!guide) return;
+    $('#pre-s1-review-title').innerHTML = bilingual(guide.title, guide.titleZh);
+    $('#pre-s1-review-note').innerHTML = bilingual(guide.notice, guide.noticeZh);
+    $('#pre-s1-vocabulary').innerHTML = guide.vocabulary.map((group) => `<article class="pre-s1-study-group"><header><p class="eyebrow">VOCABULARY · 詞彙</p><h2>${escape(group.group)}<small>${escape(group.groupZh)}</small></h2></header><div class="pre-s1-vocab-list">${group.items.map((item) => `<section><strong>${escape(item.term)}</strong><span>${escape(item.zh)}</span><p>${escape(item.note)}</p><blockquote>${escape(item.example)}</blockquote></section>`).join('')}</div></article>`).join('');
+    $('#pre-s1-grammar').innerHTML = guide.grammar.map((item) => `<article class="pre-s1-grammar-card"><header><strong>${escape(item.title)}</strong><small>${escape(item.titleZh)}</small></header><p>${escape(item.rule)}<span>${escape(item.ruleZh)}</span></p><blockquote>${escape(item.model)}</blockquote><footer><b>Editing reminder · 改錯提醒</b>${escape(item.alert)}</footer></article>`).join('');
+  }
+
+  const percentage = (correct, attempted) => attempted ? Math.round(correct / attempted * 100) : null;
+  const formatAttemptDate = (value) => value ? new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(value)) : '—';
+  function recordJuniorProgress(item, correct) {
+    if (item.grade > 3) return;
+    const kind = item.topic === 'Phonics & story game' ? 'phonics' : item.topic === 'Listening lab' ? 'listening' : null;
+    if (!kind) return;
+    const record = juniorProgress();
+    const target = record.grades[item.grade][kind];
+    target.attempted += 1;
+    target.correct += Number(correct);
+    target.lastAttempt = new Date().toISOString();
+    record.updatedAt = target.lastAttempt;
+    saveJuniorProgress(record);
+  }
+
+  function renderTracker() {
+    const record = juniorProgress();
+    const all = [1, 2, 3].flatMap((grade) => ['phonics', 'listening'].map((kind) => record.grades[grade][kind]));
+    const attempted = all.reduce((sum, item) => sum + item.attempted, 0);
+    const correct = all.reduce((sum, item) => sum + item.correct, 0);
+    const last = all.map((item) => item.lastAttempt).filter(Boolean).sort().at(-1);
+    $('#tracker-summary').innerHTML = `<article><strong>${attempted}</strong><span>Junior attempts <small>初小已作答題目</small></span></article><article><strong>${percentage(correct, attempted) ?? '—'}${attempted ? '%' : ''}</strong><span>Objective accuracy <small>客觀題正確率</small></span></article><article><strong>${formatAttemptDate(last)}</strong><span>Latest local activity <small>最近本機紀錄</small></span></article>`;
+    $('#tracker-table').innerHTML = [1, 2, 3].map((grade) => {
+      const phonics = record.grades[grade].phonics;
+      const listening = record.grades[grade].listening;
+      const row = (label, labelZh, item) => `<article class="tracker-row"><div><strong>${label}<small>${labelZh}</small></strong><span>${item.attempted ? `${item.correct} / ${item.attempted} correct · 正確` : 'No recorded attempts · 暫無作答紀錄'}</span></div><b>${percentage(item.correct, item.attempted) ?? '—'}${item.attempted ? '%' : ''}</b><time>${formatAttemptDate(item.lastAttempt)}</time></article>`;
+      return `<section class="tracker-grade"><header><p class="eyebrow">P${grade} PROGRESS · 小${grade}進度</p><h2>P${grade} phonics & listening <small>拼音與聆聽遊戲</small></h2></header>${row('Phonics & story game', '拼音與故事遊戲', phonics)}${row('Listening lab', '聆聽練習室', listening)}</section>`;
+    }).join('');
+    $('#tracker-reset')?.addEventListener('click', () => {
+      if (!window.confirm('Clear the local P1–P3 tracker on this device?\n清除本裝置的 P1–P3 進度紀錄？')) return;
+      saveJuniorProgress(emptyJuniorProgress());
+      renderTracker();
+      toast('本機初小進度紀錄已清除。');
+    });
   }
 
   function renderScopePage() {
@@ -760,6 +819,7 @@
     record.skills ||= { read: 0, write: 0, listen: 0, language: 0 };
     record.skills[item.route] = (record.skills[item.route] || 0) + 1;
     saveStats(record);
+    recordJuniorProgress(item, correct);
     if (!item.selfCheck && !item.writingTask && !correct) { addReview(item, answer); toast('這題已加入溫習清單，稍後可以再挑戰。'); }
     else { removeReview(item.id); toast(item.writingTask ? (correct ? '已完成寫作自我檢查。' : `請再加入一些內容，完成最少 ${item.writingTask.minWords} 字。`) : correct ? '答對了，繼續保持。' : '已完成這項練習。'); }
     renderSidebar();
@@ -768,6 +828,11 @@
 
   function startPractice() {
     const module = selectedModule();
+    if (module.reviewGuide) {
+      renderPreS1Review();
+      showView('pre-s1-review');
+      return;
+    }
     if (module.assessment) {
       state.modelGrade = Math.max(4, Math.min(6, state.grade));
       state.modelId = null;
@@ -846,6 +911,7 @@
       const target = button.dataset.nav;
       if (target === 'scope') { renderScopePage(); showView('scope'); }
       else if (target === 'review') { renderReview(); showView('review'); }
+      else if (target === 'tracker') { renderTracker(); showView('tracker'); }
       else { showView('home'); renderHome(); }
     }));
     $('#back-home').addEventListener('click', () => { showView('home'); renderHome(); });

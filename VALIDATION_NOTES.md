@@ -129,3 +129,11 @@ The new P6 Pre-S1 readiness mock appeared under Language use with a visible “P
 The writing item opened as Question 12 of 12 with a long-response textarea, a bilingual content plan and a stated 80–100 word target. A 55-word test draft was accepted as a completed self-check and showed feedback that clearly distinguishes the word-count completion from any automatic content or quality score.
 
 The local result screen was visually reviewed. It displayed the objective score as a fraction, separately stated the writing self-check status, included the original-practice disclaimer and showed both return and review controls without clipping or overlap.
+
+## P6 revision checklist and junior progress tracker
+
+A local P6 check opened the new Pre-S1 vocabulary & grammar review from the Language use route. The module showed the “P6 REVIEW · 重點複習” label, three bilingual vocabulary groups and eight grammar/editing cards with model sentences and correction reminders.
+
+The Parent / Teacher panel opened with a clear device-only privacy notice, three summary measures and six P1–P3 skill rows. After one P1 Phonics & story game answer and one P1 Listening lab answer, the panel immediately showed two local attempts, separate P1 phonics/listening records, accuracy figures and the latest local activity date. No student name, account, cloud sync or external transmission is used.
+
+The desktop tracker panel was visually reviewed: summary cards, P1–P3 skill rows, local-record controls and privacy copy were readable without overlap or clipping. The P6 revision screen also rendered all 12 vocabulary cards and all 8 grammar cards. The P6 screen’s two-column vocabulary/grammar layout was visually checked and remained readable; a page reload retained the device-local junior progress record.

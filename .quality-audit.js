@@ -4,7 +4,7 @@ const vm = require('vm');
 const ctx = { window: {}, console };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
-for (const file of ['english-scope.js', 'writing-models.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js']) {
+for (const file of ['english-scope.js', 'writing-models.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js']) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: file });
 }
 
@@ -54,6 +54,12 @@ expect(new Set((preS1?.questions || []).map((item) => item.section)).size === 4,
 expect((preS1?.questions || []).filter((item) => item.options).every((item) => item.options.length === 4 && Number.isInteger(item.answer) && item.answer >= 0 && item.answer < item.options.length), 'Pre-S1 objective items require four valid options');
 expect((preS1?.questions || []).filter((item) => item.writingTask).length === 1, 'Pre-S1 readiness mock should contain one writing self-check task');
 
+const preS1Guide = ctx.window.PRE_S1_REVIEW_GUIDE;
+expect(preS1Guide?.title && preS1Guide?.titleZh, 'Pre-S1 revision guide titles are missing');
+expect((preS1Guide?.vocabulary || []).length === 3, 'Pre-S1 revision guide should contain three vocabulary groups');
+expect((preS1Guide?.vocabulary || []).flatMap((group) => group.items || []).length >= 12, 'Pre-S1 revision guide should contain at least 12 vocabulary items');
+expect((preS1Guide?.grammar || []).length >= 8, 'Pre-S1 revision guide should contain at least eight grammar points');
+
 for (const grade of [4, 5, 6]) {
   const scripts = ctx.window.SENIOR_LISTENING_LIBRARY?.[grade] || [];
   const oral = ctx.window.SENIOR_ORAL_LIBRARY?.[grade] || [];
@@ -65,5 +71,6 @@ info.push(`Grades checked: ${grades.length}`);
 info.push(`Writing models checked: ${models.length}`);
 info.push(`Writing quiz items checked: ${models.reduce((sum, model) => sum + (ctx.window.WRITING_ERROR_QUIZZES?.[model.id]?.length || 0), 0)}`);
 info.push(`Pre-S1 mock items checked: ${preS1?.questions?.length || 0}`);
+info.push(`Pre-S1 revision items checked: ${(preS1Guide?.vocabulary || []).flatMap((group) => group.items || []).length + (preS1Guide?.grammar || []).length}`);
 console.log(JSON.stringify({ status: issues.length ? 'issues_found' : 'passed', info, issues }, null, 2));
 process.exitCode = issues.length ? 1 : 0;
