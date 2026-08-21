@@ -10,7 +10,7 @@ This folder is a **static, multi-page HTML workspace** for Primary English Studi
 |---|---|---|
 | `index.html` | Change the standalone-lesson directory cards or explanatory text. | Change an individual lesson’s questions. |
 | `s2/*.html` | Change a page title, page description, selected skill module, or add a page-specific note. | Edit questions, answers or bilingual feedback. |
-| `data/s2-experiences-and-choices-data.js` | Add, remove or revise S2 questions, passages, scripts, writing prompts, models and Chinese support. | Change the shared layout. |
+| `data/s2-experiences-and-choices-data.js` and `data/s2-messages-and-media-data.js` | Add, remove or revise the matching S2 unit’s questions, passages, scripts, writing prompts, models and Chinese support. | Change the shared layout. |
 | `assets/lesson.css` | Change colours, spacing, typography, page layout or mobile display for every standalone page. | Alter answer checking rules. |
 | `assets/lesson.js` | Change shared quiz behaviour, local-only progress recording, word count or browser speech playback. | Change one question only. |
 | `templates/lesson-template.html` | Create the starting file for a new independent lesson. | Use it as a live lesson without replacing all placeholder text. |
@@ -26,14 +26,16 @@ Then ask Gemini to show the complete changed file or a precise diff. Check the c
 | Goal | Recommended Gemini request |
 |---|---|
 | Add a grammar question | “In `data/s2-experiences-and-choices-data.js`, add one original grammar item using the current 9-part grammar array format. Test present perfect versus simple past. Include a natural Hong Kong school or community context, Traditional Chinese support, four options, correct answer index, English and Chinese explanations, and a bilingual hint.” |
-| Change a reading text | “Edit only the `reading.sets` entry with id `s2-ec-rset-2`. Keep two texts and exactly three questions. Preserve English-first wording, bilingual purposes, four options, explanations and hints.” |
+| Change a reading text | “Edit only the `reading.sets` entry with id `s2-mm-rset-2` in `data/s2-messages-and-media-data.js`. Keep two texts and exactly three questions. Preserve English-first wording, bilingual purposes, four options, explanations and hints.” |
 | Add a standalone page | “Copy `templates/lesson-template.html` into `s1/s1_read_new_topic.html`. Set its body data attributes and linked data file. Do not change the shared CSS or JavaScript.” |
 | Change all page colours | “Edit `assets/lesson.css` only. Keep contrast and mobile responsiveness. Change the blue accent system to a calm green-and-navy system.” |
 | Change response behaviour | “Edit `assets/lesson.js` only. Do not remove local-only storage or the original-practice notice. Explain which functions you changed.” |
 
-## 3. Understanding the S2 data file
+## 3. Understanding the S2 data files
 
-The first converted content unit is stored in `data/s2-experiences-and-choices-data.js`. It begins with:
+Two complete S2 units are now available. **S2 Develop: Experiences and Choices** is stored in `data/s2-experiences-and-choices-data.js`. **S2 Connect: Messages and Media** is stored in `data/s2-messages-and-media-data.js`. Both use the same six-skill data structure, so it is safer to copy an existing item and revise it than to invent a new format.
+
+The first data file begins with:
 
 ```js
 window.S2_EXPERIENCES_CHOICES = {
@@ -43,7 +45,7 @@ window.S2_EXPERIENCES_CHOICES = {
 };
 ```
 
-Keep the outer name `window.S2_EXPERIENCES_CHOICES` unchanged unless you also update `assets/lesson.js`. Every content block uses the same data structure as the currently deployed S2 unit, so it is safer to copy an existing item and revise it rather than inventing a new format.
+Keep the outer names `window.S2_EXPERIENCES_CHOICES` and `window.S2_MESSAGES_MEDIA` unchanged unless you also update `assets/lesson.js`. The second file begins with `window.S2_MESSAGES_MEDIA = { ... }`.
 
 ### Objective-question checklist
 
@@ -66,10 +68,10 @@ Change only these values first:
 
 ```html
 <body
-  data-unit="s2-experiences-and-choices"
+  data-unit="s2-messages-and-media"
   data-module="reading"
-  data-page-title="S2 Reading: Compare and Connect"
-  data-page-title-zh="中二閱讀：比較與連結">
+  data-page-title="S2 Connect Reading: Sources and Voices"
+  data-page-title-zh="中二連結閱讀：資料來源與聲音">
 ```
 
 The `data-module` values currently supported by the shared script are `grammar`, `vocabulary`, `reading`, `listening`, `writing` and `speaking`. A new unit also needs a matching data file and one small addition in `assets/lesson.js` inside the `sourceUnit()` function.

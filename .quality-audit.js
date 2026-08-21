@@ -4,7 +4,7 @@ const vm = require('vm');
 const ctx = { window: {}, console };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
-for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js', 's1-core-path.js', 's2-experiences-and-choices.js']) {
+for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js', 's1-core-path.js', 's2-experiences-and-choices.js', 's2-messages-and-media.js']) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: file });
 }
 
@@ -146,6 +146,35 @@ const s2Speaking = s2Develop?.speaking || [];
 expect(s2Speaking.length === 3 && s2Speaking.every((item) => item.id && item.title && item.titleZh && item.prompt && item.promptZh && item.model && item.selfCheck), 'S2 Develop speaking should contain three bilingual model and self-check tasks');
 expect(new Set([...s2Writing, ...s2Speaking].map((item) => item.id)).size === s2Writing.length + s2Speaking.length, 'S2 Develop writing and speaking task IDs must be unique');
 
+const s2Connect = ctx.window.S2_MESSAGES_MEDIA;
+expect(s2Connect?.notice && s2Connect?.noticeZh, 'S2 Connect requires an original-practice notice in both languages');
+const s2ConnectGrammar = s2Connect?.grammar?.questions || [];
+expect(s2ConnectGrammar.length === 16, 'S2 Connect grammar should contain 16 contextual questions');
+expect(s2ConnectGrammar.every((item) => Array.isArray(item) && item.length === 9 && item[0] && item[1] && item[2] && item[3] && Array.isArray(item[4]) && item[4].length === 4 && Number.isInteger(item[5]) && item[5] >= 0 && item[5] < item[4].length && item[6] && item[7] && item[8]), 'S2 Connect grammar questions require context, bilingual support, hint and four valid options');
+expect(new Set(s2ConnectGrammar.map((item) => item[0])).size === s2ConnectGrammar.length, 'S2 Connect grammar question IDs must be unique');
+
+const s2ConnectVocabulary = s2Connect?.vocabulary?.items || [];
+expect(s2ConnectVocabulary.length === 18, 'S2 Connect vocabulary should contain 18 items');
+expect(s2ConnectVocabulary.every((item) => Array.isArray(item) && item.length === 7 && item[0] && item[1] && item[2] && item[3] && item[4] && item[5] && Array.isArray(item[6]) && item[6].length === 4 && item[6].includes(item[5])), 'S2 Connect vocabulary items require bilingual meaning, model, prompt, answer and four options');
+expect(new Set(s2ConnectVocabulary.map((item) => item[0])).size === s2ConnectVocabulary.length, 'S2 Connect vocabulary words must be unique');
+
+const s2ConnectReadingSets = s2Connect?.reading?.sets || [];
+const s2ConnectReadingQuestions = s2ConnectReadingSets.flatMap((set) => set.questions || []);
+expect(s2ConnectReadingSets.length === 4, 'S2 Connect reading should contain four paired-text sets');
+expect(s2ConnectReadingSets.every((set) => set.id && set.title && set.titleZh && Array.isArray(set.texts) && set.texts.length === 2 && set.texts.every((text) => text.label && text.title && text.purpose && text.purposeZh && text.text) && Array.isArray(set.questions) && set.questions.length === 3), 'Each S2 Connect paired-text set requires two labelled texts with bilingual purpose and three questions');
+expect(s2ConnectReadingQuestions.length === 12 && s2ConnectReadingQuestions.every((item) => Array.isArray(item) && item.length === 8 && item[0] && item[1] && item[2] && Array.isArray(item[3]) && item[3].length === 4 && Number.isInteger(item[4]) && item[4] >= 0 && item[4] < item[3].length && item[5] && item[6] && item[7]), 'S2 Connect reading questions require bilingual prompts/explanations, hints and four valid options');
+expect(new Set(s2ConnectReadingQuestions.map((item) => item[0])).size === s2ConnectReadingQuestions.length, 'S2 Connect reading question IDs must be unique');
+
+const s2ConnectListening = s2Connect?.listening?.scripts || [];
+expect(s2ConnectListening.length === 3 && s2ConnectListening.every((script) => script.id && script.title && script.titleZh && script.script && script.questions?.length === 4), 'S2 Connect listening should contain three bilingual scripts with four questions each');
+expect(s2ConnectListening.flatMap((script) => script.questions).every((item) => Array.isArray(item) && item[0] && item[1] && Array.isArray(item[2]) && item[2].length === 4 && Number.isInteger(item[3]) && item[3] >= 0 && item[3] < item[2].length && item[4] && item[5]), 'S2 Connect listening questions require bilingual prompts, valid options and explanations');
+
+const s2ConnectWriting = s2Connect?.writing || [];
+expect(s2ConnectWriting.length === 3 && s2ConnectWriting.every((item) => item.id && item.title && item.titleZh && item.prompt && item.promptZh && item.plan && item.selfCheck), 'S2 Connect writing should contain three bilingual planned self-check tasks');
+const s2ConnectSpeaking = s2Connect?.speaking || [];
+expect(s2ConnectSpeaking.length === 3 && s2ConnectSpeaking.every((item) => item.id && item.title && item.titleZh && item.prompt && item.promptZh && item.model && item.selfCheck), 'S2 Connect speaking should contain three bilingual model and self-check tasks');
+expect(new Set([...s2ConnectWriting, ...s2ConnectSpeaking].map((item) => item.id)).size === s2ConnectWriting.length + s2ConnectSpeaking.length, 'S2 Connect writing and speaking task IDs must be unique');
+
 const preS1Guide = ctx.window.PRE_S1_REVIEW_GUIDE;
 expect(preS1Guide?.title && preS1Guide?.titleZh, 'Pre-S1 revision guide titles are missing');
 expect((preS1Guide?.vocabulary || []).length === 3, 'Pre-S1 revision guide should contain three vocabulary groups');
@@ -166,5 +195,6 @@ info.push(`Pre-S1 mock items checked: ${preS1?.questions?.length || 0}`);
 info.push(`Pre-S1 revision items checked: ${(preS1Guide?.vocabulary || []).flatMap((group) => group.items || []).length + (preS1Guide?.grammar || []).length}`);
 info.push(`S1 Core items checked: ${s1CoreGrammar.length + s1CoreVocabulary.length + s1CoreReading.length + s1CoreListening.flatMap((script) => script.questions).length + s1CoreWriting.length + s1CoreSpeaking.length}`);
 info.push(`S2 Develop items checked: ${s2Grammar.length + s2Vocabulary.length + s2ReadingQuestions.length + s2Listening.flatMap((script) => script.questions).length + s2Writing.length + s2Speaking.length}`);
+info.push(`S2 Connect items checked: ${s2ConnectGrammar.length + s2ConnectVocabulary.length + s2ConnectReadingQuestions.length + s2ConnectListening.flatMap((script) => script.questions).length + s2ConnectWriting.length + s2ConnectSpeaking.length}`);
 console.log(JSON.stringify({ status: issues.length ? 'issues_found' : 'passed', info, issues }, null, 2));
 process.exitCode = issues.length ? 1 : 0;

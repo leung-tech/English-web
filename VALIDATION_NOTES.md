@@ -245,3 +245,15 @@ The standalone S2 speaking page loaded the bilingual 45–60 second task, replay
 ## Gemini-editable standalone HTML pages — Public deployment verification
 
 GitHub Pages workflow `32443116010` for commit `224b232` completed successfully. The public Gemini workspace at <https://leung-tech.github.io/English-web/gemini-pages/> displayed six S2 standalone HTML lesson cards and the link to the editing guide. The public standalone reading URL loaded its original-practice notice, bilingual paired-text reading content, two purpose blocks, four interactive answer choices and the local-only progress description. The multi-page HTML workspace is publicly available without changing the original full learning platform.
+
+## S2 Connect: Messages and Media — Local platform verification
+
+The local full platform loaded `window.S2_MESSAGES_MEDIA` and, after selecting P6, rendered all six new S2 Connect modules with the original-practice label. The Apply route contained Grammar in Context and Media Messages; Read contained Sources and Voices; Listen contained Hear the Message and Report and Respond; Write contained Inform an Audience.
+
+The local S2 Connect reading practice loaded a two-text paired-reading layout with the `S2 CONNECT · ORIGINAL PAIRED TEXTS` label and a bilingual purpose question. Listening, writing and speaking routes also loaded their respective S2 Connect prompts in the main practice view; their visible control labels were then checked separately because the verification page uses existing control identifiers rather than the provisional selector names used in the first DOM probe.
+
+The S2 Connect speaking task displayed the existing `Play audio` control and speaking self-check. The S2 Connect writing task displayed the bilingual Responsible Online Notice prompt, a long-response text area and the 100–120 word target. These controls use the established platform element names and retain completion-only self-checking rather than automated quality scoring.
+
+## S2 Connect: Messages and Media — Gemini standalone verification
+
+The local standalone page `gemini-pages/s2/s2_connect_read_sources_voices.html` loaded the S2 CONNECT original-practice label, the `s2-messages-and-media-data.js` editing reference, two labelled texts, four answer choices and the shared feedback flow. Selecting the correct answer marked one option as correct and displayed the expected English and Traditional Chinese explanation.

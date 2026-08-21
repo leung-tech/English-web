@@ -15,6 +15,8 @@
     titleZh: body.dataset.pageTitleZh
   };
   const storageKey = 'primary-english-studio-standalone-progress-v1';
+  const unitLabel = config.unit === 's2-messages-and-media' ? 'S2 CONNECT' : 'S2 DEVELOP';
+  const unitDataFile = config.unit === 's2-messages-and-media' ? 's2-messages-and-media-data.js' : 's2-experiences-and-choices-data.js';
   let items = [];
   let current = 0;
   let checked = false;
@@ -52,6 +54,7 @@
 
   function sourceUnit() {
     if (config.unit === 's2-experiences-and-choices') return window.S2_EXPERIENCES_CHOICES;
+    if (config.unit === 's2-messages-and-media') return window.S2_MESSAGES_MEDIA;
     return null;
   }
 
@@ -75,19 +78,19 @@
     }
     if (config.module === 'listening') {
       return unit.listening.scripts.flatMap((script) => script.questions.map(([prompt, promptZh, options, answer, explanation, explanationZh], index) => ({
-        id: `s2-standalone-listening-${script.id}-${index}`, kind: 'objective', skill: 'Listening · 聆聽', title: script.title, titleZh: script.titleZh, audioText: script.script, prompt, promptZh, options, answer, explanation, explanationZh, hint: 'Read the question first. Listen for a comparison, completed experience, reason, time, rule or recommendation. 先讀題目；留意比較、已完成經驗、理由、時間、規則或建議。'
+        id: `s2-standalone-listening-${script.id}-${index}`, kind: 'objective', skill: 'Listening · 聆聽', title: script.title, titleZh: script.titleZh, audioText: script.script, prompt, promptZh, options, answer, explanation, explanationZh, hint: 'Read the question first. Listen for a speaker, purpose, source, detail, instruction or next action. 先讀題目；留意說話者、目的、資料來源、細節、指示或下一步。'
       })));
     }
     if (config.module === 'writing') {
       return unit.writing.map((task) => ({
         ...task, kind: 'writing', skill: 'Writing · 寫作', minWords: 100,
-        hint: 'Compare choices with evidence, organise your paragraphs and check tense, modal verbs and linking words. 用證據比較選擇，組織段落，並檢查時態、情態動詞和連接詞。'
+        hint: 'Write for a real audience, organise accurate information and check grammar, tone and linking words. 為真實受眾寫作，組織準確資料，並檢查文法、語氣和連接詞。'
       }));
     }
     if (config.module === 'speaking') {
       return unit.speaking.map((task) => ({
         ...task, kind: 'speaking', skill: 'Speaking · 口語', audioText: task.model,
-        hint: 'State your view, compare choices clearly, then support it with a reason and a practical example. 說明你的看法，清楚比較選擇，再以理由和實際例子支持。'
+        hint: 'State accurate information, distinguish a fact from an opinion, then add a reason, source or next action. 說明準確資料，分辨事實與意見，再加入理由、資料來源或下一步。'
       }));
     }
     return [];
@@ -95,7 +98,7 @@
 
   function pairedReadingMarkup(item) {
     if (!item.pairedTexts) return '';
-    return `<section class="paired-reading"><header><p class="eyebrow">S2 DEVELOP · ORIGINAL PAIRED TEXTS · 原創配對閱讀</p><strong>${escape(item.title)}<small>${escape(item.titleZh)}</small></strong><span>Read both texts. Compare purpose, evidence and useful details. · 閱讀兩篇文本，比較寫作目的、證據及實用細節。</span></header><div class="paired-texts">${item.pairedTexts.map((text) => `<article class="paired-text"><small>${escape(text.label)}</small><strong>${escape(text.title)}</strong><p>${escape(text.text)}</p><footer><b>Purpose · 寫作目的</b>${escape(text.purpose)}<i>${escape(text.purposeZh)}</i></footer></article>`).join('')}</div></section>`;
+    return `<section class="paired-reading"><header><p class="eyebrow">${unitLabel} · ORIGINAL PAIRED TEXTS · 原創配對閱讀</p><strong>${escape(item.title)}<small>${escape(item.titleZh)}</small></strong><span>Read both texts. Compare purpose, evidence and useful details. · 閱讀兩篇文本，比較寫作目的、證據及實用細節。</span></header><div class="paired-texts">${item.pairedTexts.map((text) => `<article class="paired-text"><small>${escape(text.label)}</small><strong>${escape(text.title)}</strong><p>${escape(text.text)}</p><footer><b>Purpose · 寫作目的</b>${escape(text.purpose)}<i>${escape(text.purposeZh)}</i></footer></article>`).join('')}</div></section>`;
   }
 
   function audioMarkup(item) {
@@ -130,7 +133,7 @@
     item.renderOptions = objective;
     const prompt = item.kind === 'writing' || item.kind === 'speaking' ? item.prompt : item.prompt;
     const bodyMarkup = item.kind === 'objective' ? objectiveMarkup(item, objective) : item.kind === 'writing' ? writingMarkup(item) : speakingMarkup(item);
-    app.innerHTML = `<header class="lesson-hero"><div><p class="eyebrow">S2 DEVELOP · ORIGINAL PRACTICE · 原創練習</p><h1>${escape(config.title)}<small>${escape(config.titleZh)}</small></h1><p>Independent bilingual practice page. You can safely edit lesson content in its data file. · 獨立的中英對照練習頁，可在資料檔安全修改內容。</p></div><aside class="original-note"><strong>ORIGINAL PRACTICE · 原創練習</strong>This is not an official examination paper. · 本練習並非官方試卷。</aside></header><main class="lesson-layout"><section class="lesson-panel"><div class="question-meta"><span>${current + 1} / ${items.length}</span>${escape(item.skill)} · S2 DEVELOP</div>${audioMarkup(item)}${pairedReadingMarkup(item)}${item.context ? `<article class="context-passage"><strong>${escape(item.title)} · S2 Develop</strong>${escape(item.context)}</article>` : ''}<h2 class="question-title">${escape(prompt)}<small class="question-zh">${escape(item.promptZh || '')}</small></h2>${bodyMarkup}<div class="lesson-actions"><button id="hint-button" class="secondary-button" type="button">Hint · 提示</button><div class="button-row">${item.kind === 'objective' ? '<button id="check-button" class="primary-button" type="button" disabled>Check answer · 檢查答案</button>' : '<button id="complete-button" class="primary-button" type="button">Record completion · 記錄完成</button>'}<button id="next-button" class="secondary-button" type="button" ${current === items.length - 1 ? 'disabled' : ''}>Next · 下一題</button></div></div></section><aside class="lesson-sidebar"><section class="side-panel"><h2>Your lesson · 你的練習</h2><p>${items.length} tasks in this standalone page. Progress stays in this browser only. · 此獨立頁有 ${items.length} 個任務，進度只保存在此瀏覽器。</p><div class="progress-track"><i style="width:${((current + 1) / items.length) * 100}%"></i></div><span class="counter">Task ${current + 1} of ${items.length} · 第 ${current + 1} / ${items.length} 題</span></section><section class="side-panel"><h2>Editing note · 修改提示</h2><p>Lesson words and questions are in <b>data/s2-experiences-and-choices-data.js</b>. This page only selects the skill module. · 詞語與題目位於資料檔，本頁只選擇技能模組。</p></section><section class="side-panel"><h2>Learning focus · 學習重點</h2><ul class="status-list"><li><b>English first</b><br>Use Chinese support after reading the English task.</li><li><b>Evidence and choices</b><br>Explain a choice with a reason and example.</li><li><b>Local only</b><br>No account or upload is required.</li></ul></section></aside></main>`;
+    app.innerHTML = `<header class="lesson-hero"><div><p class="eyebrow">${unitLabel} · ORIGINAL PRACTICE · 原創練習</p><h1>${escape(config.title)}<small>${escape(config.titleZh)}</small></h1><p>Independent bilingual practice page. You can safely edit lesson content in its data file. · 獨立的中英對照練習頁，可在資料檔安全修改內容。</p></div><aside class="original-note"><strong>ORIGINAL PRACTICE · 原創練習</strong>This is not an official examination paper. · 本練習並非官方試卷。</aside></header><main class="lesson-layout"><section class="lesson-panel"><div class="question-meta"><span>${current + 1} / ${items.length}</span>${escape(item.skill)} · ${unitLabel}</div>${audioMarkup(item)}${pairedReadingMarkup(item)}${item.context ? `<article class="context-passage"><strong>${escape(item.title)} · ${unitLabel}</strong>${escape(item.context)}</article>` : ''}<h2 class="question-title">${escape(prompt)}<small class="question-zh">${escape(item.promptZh || '')}</small></h2>${bodyMarkup}<div class="lesson-actions"><button id="hint-button" class="secondary-button" type="button">Hint · 提示</button><div class="button-row">${item.kind === 'objective' ? '<button id="check-button" class="primary-button" type="button" disabled>Check answer · 檢查答案</button>' : '<button id="complete-button" class="primary-button" type="button">Record completion · 記錄完成</button>'}<button id="next-button" class="secondary-button" type="button" ${current === items.length - 1 ? 'disabled' : ''}>Next · 下一題</button></div></div></section><aside class="lesson-sidebar"><section class="side-panel"><h2>Your lesson · 你的練習</h2><p>${items.length} tasks in this standalone page. Progress stays in this browser only. · 此獨立頁有 ${items.length} 個任務，進度只保存在此瀏覽器。</p><div class="progress-track"><i style="width:${((current + 1) / items.length) * 100}%"></i></div><span class="counter">Task ${current + 1} of ${items.length} · 第 ${current + 1} / ${items.length} 題</span></section><section class="side-panel"><h2>Editing note · 修改提示</h2><p>Lesson words and questions are in <b>data/${unitDataFile}</b>. This page only selects the skill module. · 詞語與題目位於資料檔，本頁只選擇技能模組。</p></section><section class="side-panel"><h2>Learning focus · 學習重點</h2><ul class="status-list"><li><b>English first</b><br>Use Chinese support after reading the English task.</li><li><b>Evidence and communication</b><br>Explain a message with accurate information, a reason and a source when useful.</li><li><b>Local only</b><br>No account or upload is required.</li></ul></section></aside></main>`;
     bindEvents(item);
   }
 
