@@ -72,7 +72,8 @@
         { id: 'reading-details', symbol: 'K', title: 'Key detail hunter', titleZh: '關鍵細節搜尋', description: 'People, places, times and actions', descriptionZh: '人物、地點、時間與細節', sessions: 10 },
         { id: 'advanced-reading', symbol: '★', title: 'Advanced reading workshop', titleZh: '進階閱讀工作坊', description: 'P4–P6 genres, inference and model analysis', descriptionZh: '小四至小六多體裁閱讀、推論及範例解析', sessions: 5, minGrade: 4 },
         { id: 's1-bridge-reading-cloze', symbol: 'S1', title: 'S1 Bridge: Reading & cloze', titleZh: '中一銜接：閱讀與綜合填空', description: 'Original school-life reading and grammar-in-context', descriptionZh: '原創校園生活閱讀及語境綜合填空', sessions: 10, minGrade: 6, s1Bridge: true },
-        { id: 's1-core-reading', symbol: 'S1+', title: 'S1 Core: Reading workshop', titleZh: '中一核心：閱讀工作坊', description: 'Original profiles, emails and blogs with evidence finding', descriptionZh: '原創人物簡介、電郵及網誌閱讀，練習找證據', sessions: 12, minGrade: 6, s1Core: true }
+        { id: 's1-core-reading', symbol: 'S1+', title: 'S1 Core: Reading workshop', titleZh: '中一核心：閱讀工作坊', description: 'Original profiles, emails and blogs with evidence finding', descriptionZh: '原創人物簡介、電郵及網誌閱讀，練習找證據', sessions: 12, minGrade: 6, s1Core: true },
+        { id: 's2-develop-reading', symbol: 'S2', title: 'S2 Develop: Compare and Connect', titleZh: '中二發展：比較與連結', description: 'Original paired texts on choices, evidence and purpose', descriptionZh: '原創配對文本，練習選擇、證據與寫作目的', sessions: 12, minGrade: 6, s2Develop: true }
       ]
     },
     write: {
@@ -84,7 +85,8 @@
         { id: 'proofreading', symbol: 'E', title: 'Proofreading', titleZh: '改錯練習', description: 'Spot grammar and spelling slips', descriptionZh: '找出常見文法與拼寫錯誤', sessions: 8 },
         { id: 'writing-plan', symbol: 'P', title: 'Writing planner', titleZh: '寫作構思', description: 'Plan complete sentences and paragraphs', descriptionZh: '用完整句子組織小段落', sessions: 6 },
         { id: 'writing-models', symbol: '★', title: 'High-score models', titleZh: '呈分試高分範文', description: 'P4–P6 model writing and scoring points', descriptionZh: '小四至小六範文與評分要點', sessions: 0, minGrade: 4, assessment: true },
-        { id: 's1-core-writing', symbol: 'S1+', title: 'S1 Core: Writing workshop', titleZh: '中一核心：寫作工作坊', description: 'Original email, recount and school-improvement responses', descriptionZh: '原創電郵、記敘及校園改善回應寫作', sessions: 3, minGrade: 6, s1Core: true }
+        { id: 's1-core-writing', symbol: 'S1+', title: 'S1 Core: Writing workshop', titleZh: '中一核心：寫作工作坊', description: 'Original email, recount and school-improvement responses', descriptionZh: '原創電郵、記敘及校園改善回應寫作', sessions: 3, minGrade: 6, s1Core: true },
+        { id: 's2-develop-writing', symbol: 'S2', title: 'S2 Develop: Writing choices', titleZh: '中二發展：選擇寫作', description: 'Original recommendation, recount and comparison responses', descriptionZh: '原創推薦、記敘及比較回應寫作', sessions: 3, minGrade: 6, s2Develop: true }
       ]
     },
     listen: {
@@ -99,7 +101,9 @@
         { id: 'roleplay', symbol: 'R', title: 'Role-play practice', titleZh: '角色對話', description: 'Take both roles in useful school-life dialogues', descriptionZh: '在實用校園情境中練習 A、B 角色對話', sessions: 3, minGrade: 4 },
         { id: 's1-bridge-listening', symbol: 'S1', title: 'S1 Bridge: School life listening', titleZh: '中一銜接：校園生活聆聽', description: 'Replayable announcements and planning dialogues', descriptionZh: '可重播的校園公告與策劃對話', sessions: 8, minGrade: 6, s1Bridge: true },
         { id: 's1-core-listening', symbol: 'S1+', title: 'S1 Core: Listening lab', titleZh: '中一核心：聆聽練習室', description: 'Original timetable and club-interview listening tasks', descriptionZh: '原創時間表公告及社團訪問聆聽任務', sessions: 8, minGrade: 6, s1Core: true },
-        { id: 's1-core-speaking', symbol: 'S1+', title: 'S1 Core: Speaking studio', titleZh: '中一核心：口語練習室', description: 'Original club introduction, clarification and opinion tasks', descriptionZh: '原創社團介紹、要求澄清及意見表達任務', sessions: 3, minGrade: 6, s1Core: true }
+        { id: 's1-core-speaking', symbol: 'S1+', title: 'S1 Core: Speaking studio', titleZh: '中一核心：口語練習室', description: 'Original club introduction, clarification and opinion tasks', descriptionZh: '原創社團介紹、要求澄清及意見表達任務', sessions: 3, minGrade: 6, s1Core: true },
+        { id: 's2-develop-listening', symbol: 'S2', title: 'S2 Develop: Listening choices', titleZh: '中二發展：選擇聆聽', description: 'Original meetings, interviews and radio practice', descriptionZh: '原創會議、訪問及電台節目聆聽', sessions: 12, minGrade: 6, s2Develop: true },
+        { id: 's2-develop-speaking', symbol: 'S2', title: 'S2 Develop: Speaking choices', titleZh: '中二發展：選擇口語', description: 'Original recommendation, comparison and response tasks', descriptionZh: '原創推薦、比較及回應口語任務', sessions: 3, minGrade: 6, s2Develop: true }
       ]
     },
     language: {
@@ -116,7 +120,9 @@
         { id: 's1-bridge-grammar', symbol: 'S1', title: 'S1 Bridge: School Life & Routines', titleZh: '中一銜接：校園生活與日常作息', description: 'Original grammar in familiar school-life texts', descriptionZh: '透過熟悉校園文本學習原創中一基礎文法', sessions: 12, minGrade: 6, s1Bridge: true },
         { id: 's1-bridge-vocabulary', symbol: 'S1', title: 'S1 Bridge: School life vocabulary', titleZh: '中一銜接：校園生活詞彙', description: 'Learn and use useful words for secondary-school routines', descriptionZh: '學習及運用中學日常生活實用詞彙', sessions: 12, minGrade: 6, s1Bridge: true },
         { id: 's1-core-grammar', symbol: 'S1+', title: 'S1 Core: Grammar in context', titleZh: '中一核心：語境文法', description: 'Original past, future, comparison, question and pronoun practice', descriptionZh: '原創過去、未來、比較、問句及代名詞練習', sessions: 16, minGrade: 6, s1Core: true },
-        { id: 's1-core-vocabulary', symbol: 'S1+', title: 'S1 Core: Vocabulary builder', titleZh: '中一核心：詞彙建構', description: 'Original learning-habit and school-community vocabulary', descriptionZh: '原創學習習慣及校園社區詞彙', sessions: 18, minGrade: 6, s1Core: true }
+        { id: 's1-core-vocabulary', symbol: 'S1+', title: 'S1 Core: Vocabulary builder', titleZh: '中一核心：詞彙建構', description: 'Original learning-habit and school-community vocabulary', descriptionZh: '原創學習習慣及校園社區詞彙', sessions: 18, minGrade: 6, s1Core: true },
+        { id: 's2-develop-grammar', symbol: 'S2', title: 'S2 Develop: Grammar in context', titleZh: '中二發展：語境文法', description: 'Original experience, modal and comparison practice', descriptionZh: '原創經驗、情態動詞及比較練習', sessions: 16, minGrade: 6, s2Develop: true },
+        { id: 's2-develop-vocabulary', symbol: 'S2', title: 'S2 Develop: Vocabulary choices', titleZh: '中二發展：選擇詞彙', description: 'Original vocabulary for progress, choices and responsibility', descriptionZh: '原創進展、選擇及責任詞彙', sessions: 18, minGrade: 6, s2Develop: true }
       ]
     }
   };
@@ -482,6 +488,83 @@
     }));
   }
 
+  function createS2DevelopGrammar() {
+    const unit = window.S2_EXPERIENCES_CHOICES?.grammar;
+    if (!unit?.questions) return [];
+    return unit.questions.map(([id, contextTitle, context, promptZh, options, answer, explanation, explanationZh, hint]) => {
+      const shuffled = randomize(options);
+      return question(id, 'language', `S2 Develop · ${unit.title}`, 'Choose the best answer to complete the sentence in this context.', shuffled.indexOf(options[answer]), explanation, shuffled, {
+        promptZh, explanationZh, hint,
+        passage: { title: `${contextTitle} · S2 Develop`, text: context },
+        s2Develop: true, originalPractice: true
+      });
+    });
+  }
+
+  function createS2DevelopVocabulary() {
+    const unit = window.S2_EXPERIENCES_CHOICES?.vocabulary;
+    if (!unit?.items) return [];
+    return unit.items.map(([word, chinese, definition, example, prompt, answer, options], index) => {
+      const shuffled = randomize(options);
+      return question(`s2-develop-vocabulary-${index}-${word}`, 'language', `S2 Develop · ${unit.title}`, prompt, shuffled.indexOf(answer), `“${word}” means ${definition}. Example: ${example}`, shuffled, {
+        promptZh: `Which word fits this S2 context? 重點詞語：${chinese}。`,
+        explanationZh: `「${word}」的意思是「${chinese}」。例句：${example}`,
+        hint: `Connect the experience, choice or community situation with the word meaning: ${chinese}。把經驗、選擇或社區情境與詞義「${chinese}」連結。`,
+        s2Develop: true, originalPractice: true
+      });
+    });
+  }
+
+  function createS2DevelopReading() {
+    const unit = window.S2_EXPERIENCES_CHOICES?.reading;
+    if (!unit?.sets) return [];
+    return unit.sets.flatMap((set) => set.questions.map(([id, prompt, promptZh, options, answer, explanation, explanationZh, hint]) => {
+      const shuffled = randomize(options);
+      return question(id, 'read', `S2 Develop · ${unit.title}`, prompt, shuffled.indexOf(options[answer]), explanation, shuffled, {
+        promptZh, explanationZh, hint,
+        pairedPassages: { title: set.title, titleZh: set.titleZh, texts: set.texts },
+        s2Develop: true, originalPractice: true
+      });
+    }));
+  }
+
+  function createS2DevelopListening() {
+    const unit = window.S2_EXPERIENCES_CHOICES?.listening;
+    if (!unit?.scripts) return [];
+    return unit.scripts.flatMap((script) => script.questions.map(([prompt, promptZh, options, answer, explanation, explanationZh], index) => {
+      const shuffled = randomize(options);
+      return question(`s2-develop-listening-${script.id}-${index}`, 'listen', `S2 Develop · ${script.title}`, prompt, shuffled.indexOf(options[answer]), explanation, shuffled, {
+        audioText: script.script, scriptTitle: script.title, scriptTitleZh: script.titleZh,
+        promptZh, explanationZh,
+        hint: 'Read the question first. Listen for a comparison, completed experience, reason, time, rule or recommendation, then replay to check. 先讀題目；聆聽比較、已完成經驗、理由、時間、規則或建議，再重播核對。',
+        s2Develop: true, originalPractice: true
+      });
+    }));
+  }
+
+  function createS2DevelopWriting() {
+    const tasks = window.S2_EXPERIENCES_CHOICES?.writing;
+    if (!tasks) return [];
+    return tasks.map((item) => question(item.id, 'write', `S2 Develop · ${item.title}`, item.prompt, 'draft', 'Your response is recorded as a writing self-check after it reaches the target length. It is original practice and does not provide an automated quality score.', null, {
+      promptZh: item.promptZh,
+      writing: true, multiline: true,
+      writingTask: { target: '100–120 words', minWords: 100, plan: [['Plan · 寫作規劃', item.plan], ['Self-check · 自我檢查', item.selfCheck]] },
+      hint: 'Compare choices with evidence, organise your paragraphs and check tense, modal verbs and linking words. 用證據比較選擇，組織段落，並檢查時態、情態動詞和連接詞。',
+      s2Develop: true, originalPractice: true
+    }));
+  }
+
+  function createS2DevelopSpeaking() {
+    const tasks = window.S2_EXPERIENCES_CHOICES?.speaking;
+    if (!tasks) return [];
+    return tasks.map((item) => question(item.id, 'listen', `S2 Develop · ${item.title}`, item.prompt, 'spoken', 'Well done. Replay the model and improve one comparison, reason, example or response before speaking again.', null, {
+      promptZh: item.promptZh, audioText: item.model, scriptTitle: item.title, scriptTitleZh: item.titleZh,
+      selfCheck: item.selfCheck, speaking: true,
+      hint: 'State your view, compare choices clearly, then support it with a reason and a practical example. 說明你的看法，清楚比較選擇，再以理由和實際例子支持。',
+      s2Develop: true, originalPractice: true
+    }));
+  }
+
   function createReading() {
     const items = [];
     expanded('reading', readingLibrary[state.grade]).forEach((passage, passageIndex) => {
@@ -599,6 +682,12 @@
     if (state.module === 's1-core-listening') return createS1CoreListening();
     if (state.module === 's1-core-writing') return createS1CoreWriting();
     if (state.module === 's1-core-speaking') return createS1CoreSpeaking();
+    if (state.module === 's2-develop-grammar') return createS2DevelopGrammar();
+    if (state.module === 's2-develop-vocabulary') return createS2DevelopVocabulary();
+    if (state.module === 's2-develop-reading') return createS2DevelopReading();
+    if (state.module === 's2-develop-listening') return createS2DevelopListening();
+    if (state.module === 's2-develop-writing') return createS2DevelopWriting();
+    if (state.module === 's2-develop-speaking') return createS2DevelopSpeaking();
     if (state.module === 'sentence-builder') return createSentenceBuilder();
     if (state.module === 'proofreading') return createProofreading();
     if (state.module === 'writing-plan') return createWritingPlan();
@@ -732,7 +821,7 @@
     if (!modules.some((module) => module.id === state.module)) state.module = modules[0].id;
     $('#route-title').innerHTML = bilingual(route.title, route.titleZh);
     $('#route-description').innerHTML = bilingual(route.description, route.descriptionZh);
-    $('#module-list').innerHTML = modules.map((module) => `<button class="module-card ${state.module === module.id ? 'selected' : ''}" data-module="${module.id}"><i class="module-symbol">${module.symbol}</i><span><strong>${bilingual(module.title, module.titleZh)}</strong><span class="module-en">${escape(module.description)}</span><span class="module-zh">${escape(module.descriptionZh)}</span>${module.assessment ? '<span class="assessment-chip">P4–P6 ASSESSMENT · 呈分試</span>' : module.assessmentMock ? '<span class="assessment-chip">PRE-S1 STYLE · 原創銜接</span>' : module.reviewGuide ? '<span class="assessment-chip">PRE-S1 REVIEW · 重點複習</span>' : module.s1Core ? '<span class="assessment-chip">S1 CORE · 原創練習</span>' : module.s1Bridge ? '<span class="assessment-chip">S1 BRIDGE · 原創練習</span>' : ''}</span></button>`).join('');
+    $('#module-list').innerHTML = modules.map((module) => `<button class="module-card ${state.module === module.id ? 'selected' : ''}" data-module="${module.id}"><i class="module-symbol">${module.symbol}</i><span><strong>${bilingual(module.title, module.titleZh)}</strong><span class="module-en">${escape(module.description)}</span><span class="module-zh">${escape(module.descriptionZh)}</span>${module.assessment ? '<span class="assessment-chip">P4–P6 ASSESSMENT · 呈分試</span>' : module.assessmentMock ? '<span class="assessment-chip">PRE-S1 STYLE · 原創銜接</span>' : module.reviewGuide ? '<span class="assessment-chip">PRE-S1 REVIEW · 重點複習</span>' : module.s2Develop ? '<span class="assessment-chip">S2 DEVELOP · 原創練習</span>' : module.s1Core ? '<span class="assessment-chip">S1 CORE · 原創練習</span>' : module.s1Bridge ? '<span class="assessment-chip">S1 BRIDGE · 原創練習</span>' : ''}</span></button>`).join('');
     $$('[data-module]').forEach((button) => button.addEventListener('click', () => { state.module = button.dataset.module; renderHome(); }));
     const module = selectedModule();
     const activeCount = module.assessment ? 'P4–6' : module.reviewGuide ? module.sessions : (getBank().length || module.sessions);
@@ -953,12 +1042,13 @@
     $('#practice-side-copy').textContent = item.oralActivity ? '先聽示範，再按四步計劃準備自己的短講。' : item.route === 'listen' ? '可先播放兩次。核對後才會看到英文逐字稿。' : '逐題作答後，系統會提供一個可立即使用的重點提示。';
     $('#skill-tip').textContent = route.tip;
 
+    const pairedPassages = item.pairedPassages ? `<section class="paired-reading"><header><p class="eyebrow">S2 DEVELOP · ORIGINAL PAIRED TEXTS · 原創配對閱讀</p><strong>${escape(item.pairedPassages.title)}<small>${escape(item.pairedPassages.titleZh)}</small></strong><span>Read both texts. Compare purpose, evidence and useful details. · 閱讀兩篇文本，比較寫作目的、證據及實用細節。</span></header><div class="paired-passages">${item.pairedPassages.texts.map((text) => `<article class="passage paired-passage"><small>${escape(text.label)}</small><strong>${escape(text.title)}</strong><p>${escape(text.text)}</p><footer><b>Purpose · 寫作目的</b>${escape(text.purpose)}<i>${escape(text.purposeZh)}</i></footer></article>`).join('')}</div></section>` : '';
     const passage = item.passage ? `<article class="passage ${item.advancedAnalysis ? 'advanced-passage' : ''}">${item.advancedAnalysis ? `<small class="genre-label">${escape(item.advancedAnalysis.genre)} · ${escape(item.advancedAnalysis.genreZh)}</small>` : ''}<strong>${escape(item.passage.title)}</strong>${escape(item.passage.text)}</article>` : '';
     const audio = item.audioText ? `<section class="listen-player"><div><strong>${item.oralActivity ? 'Listen to the model, then build your own talk.' : item.speaking ? 'Listen, then say it aloud.' : 'Listen first. You may replay the audio.'}</strong><span>${item.oralActivity ? '按播放鍵聽示範，然後按照四步計劃準備個人短講。' : item.speaking ? '按播放鍵聽示範，然後用自己的資料完成句子。' : '核對答案後可查看英文逐字稿。'}</span></div><button class="play-audio" id="play-audio">Play audio · 播放錄音</button></section>${currentResult && !item.speaking ? `<p class="transcript"><strong>${escape(item.scriptTitle ? `${item.scriptTitle} · Transcript` : 'Transcript')}:</strong> ${escape(item.audioText)}</p>` : ''}` : '';
     const oralPlan = item.oralActivity ? `<section class="oral-plan"><header><p class="eyebrow">P4–P6 ORAL PRACTICE · 高小聆聽與口語</p><div><strong>${escape(item.oralActivity.title)}<small>${escape(item.oralActivity.titleZh)}</small></strong><span>${escape(item.oralActivity.duration)}</span></div></header><div class="oral-frames">${item.oralActivity.frames.map(([label, labelZh, frame, frameZh], index) => `<article><i>${index + 1}</i><div><b>${escape(label)}<small>${escape(labelZh)}</small></b><p>${escape(frame)}</p><span>${escape(frameZh)}</span></div></article>`).join('')}</div><footer><strong>Key language · 實用語句</strong><p>${item.oralActivity.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>` : '';
     const flashcard = item.flashcard ? `<section class="flashcard ${session.revealed?.[session.index] ? 'revealed' : ''}"><div class="flashcard-front"><p class="eyebrow">${item.flashcardType === 'match' ? 'WORD MATCH · 單字配對' : 'LISTENING VOCABULARY · 聆聽詞彙卡'}</p><strong>${escape(item.flashcard.word)}</strong><span>Preview the word, then listen and use it. · 預習詞彙，然後聆聽及運用。</span></div><div class="flashcard-actions"><button class="secondary" id="flash-reveal">${session.revealed?.[session.index] ? 'Meaning revealed · 已顯示意思' : 'Reveal meaning · 顯示意思'}</button><button class="secondary" id="flash-audio">Play word · 播放字詞</button></div><div class="flashcard-back ${session.revealed?.[session.index] ? 'show' : ''}"><strong>${escape(item.flashcard.chinese)}</strong><p>${escape(item.flashcard.definition)}</p><blockquote>${escape(item.flashcard.example)}</blockquote></div></section>` : '';
     const roleplay = item.roleplay ? `<section class="roleplay-card"><header><p class="eyebrow">ROLE-PLAY PRACTICE · 角色對話</p><strong>${escape(item.roleplay.title)}<small>${escape(item.roleplay.titleZh)}</small></strong><span>${escape(item.roleplay.roles[0])}</span><span>${escape(item.roleplay.roles[1])}</span></header><div class="roleplay-actions"><button class="secondary" data-role-audio="A">Listen to A · 聽 A 角色</button><button class="secondary" data-role-audio="B">Listen to B · 聽 B 角色</button></div><div class="roleplay-lines">${item.roleplay.dialogue.map(([speaker, line]) => `<p class="role-${speaker.toLowerCase()}"><b>${speaker}</b><span>${escape(line)}</span></p>`).join('')}</div><footer><strong>Useful phrases · 實用語句</strong><p>${item.roleplay.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>` : '';
-    const writingGuide = item.writing ? `<section class="writing-guide"><strong>${item.selfCheck ? 'Writing reminder' : item.s1Core ? 'S1 CORE WRITING · 原創練習' : item.writingTask ? 'PRE-S1-STYLE WRITING · 原創銜接寫作' : 'Writing check'}</strong><p>${item.selfCheck ? '先完成你的想法，再讀一次，確保每句都有清楚的意思。' : item.writingTask ? '這是自我檢查寫作題；系統只會確認已達最低字數，並不會自動評核內容質素。' : '輸入完整英文句子。留意大寫字母、主語、動詞和句號。'}</p></section>` : '';
+    const writingGuide = item.writing ? `<section class="writing-guide"><strong>${item.selfCheck ? 'Writing reminder' : item.s2Develop ? 'S2 DEVELOP WRITING · 原創練習' : item.s1Core ? 'S1 CORE WRITING · 原創練習' : item.writingTask ? 'PRE-S1-STYLE WRITING · 原創銜接寫作' : 'Writing check'}</strong><p>${item.selfCheck ? '先完成你的想法，再讀一次，確保每句都有清楚的意思。' : item.writingTask ? '這是自我檢查寫作題；系統只會確認已達最低字數，並不會自動評核內容質素。' : '輸入完整英文句子。留意大寫字母、主語、動詞和句號。'}</p></section>` : '';
     const mockWritingPlan = item.writingTask ? `<section class="writing-guide"><strong>Plan before you write · 先規劃再寫</strong><p>${item.writingTask.plan.map(([label, detail]) => `<b>${escape(label)}</b><br>${escape(detail)}`).join('<br><br>')}</p></section>` : '';
     let response = '';
     if (item.writingTask) {
@@ -974,7 +1064,7 @@
     }
 
     const modelAnalysis = currentResult && item.advancedAnalysis ? `<section class="reading-analysis"><p class="eyebrow">MODEL ANALYSIS · 範例解析</p><article><strong>Find the clue · 找出線索</strong><p>${escape(item.advancedAnalysis.clue)}</p></article><article><strong>Model answer · 範例答案</strong><p>${escape(item.advancedAnalysis.model)}</p></article><article><strong>Why it works · 解題原因</strong><p>${escape(item.advancedAnalysis.why)}</p></article></section>` : '';
-    $('#question-content').innerHTML = `${audio}${passage}<h1>${escape(item.prompt)}${item.promptZh ? `<small class="question-zh">${escape(item.promptZh)}</small>` : ''}</h1>${flashcard}${oralPlan}${roleplay}${writingGuide}${response}${modelAnalysis}`;
+    $('#question-content').innerHTML = `${audio}${pairedPassages}${passage}<h1>${escape(item.prompt)}${item.promptZh ? `<small class="question-zh">${escape(item.promptZh)}</small>` : ''}</h1>${flashcard}${oralPlan}${roleplay}${writingGuide}${response}${modelAnalysis}`;
     const feedback = $('#feedback');
     feedback.className = `feedback ${currentResult ? `show ${currentResult.correct ? 'correct' : 'wrong'}` : ''}`;
     feedback.innerHTML = currentResult ? `<strong>${item.writingTask ? (currentResult.correct ? 'Writing draft recorded.' : `Keep writing: add at least ${item.writingTask.minWords} words.`) : currentResult.correct ? 'Good work.' : 'Keep this one for review.'}</strong> ${escape(item.explanation)}${item.explanationZh ? `<small>${escape(item.explanationZh)}</small>` : ''}` : '';

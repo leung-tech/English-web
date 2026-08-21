@@ -4,7 +4,7 @@ const vm = require('vm');
 const ctx = { window: {}, console };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
-for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js', 's1-core-path.js']) {
+for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js', 's1-core-path.js', 's2-experiences-and-choices.js']) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: file });
 }
 
@@ -117,6 +117,35 @@ const s1CoreSpeaking = s1Core?.speaking || [];
 expect(s1CoreSpeaking.length === 3 && s1CoreSpeaking.every((item) => item.id && item.title && item.titleZh && item.prompt && item.promptZh && item.model && item.selfCheck), 'S1 Core speaking studio should contain three bilingual tasks with a model and self-check prompt');
 expect(new Set([...s1CoreWriting, ...s1CoreSpeaking].map((item) => item.id)).size === s1CoreWriting.length + s1CoreSpeaking.length, 'S1 Core writing and speaking task IDs must be unique');
 
+const s2Develop = ctx.window.S2_EXPERIENCES_CHOICES;
+expect(s2Develop?.notice && s2Develop?.noticeZh, 'S2 Develop requires an original-practice notice in both languages');
+const s2Grammar = s2Develop?.grammar?.questions || [];
+expect(s2Grammar.length === 16, 'S2 Develop grammar should contain 16 contextual questions');
+expect(s2Grammar.every((item) => Array.isArray(item) && item.length === 9 && item[0] && item[1] && item[2] && item[3] && Array.isArray(item[4]) && item[4].length === 4 && Number.isInteger(item[5]) && item[5] >= 0 && item[5] < item[4].length && item[6] && item[7] && item[8]), 'S2 Develop grammar questions require context, bilingual support, hint and four valid options');
+expect(new Set(s2Grammar.map((item) => item[0])).size === s2Grammar.length, 'S2 Develop grammar question IDs must be unique');
+
+const s2Vocabulary = s2Develop?.vocabulary?.items || [];
+expect(s2Vocabulary.length === 18, 'S2 Develop vocabulary should contain 18 items');
+expect(s2Vocabulary.every((item) => Array.isArray(item) && item.length === 7 && item[0] && item[1] && item[2] && item[3] && item[4] && item[5] && Array.isArray(item[6]) && item[6].length === 4 && item[6].includes(item[5])), 'S2 Develop vocabulary items require bilingual meaning, model, prompt, answer and four options');
+expect(new Set(s2Vocabulary.map((item) => item[0])).size === s2Vocabulary.length, 'S2 Develop vocabulary words must be unique');
+
+const s2ReadingSets = s2Develop?.reading?.sets || [];
+const s2ReadingQuestions = s2ReadingSets.flatMap((set) => set.questions || []);
+expect(s2ReadingSets.length === 4, 'S2 Develop reading should contain four paired-text sets');
+expect(s2ReadingSets.every((set) => set.id && set.title && set.titleZh && Array.isArray(set.texts) && set.texts.length === 2 && set.texts.every((text) => text.label && text.title && text.purpose && text.purposeZh && text.text) && Array.isArray(set.questions) && set.questions.length === 3), 'Each S2 paired-text set requires two labelled texts with bilingual purpose and three questions');
+expect(s2ReadingQuestions.length === 12 && s2ReadingQuestions.every((item) => Array.isArray(item) && item.length === 8 && item[0] && item[1] && item[2] && Array.isArray(item[3]) && item[3].length === 4 && Number.isInteger(item[4]) && item[4] >= 0 && item[4] < item[3].length && item[5] && item[6] && item[7]), 'S2 Develop reading questions require bilingual prompts/explanations, hints and four valid options');
+expect(new Set(s2ReadingQuestions.map((item) => item[0])).size === s2ReadingQuestions.length, 'S2 Develop reading question IDs must be unique');
+
+const s2Listening = s2Develop?.listening?.scripts || [];
+expect(s2Listening.length === 3 && s2Listening.every((script) => script.id && script.title && script.titleZh && script.script && script.questions?.length === 4), 'S2 Develop listening should contain three bilingual scripts with four questions each');
+expect(s2Listening.flatMap((script) => script.questions).every((item) => Array.isArray(item) && item[0] && item[1] && Array.isArray(item[2]) && item[2].length === 4 && Number.isInteger(item[3]) && item[3] >= 0 && item[3] < item[2].length && item[4] && item[5]), 'S2 Develop listening questions require bilingual prompts, valid options and explanations');
+
+const s2Writing = s2Develop?.writing || [];
+expect(s2Writing.length === 3 && s2Writing.every((item) => item.id && item.title && item.titleZh && item.prompt && item.promptZh && item.plan && item.selfCheck), 'S2 Develop writing should contain three bilingual planned self-check tasks');
+const s2Speaking = s2Develop?.speaking || [];
+expect(s2Speaking.length === 3 && s2Speaking.every((item) => item.id && item.title && item.titleZh && item.prompt && item.promptZh && item.model && item.selfCheck), 'S2 Develop speaking should contain three bilingual model and self-check tasks');
+expect(new Set([...s2Writing, ...s2Speaking].map((item) => item.id)).size === s2Writing.length + s2Speaking.length, 'S2 Develop writing and speaking task IDs must be unique');
+
 const preS1Guide = ctx.window.PRE_S1_REVIEW_GUIDE;
 expect(preS1Guide?.title && preS1Guide?.titleZh, 'Pre-S1 revision guide titles are missing');
 expect((preS1Guide?.vocabulary || []).length === 3, 'Pre-S1 revision guide should contain three vocabulary groups');
@@ -136,5 +165,6 @@ info.push(`Writing quiz items checked: ${models.reduce((sum, model) => sum + (ct
 info.push(`Pre-S1 mock items checked: ${preS1?.questions?.length || 0}`);
 info.push(`Pre-S1 revision items checked: ${(preS1Guide?.vocabulary || []).flatMap((group) => group.items || []).length + (preS1Guide?.grammar || []).length}`);
 info.push(`S1 Core items checked: ${s1CoreGrammar.length + s1CoreVocabulary.length + s1CoreReading.length + s1CoreListening.flatMap((script) => script.questions).length + s1CoreWriting.length + s1CoreSpeaking.length}`);
+info.push(`S2 Develop items checked: ${s2Grammar.length + s2Vocabulary.length + s2ReadingQuestions.length + s2Listening.flatMap((script) => script.questions).length + s2Writing.length + s2Speaking.length}`);
 console.log(JSON.stringify({ status: issues.length ? 'issues_found' : 'passed', info, issues }, null, 2));
 process.exitCode = issues.length ? 1 : 0;

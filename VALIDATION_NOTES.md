@@ -209,3 +209,11 @@ JavaScript syntax checks for `app.js` and `s1-core-path.js` passed. The updated 
 ## S1 Core Path — Public deployment verification
 
 GitHub Pages build run `32441225262` for commit `41632c8` completed successfully. The public P6 page at <https://leung-tech.github.io/English-web/> displayed all six S1 Core modules with the required **S1 CORE · 原創練習** label: Grammar in context (16), Vocabulary builder (18), Reading workshop (12), Listening lab (8), Writing workshop (3) and Speaking studio (3). The public Read route selected the S1 Core Reading workshop correctly and reported **12 QUESTIONS · 12 題**, confirming that the versioned data and application scripts were deployed together.
+
+## S2 Develop — Local interface verification
+
+The local P6 page displayed six new **S2 Develop · 中二發展** modules, each carrying the visible **S2 DEVELOP · 原創練習** label. The Apply route contained Grammar in context and Vocabulary choices; the Read route contained Compare and Connect; the Listen route contained Listening choices and Speaking choices; and the Write route contained Writing choices.
+
+A local S2 Compare and Connect session opened successfully with a pair of original texts. The reading panel showed the S2 original-paired-text label, both labelled source texts, each text’s stated English and Traditional Chinese purpose, and four answer choices. This confirms that the new paired-text renderer is connected to the normal practice flow.
+
+The remaining S2 local checks also passed. Grammar in context opened with a contextual sentence, bilingual prompt and four options; Vocabulary choices opened with four word-choice options and Traditional Chinese meaning support. Listening choices showed four options and the replay-audio control. Speaking choices showed both model-audio replay and a spoken self-check. Writing choices showed the **S2 DEVELOP WRITING · 原創練習** label, planning/self-check panels, a long-response text area and the explicit 100-word minimum self-check statement.
