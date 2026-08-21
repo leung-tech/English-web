@@ -257,3 +257,7 @@ The S2 Connect speaking task displayed the existing `Play audio` control and spe
 ## S2 Connect: Messages and Media — Gemini standalone verification
 
 The local standalone page `gemini-pages/s2/s2_connect_read_sources_voices.html` loaded the S2 CONNECT original-practice label, the `s2-messages-and-media-data.js` editing reference, two labelled texts, four answer choices and the shared feedback flow. Selecting the correct answer marked one option as correct and displayed the expected English and Traditional Chinese explanation.
+
+## S2 Connect: Messages and Media — Public deployment verification
+
+GitHub Pages workflow `32444165167` for commit `bb5afad` completed successfully. The public platform loaded `window.S2_MESSAGES_MEDIA`; after selecting P6, all six S2 Connect module identifiers were present across the language, reading, listening and writing routes.
