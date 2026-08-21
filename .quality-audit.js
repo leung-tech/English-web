@@ -4,7 +4,7 @@ const vm = require('vm');
 const ctx = { window: {}, console };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
-for (const file of ['english-scope.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js']) {
+for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js']) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: file });
 }
 
@@ -35,6 +35,12 @@ for (const grade of grades) {
     expect((ctx.window.QUESTION_BANK_EXPANSION?.advancedReading?.[grade] || []).length >= 2, `P${grade}: fewer than 2 added advanced reading articles`);
   }
 }
+
+const juniorRewards = ctx.window.JUNIOR_REWARDS;
+expect(juniorRewards?.points?.correct === 10 && juniorRewards?.points?.attempt === 3, 'Junior reward points should grant 10 stars for correct answers and 3 stars for attempts');
+expect((juniorRewards?.badges || []).length === 6, 'Junior rewards should contain six badges');
+expect(new Set((juniorRewards?.badges || []).map((badge) => badge.id)).size === (juniorRewards?.badges || []).length, 'Junior reward badge IDs must be unique');
+expect((juniorRewards?.badges || []).every((badge) => badge.title && badge.titleZh && badge.description && badge.descriptionZh && badge.condition?.type && Number.isInteger(badge.condition?.value) && badge.condition.value > 0), 'Junior reward badges require bilingual labels and a valid positive condition');
 
 const models = ctx.window.WRITING_MODELS || [];
 expect(models.length === 7, 'Writing model library should contain seven models');

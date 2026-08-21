@@ -23,10 +23,14 @@
   const reviewItems = () => safeGet(KEYS.review, []);
   const saveStats = (value) => safeSet(KEYS.stats, value);
   const saveReview = (value) => safeSet(KEYS.review, value);
-  const emptyJuniorProgress = () => ({ version: 1, updatedAt: null, grades: { 1: { phonics: { attempted: 0, correct: 0, lastAttempt: null }, listening: { attempted: 0, correct: 0, lastAttempt: null } }, 2: { phonics: { attempted: 0, correct: 0, lastAttempt: null }, listening: { attempted: 0, correct: 0, lastAttempt: null } }, 3: { phonics: { attempted: 0, correct: 0, lastAttempt: null }, listening: { attempted: 0, correct: 0, lastAttempt: null } } } });
+  const emptyJuniorProgress = () => ({ version: 2, updatedAt: null, rewards: { stars: 0, badgeIds: [] }, grades: { 1: { phonics: { attempted: 0, correct: 0, lastAttempt: null }, listening: { attempted: 0, correct: 0, lastAttempt: null } }, 2: { phonics: { attempted: 0, correct: 0, lastAttempt: null }, listening: { attempted: 0, correct: 0, lastAttempt: null } }, 3: { phonics: { attempted: 0, correct: 0, lastAttempt: null }, listening: { attempted: 0, correct: 0, lastAttempt: null } } } });
   const juniorProgress = () => {
     const stored = safeGet(KEYS.juniorProgress, emptyJuniorProgress());
     const fallback = emptyJuniorProgress();
+    stored.version = 2;
+    stored.rewards ||= fallback.rewards;
+    stored.rewards.stars = Math.max(0, Number(stored.rewards.stars || 0));
+    stored.rewards.badgeIds = Array.isArray(stored.rewards.badgeIds) ? stored.rewards.badgeIds : [];
     [1, 2, 3].forEach((grade) => {
       stored.grades ||= {};
       stored.grades[grade] ||= fallback.grades[grade];
@@ -35,6 +39,28 @@
     return stored;
   };
   const saveJuniorProgress = (value) => safeSet(KEYS.juniorProgress, value);
+  const juniorRewardConfig = () => window.JUNIOR_REWARDS || { points: { correct: 10, attempt: 3 }, badges: [] };
+  const juniorRewardMetrics = (record) => {
+    const entries = [1, 2, 3].flatMap((grade) => ['phonics', 'listening'].map((kind) => record.grades[grade][kind]));
+    const phonics = [1, 2, 3].reduce((sum, grade) => sum + record.grades[grade].phonics.attempted, 0);
+    const phonicsCorrect = [1, 2, 3].reduce((sum, grade) => sum + record.grades[grade].phonics.correct, 0);
+    const listening = [1, 2, 3].reduce((sum, grade) => sum + record.grades[grade].listening.attempted, 0);
+    const listeningCorrect = [1, 2, 3].reduce((sum, grade) => sum + record.grades[grade].listening.correct, 0);
+    return { attempted: entries.reduce((sum, item) => sum + item.attempted, 0), correct: entries.reduce((sum, item) => sum + item.correct, 0), phonicsAttempted: phonics, phonicsCorrect, listeningAttempted: listening, listeningCorrect };
+  };
+  const rewardMetricValue = (metrics, type) => Number(metrics[type] || 0);
+  const badgeProgress = (badge, metrics) => Math.min(rewardMetricValue(metrics, badge.condition.type), badge.condition.value);
+  const awardJuniorRewards = (record, correct) => {
+    const config = juniorRewardConfig();
+    record.rewards ||= { stars: 0, badgeIds: [] };
+    record.rewards.badgeIds ||= [];
+    const points = Number(correct ? config.points.correct : config.points.attempt) || 0;
+    record.rewards.stars = Math.max(0, Number(record.rewards.stars || 0) + points);
+    const metrics = juniorRewardMetrics(record);
+    const unlocked = (config.badges || []).filter((badge) => rewardMetricValue(metrics, badge.condition.type) >= badge.condition.value && !record.rewards.badgeIds.includes(badge.id));
+    record.rewards.badgeIds.push(...unlocked.map((badge) => badge.id));
+    return { points, unlocked };
+  };
 
   const routes = {
     read: {
@@ -668,16 +694,18 @@
   const percentage = (correct, attempted) => attempted ? Math.round(correct / attempted * 100) : null;
   const formatAttemptDate = (value) => value ? new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(value)) : '—';
   function recordJuniorProgress(item, correct) {
-    if (item.grade > 3) return;
+    if (item.grade > 3) return null;
     const kind = item.topic === 'Phonics & story game' ? 'phonics' : item.topic === 'Listening lab' ? 'listening' : null;
-    if (!kind) return;
+    if (!kind) return null;
     const record = juniorProgress();
     const target = record.grades[item.grade][kind];
     target.attempted += 1;
     target.correct += Number(correct);
     target.lastAttempt = new Date().toISOString();
     record.updatedAt = target.lastAttempt;
+    const reward = awardJuniorRewards(record, correct);
     saveJuniorProgress(record);
+    return reward;
   }
 
   function renderTracker() {
@@ -686,6 +714,15 @@
     const attempted = all.reduce((sum, item) => sum + item.attempted, 0);
     const correct = all.reduce((sum, item) => sum + item.correct, 0);
     const last = all.map((item) => item.lastAttempt).filter(Boolean).sort().at(-1);
+    const rewardConfig = juniorRewardConfig();
+    const metrics = juniorRewardMetrics(record);
+    const badges = rewardConfig.badges || [];
+    const earned = new Set(record.rewards?.badgeIds || []);
+    const nextBadge = badges.find((badge) => !earned.has(badge.id));
+    const rewardSummary = $('#reward-summary');
+    const badgeWall = $('#badge-wall');
+    if (rewardSummary) rewardSummary.innerHTML = `<article><strong>${record.rewards?.stars || 0}</strong><span>Star points <small>星星積分</small></span></article><article><strong>${earned.size}/${badges.length}</strong><span>Badges unlocked <small>已解鎖徽章</small></span></article><article><strong>${nextBadge ? escape(nextBadge.title) : 'All!'}</strong><span>${nextBadge ? `${badgeProgress(nextBadge, metrics)}/${nextBadge.condition.value} to go` : 'Every current badge earned'}<small>${nextBadge ? `下一目標：${escape(nextBadge.titleZh)}` : '已集齊目前所有徽章'}</small></span></article>`;
+    if (badgeWall) badgeWall.innerHTML = badges.map((badge) => { const isEarned = earned.has(badge.id); const progress = badgeProgress(badge, metrics); return `<article class="reward-badge ${isEarned ? 'earned' : 'locked'}"><span class="reward-mark">${escape(badge.mark)}</span><div><strong>${escape(badge.title)}</strong><small>${escape(badge.titleZh)}</small><p>${escape(badge.description)}<br>${escape(badge.descriptionZh)}</p><b>${isEarned ? 'Earned · 已解鎖' : `${progress}/${badge.condition.value} · 努力中`}</b></div></article>`; }).join('');
     $('#tracker-summary').innerHTML = `<article><strong>${attempted}</strong><span>Junior attempts <small>初小已作答題目</small></span></article><article><strong>${percentage(correct, attempted) ?? '—'}${attempted ? '%' : ''}</strong><span>Objective accuracy <small>客觀題正確率</small></span></article><article><strong>${formatAttemptDate(last)}</strong><span>Latest local activity <small>最近本機紀錄</small></span></article>`;
     $('#tracker-table').innerHTML = [1, 2, 3].map((grade) => {
       const phonics = record.grades[grade].phonics;
@@ -820,9 +857,15 @@
     record.skills ||= { read: 0, write: 0, listen: 0, language: 0 };
     record.skills[item.route] = (record.skills[item.route] || 0) + 1;
     saveStats(record);
-    recordJuniorProgress(item, correct);
-    if (!item.selfCheck && !item.writingTask && !correct) { addReview(item, answer); toast('這題已加入溫習清單，稍後可以再挑戰。'); }
-    else { removeReview(item.id); toast(item.writingTask ? (correct ? '已完成寫作自我檢查。' : `請再加入一些內容，完成最少 ${item.writingTask.minWords} 字。`) : correct ? '答對了，繼續保持。' : '已完成這項練習。'); }
+    const juniorReward = recordJuniorProgress(item, correct);
+    let outcome = '';
+    if (!item.selfCheck && !item.writingTask && !correct) { addReview(item, answer); outcome = '這題已加入溫習清單，稍後可以再挑戰。'; }
+    else { removeReview(item.id); outcome = item.writingTask ? (correct ? '已完成寫作自我檢查。' : `請再加入一些內容，完成最少 ${item.writingTask.minWords} 字。`) : correct ? '答對了，繼續保持。' : '已完成這項練習。'; }
+    if (juniorReward) {
+      const badgeMessage = juniorReward.unlocked.length ? ` 已獲得：${juniorReward.unlocked.map((badge) => `${badge.title}／${badge.titleZh}`).join('、')}！` : '';
+      outcome += ` +${juniorReward.points} 星星積分。${badgeMessage}`;
+    }
+    toast(outcome);
     renderSidebar();
     renderQuestion();
   }

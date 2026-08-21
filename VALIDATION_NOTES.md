@@ -157,3 +157,11 @@ The local P6 writing library opened the new “Three Smart Habits for a Calm Sta
 The desktop writing page was visually reviewed: the model selector, task, exemplar, five rubric cards and writing-support area were readable without clipping or overlap. The Quick correction quiz opened as Question 1 of 4 with three answer options and bilingual support.
 
 The published website was verified after deployment. It loaded the original Pre-S1 writing model with its explicit label, five rubric criteria, four sentence patterns and four correction-quiz questions.
+
+## P1–P3 star points and badge rewards
+
+The local Parent / Teacher panel displayed three reward-summary cards and six locked badges on a new reward record. A real P1 Phonics & story game answer then awarded 10 local star points, updated the P1 phonics attempt/correct record and unlocked the First Spark / 起步星光 badge. The immediate feedback toast clearly reported both the points and new badge.
+
+The desktop reward board was visually reviewed. Its three summary cards, six badges, earned-versus-progress states, star values and private-to-this-browser notice remained readable without overlap or clipping.
+
+At a 390px viewport, the top navigation and Parent / Teacher header wrapped without clipping; the local-record and return controls remained distinct and reachable. The reward board's narrow-screen grid uses the dedicated one-column summary and single-column badge rules.
