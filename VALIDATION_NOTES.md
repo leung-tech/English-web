@@ -139,3 +139,11 @@ The Parent / Teacher panel opened with a clear device-only privacy notice, three
 The desktop tracker panel was visually reviewed: summary cards, P1–P3 skill rows, local-record controls and privacy copy were readable without overlap or clipping. The P6 revision screen also rendered all 12 vocabulary cards and all 8 grammar cards. The P6 screen’s two-column vocabulary/grammar layout was visually checked and remained readable; a page reload retained the device-local junior progress record.
 
 The published website was verified after deployment. It loaded the 12-item vocabulary / 8-item grammar Pre-S1 revision guide and opened the Parent / Teacher panel with all six P1–P3 skills rows.
+
+## P6 extended reading and integrated cloze expansion
+
+A local P6 Pre-S1 mock session launched as Question 1 of 22 with 22 visible question-navigation controls. The new original content adds four extended-reading questions and six integrated-cloze questions to the existing listening, reading, language use and writing sections.
+
+The extended-reading item appeared as Question 12 of 22 with its full magazine article, English-first/Traditional-Chinese question and four answer choices. The integrated-cloze item appeared as Question 16 of 22 with the complete six-blank passage, a clearly numbered blank prompt, bilingual support and four answer choices.
+
+A correct integrated-cloze response produced immediate English and Traditional-Chinese grammar feedback and a visible Next control. The desktop question screen was visually reviewed: the passage, four choices, answer feedback, 22-question navigation path and action controls all remained readable without overlap or clipping.

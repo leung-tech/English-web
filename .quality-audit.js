@@ -49,10 +49,13 @@ models.forEach((model) => {
 
 const preS1 = ctx.window.PRE_S1_ENGLISH_MOCK;
 expect(preS1?.id === 'pre-s1-english-readiness', 'Pre-S1 readiness mock is missing');
-expect(preS1?.questions?.length === 12, 'Pre-S1 readiness mock should contain 12 items');
-expect(new Set((preS1?.questions || []).map((item) => item.section)).size === 4, 'Pre-S1 readiness mock should contain four sections');
+expect(preS1?.questions?.length === 22, 'Pre-S1 readiness mock should contain 22 items');
+expect(new Set((preS1?.questions || []).map((item) => item.section)).size === 6, 'Pre-S1 readiness mock should contain six sections');
 expect((preS1?.questions || []).filter((item) => item.options).every((item) => item.options.length === 4 && Number.isInteger(item.answer) && item.answer >= 0 && item.answer < item.options.length), 'Pre-S1 objective items require four valid options');
 expect((preS1?.questions || []).filter((item) => item.writingTask).length === 1, 'Pre-S1 readiness mock should contain one writing self-check task');
+expect((preS1?.questions || []).filter((item) => item.section === 'Section D · Extended reading').length === 4, 'Pre-S1 readiness mock should contain four extended-reading questions');
+expect((preS1?.questions || []).filter((item) => item.section === 'Section E · Integrated cloze').length === 6, 'Pre-S1 readiness mock should contain six integrated-cloze questions');
+expect((preS1?.questions || []).filter((item) => item.section === 'Section E · Integrated cloze').every((item) => item.passage?.title && item.promptZh && item.explanationZh), 'Integrated-cloze items require a passage and bilingual support');
 
 const preS1Guide = ctx.window.PRE_S1_REVIEW_GUIDE;
 expect(preS1Guide?.title && preS1Guide?.titleZh, 'Pre-S1 revision guide titles are missing');
