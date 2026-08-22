@@ -363,3 +363,5 @@ Public integrated-skills and quest-demo verification succeeded at the cache-bust
 Local grammar-bank verification succeeded. S1 Passive Voice Quest and Conditionals Quest each loaded 1/12 with three grammar clues and four choices. The new S1 Grammar in School and Community bank loaded 1/18 with a visible “Complete the message” type label and correct-answer feedback. The S2 evidence-and-viewpoints bank and S3 formal-response bank each loaded 1/18 with four choices and their respective question-format labels.
 
 S1–S3 grammar expansion audit passed. New original content includes 12 S1 Passive Voice Quest rounds, 12 S1 Conditionals Quest rounds, and 18 contextual grammar items each for S1, S2 and S3. All new question banks use defined-answer objective feedback and rotating task labels; full-site and Gemini-page audits also passed.
+
+Public grammar-expansion verification succeeded at the cache-busted secondary URL. S1 Passive Voice Quest loaded 1/12 and produced correct-answer feedback; S1 Conditionals Quest loaded 1/12 with three grammar clues. The new S1, S2 and S3 grammar banks loaded 1/18 each and displayed their contextual question-format labels.
