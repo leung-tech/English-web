@@ -65,78 +65,48 @@
   const routes = {
     read: {
       token: 'R', color: '#214d7a', tint: '#eef7fc', label: 'Read', labelZh: '閱讀理解', title: 'Read with confidence', titleZh: '建立自信閱讀',
-      description: 'Understand stories, notices and information texts.', descriptionZh: '閱讀短文、故事和實用文本，找出關鍵資料、主旨和簡單推論。',
+      description: 'Read short texts and find the answer.', descriptionZh: '閱讀短文，找出答案。',
       tip: '先圈出題目中的關鍵字，再回到文章找相關句子。',
       modules: [
-        { id: 'reading', symbol: 'R', title: 'Reading comprehension', titleZh: '閱讀理解', description: 'Stories, notices and main ideas', descriptionZh: '短文、故事與主旨理解', sessions: 10 },
-        { id: 'reading-details', symbol: 'K', title: 'Key detail hunter', titleZh: '關鍵細節搜尋', description: 'People, places, times and actions', descriptionZh: '人物、地點、時間與細節', sessions: 10 },
+        { id: 'reading', symbol: 'R', title: 'Reading comprehension', titleZh: '閱讀理解', description: 'Read and choose', descriptionZh: '閱讀再選答案', sessions: 10 },
+        { id: 'reading-details', symbol: 'K', title: 'Key detail hunter', titleZh: '關鍵細節搜尋', description: 'Find key details', descriptionZh: '找出重點資料', sessions: 10 },
         { id: 'advanced-reading', symbol: '★', title: 'Advanced reading workshop', titleZh: '進階閱讀工作坊', description: 'P4–P6 genres, inference and model analysis', descriptionZh: '小四至小六多體裁閱讀、推論及範例解析', sessions: 5, minGrade: 4 },
-        { id: 's1-bridge-reading-cloze', symbol: 'S1', title: 'S1 Bridge: Reading & cloze', titleZh: '中一銜接：閱讀與綜合填空', description: 'Original school-life reading and grammar-in-context', descriptionZh: '原創校園生活閱讀及語境綜合填空', sessions: 10, minGrade: 6, s1Bridge: true },
-        { id: 's1-core-reading', symbol: 'S1+', title: 'S1 Core: Reading workshop', titleZh: '中一核心：閱讀工作坊', description: 'Original profiles, emails and blogs with evidence finding', descriptionZh: '原創人物簡介、電郵及網誌閱讀，練習找證據', sessions: 12, minGrade: 6, s1Core: true },
-        { id: 's2-develop-reading', symbol: 'S2', title: 'S2 Develop: Compare and Connect', titleZh: '中二發展：比較與連結', description: 'Original paired texts on choices, evidence and purpose', descriptionZh: '原創配對文本，練習選擇、證據與寫作目的', sessions: 12, minGrade: 6, s2Develop: true },
-        { id: 's2-connect-reading', symbol: 'S2+', title: 'S2 Connect: Sources and voices', titleZh: '中二連結：資料來源與聲音', description: 'Original paired texts on audience, purpose and reliable information', descriptionZh: '原創配對文本，練習受眾、目的及可靠資料', sessions: 12, minGrade: 6, s2Connect: true },
-        { id: 's2-action-reading', symbol: 'S2A', title: 'S2 Action: Community and environment', titleZh: '中二行動：社區與環境', description: 'Original paired texts on evidence, practical action and community care', descriptionZh: '原創配對文本，練習證據、實際行動及社區關懷', sessions: 12, minGrade: 6, s2Action: true }
       ]
     },
     write: {
       token: 'W', color: '#d97463', tint: '#fff2ef', label: 'Write', labelZh: '寫作與編輯', title: 'Write clear English', titleZh: '寫出清晰英語',
-      description: 'Build accurate sentences and organised ideas.', descriptionZh: '由詞語排序、句子改錯到段落構思，建立準確而有條理的寫作習慣。',
+      description: 'Build clear sentences and ideas.', descriptionZh: '寫出清楚句子和想法。',
       tip: '寫完後先檢查主語、動詞、大小寫和句號，再讀一次是否通順。',
       modules: [
-        { id: 'sentence-builder', symbol: 'S', title: 'Sentence builder', titleZh: '句子重組', description: 'Turn word groups into full sentences', descriptionZh: '重組詞語，寫成完整句子', sessions: 8 },
-        { id: 'proofreading', symbol: 'E', title: 'Proofreading', titleZh: '改錯練習', description: 'Spot grammar and spelling slips', descriptionZh: '找出常見文法與拼寫錯誤', sessions: 8 },
-        { id: 'writing-plan', symbol: 'P', title: 'Writing planner', titleZh: '寫作構思', description: 'Plan complete sentences and paragraphs', descriptionZh: '用完整句子組織小段落', sessions: 6 },
+        { id: 'sentence-builder', symbol: 'S', title: 'Sentence builder', titleZh: '句子重組', description: 'Make a sentence', descriptionZh: '組成完整句子', sessions: 8 },
+        { id: 'proofreading', symbol: 'E', title: 'Proofreading', titleZh: '改錯練習', description: 'Find the mistake', descriptionZh: '找出錯誤', sessions: 8 },
+        { id: 'writing-plan', symbol: 'P', title: 'Writing planner', titleZh: '寫作構思', description: 'Plan your writing', descriptionZh: '規劃你的寫作', sessions: 6 },
         { id: 'writing-models', symbol: '★', title: 'High-score models', titleZh: '呈分試高分範文', description: 'P4–P6 model writing and scoring points', descriptionZh: '小四至小六範文與評分要點', sessions: 0, minGrade: 4, assessment: true },
-        { id: 's1-core-writing', symbol: 'S1+', title: 'S1 Core: Writing workshop', titleZh: '中一核心：寫作工作坊', description: 'Original email, recount and school-improvement responses', descriptionZh: '原創電郵、記敘及校園改善回應寫作', sessions: 3, minGrade: 6, s1Core: true },
-        { id: 's2-develop-writing', symbol: 'S2', title: 'S2 Develop: Writing choices', titleZh: '中二發展：選擇寫作', description: 'Original recommendation, recount and comparison responses', descriptionZh: '原創推薦、記敘及比較回應寫作', sessions: 3, minGrade: 6, s2Develop: true },
-        { id: 's2-connect-writing', symbol: 'S2+', title: 'S2 Connect: Inform an audience', titleZh: '中二連結：向受眾傳達訊息', description: 'Original news, update-email and responsible-notice writing', descriptionZh: '原創新聞、更新電郵及負責任通告寫作', sessions: 3, minGrade: 6, s2Connect: true },
-        { id: 's2-action-writing', symbol: 'S2A', title: 'S2 Action: Propose a change', titleZh: '中二行動：提出改變建議', description: 'Original persuasive email, proposal and community-action article', descriptionZh: '原創說服電郵、建議書及社區行動文章', sessions: 3, minGrade: 6, s2Action: true },
-        { id: 's2-action-writing-advanced', symbol: 'S2A+', title: 'S2 Action: Advanced writing lab', titleZh: '中二行動：進階寫作室', description: 'Evidence-led proposal writing with source-pack guidance', descriptionZh: '運用資料包引導的證據型建議書寫作', sessions: 1, minGrade: 6, s2Action: true }
       ]
     },
     listen: {
       token: 'L', color: '#4e8875', tint: '#eff9f4', label: 'Listen', labelZh: '聆聽與口語', title: 'Listen, then speak', titleZh: '先聽再說',
-      description: 'Listen for key details, then speak in complete sentences.', descriptionZh: '先聽重點，再選答案；完成後查看逐字稿，並用完整句子開口說英語。',
+      description: 'Listen. Then speak.', descriptionZh: '先聽，再說。',
       tip: '利用準備時間先看選項，預測可能聽到的人物、地點、數字或動作。',
       modules: [
-        { id: 'listening', symbol: 'L', title: 'Listening lab', titleZh: '聆聽練習室', description: 'Replayable dialogues and short stories', descriptionZh: '可重播的短對話與故事', sessions: 10 },
+        { id: 'listening', symbol: 'L', title: 'Listening lab', titleZh: '聆聽練習室', description: 'Listen again', descriptionZh: '可重播聆聽', sessions: 10 },
         { id: 'speaking', symbol: 'S', title: 'Speak aloud', titleZh: '朗讀與表達', descriptionZh: '聽示範後按計劃完成個人短講', description: 'Listen to a model, then build your own talk', sessions: 5 },
         { id: 'listening-vocab', symbol: 'V', title: 'Listening vocabulary', titleZh: '聆聽詞彙卡', description: 'Reveal, hear and use key listening words', descriptionZh: '翻開、聆聽及運用聆聽重點詞彙', sessions: 10, minGrade: 4 },
         { id: 'listening-check', symbol: 'Q', title: 'Listening quick check', titleZh: '聽後小測', description: 'Short replayable clips with instant feedback', descriptionZh: '可重播短句配合即時中英回饋', sessions: 7, minGrade: 4 },
         { id: 'roleplay', symbol: 'R', title: 'Role-play practice', titleZh: '角色對話', description: 'Take both roles in useful school-life dialogues', descriptionZh: '在實用校園情境中練習 A、B 角色對話', sessions: 3, minGrade: 4 },
-        { id: 's1-bridge-listening', symbol: 'S1', title: 'S1 Bridge: School life listening', titleZh: '中一銜接：校園生活聆聽', description: 'Replayable announcements and planning dialogues', descriptionZh: '可重播的校園公告與策劃對話', sessions: 8, minGrade: 6, s1Bridge: true },
-        { id: 's1-core-listening', symbol: 'S1+', title: 'S1 Core: Listening lab', titleZh: '中一核心：聆聽練習室', description: 'Original timetable and club-interview listening tasks', descriptionZh: '原創時間表公告及社團訪問聆聽任務', sessions: 8, minGrade: 6, s1Core: true },
-        { id: 's1-core-speaking', symbol: 'S1+', title: 'S1 Core: Speaking studio', titleZh: '中一核心：口語練習室', description: 'Original club introduction, clarification and opinion tasks', descriptionZh: '原創社團介紹、要求澄清及意見表達任務', sessions: 3, minGrade: 6, s1Core: true },
-        { id: 's2-develop-listening', symbol: 'S2', title: 'S2 Develop: Listening choices', titleZh: '中二發展：選擇聆聽', description: 'Original meetings, interviews and radio practice', descriptionZh: '原創會議、訪問及電台節目聆聽', sessions: 12, minGrade: 6, s2Develop: true },
-        { id: 's2-develop-speaking', symbol: 'S2', title: 'S2 Develop: Speaking choices', titleZh: '中二發展：選擇口語', description: 'Original recommendation, comparison and response tasks', descriptionZh: '原創推薦、比較及回應口語任務', sessions: 3, minGrade: 6, s2Develop: true },
-        { id: 's2-connect-listening', symbol: 'S2+', title: 'S2 Connect: Hear the message', titleZh: '中二連結：聽清訊息', description: 'Original briefings, club meetings and digital-safety listening', descriptionZh: '原創簡介會、學會會議及網絡安全聆聽', sessions: 12, minGrade: 6, s2Connect: true },
-        { id: 's2-connect-speaking', symbol: 'S2+', title: 'S2 Connect: Report and respond', titleZh: '中二連結：報告與回應', description: 'Original event-report, summary and message-response speaking', descriptionZh: '原創活動報告、總結及訊息回應口語', sessions: 3, minGrade: 6, s2Connect: true },
-        { id: 's2-action-listening', symbol: 'S2A', title: 'S2 Action: Hear the plan', titleZh: '中二行動：聽懂行動計劃', description: 'Original school briefing, club meeting and community interview', descriptionZh: '原創學校簡介會、學會會議及社區訪問', sessions: 12, minGrade: 6, s2Action: true },
-        { id: 's2-action-speaking', symbol: 'S2A', title: 'S2 Action: Recommend and report', titleZh: '中二行動：推薦與報告', description: 'Original green-action, project-comparison and survey-report speaking', descriptionZh: '原創環保行動、專題比較及調查報告口語', sessions: 3, minGrade: 6, s2Action: true },
-        { id: 's2-action-dialogues', symbol: 'S2A+', title: 'S2 Action: Community dialogue lab', titleZh: '中二行動：社區對話室', description: 'Original evidence-led meetings with role replay and response choices', descriptionZh: '原創證據型會議對話，附角色重播及回應選擇', sessions: 4, minGrade: 6, s2Action: true }
       ]
     },
     language: {
       token: 'A', color: '#e1a443', tint: '#fff9ec', label: 'Apply', labelZh: '語言運用', title: 'Apply language well', titleZh: '靈活運用英語',
-      description: 'Use vocabulary, spelling and grammar in context.', descriptionZh: '透過分級字詞、拼寫、文法與句型，把英語知識用在合適的語境中。',
+      description: 'Use words and grammar.', descriptionZh: '運用字詞和文法。',
       tip: '做時態題時，先找時間提示；做句子題時，先找誰在做這個動作。',
       modules: [
-        { id: 'vocabulary', symbol: 'V', title: 'Vocabulary & spelling', titleZh: '字詞與拼寫', description: 'Core words, spelling and useful topics', descriptionZh: '核心字詞、拼寫與主題詞彙', sessions: 12 },
-        { id: 'grammar', symbol: 'G', title: 'Grammar & patterns', titleZh: '文法與句型', description: 'Tenses, patterns and language use', descriptionZh: '時態、句型與語言運用', sessions: 8 },
+        { id: 'vocabulary', symbol: 'V', title: 'Vocabulary & spelling', titleZh: '字詞與拼寫', description: 'Learn useful words', descriptionZh: '學習實用字詞', sessions: 12 },
+        { id: 'grammar', symbol: 'G', title: 'Grammar & patterns', titleZh: '文法與句型', description: 'Try grammar', descriptionZh: '練習文法', sessions: 8 },
         { id: 'junior-game', symbol: '♪', title: 'Phonics & story game', titleZh: '拼音與故事遊戲', description: 'Hear a word or clue, then make a playful choice', descriptionZh: '聽字詞或故事線索，再作有趣選擇', sessions: 8, maxGrade: 3 },
         { id: 'word-match', symbol: '↔', title: 'Word Match', titleZh: '單字配對', description: 'Reveal word clues and build everyday vocabulary', descriptionZh: '翻開單字線索，建立生活英語詞彙', sessions: 6, maxGrade: 3 },
         { id: 'pre-s1-mock', symbol: '◎', title: 'Pre-S1 readiness mock', titleZh: '中一分班試英語模擬', description: 'Original P6 practice in listening, reading, language use and writing', descriptionZh: '原創小六升中銜接：聆聽、閱讀、語言運用及寫作', sessions: 12, minGrade: 6, assessmentMock: true },
         { id: 'pre-s1-review', symbol: '✓', title: 'Pre-S1 vocabulary & grammar review', titleZh: '中一分班試詞彙與文法重點複習', description: 'A bilingual checklist with examples and editing reminders', descriptionZh: '附例句及改錯提醒的雙語重點清單', sessions: 20, minGrade: 6, reviewGuide: true },
-        { id: 's1-bridge-grammar', symbol: 'S1', title: 'S1 Bridge: School Life & Routines', titleZh: '中一銜接：校園生活與日常作息', description: 'Original grammar in familiar school-life texts', descriptionZh: '透過熟悉校園文本學習原創中一基礎文法', sessions: 12, minGrade: 6, s1Bridge: true },
-        { id: 's1-bridge-vocabulary', symbol: 'S1', title: 'S1 Bridge: School life vocabulary', titleZh: '中一銜接：校園生活詞彙', description: 'Learn and use useful words for secondary-school routines', descriptionZh: '學習及運用中學日常生活實用詞彙', sessions: 12, minGrade: 6, s1Bridge: true },
-        { id: 's1-core-grammar', symbol: 'S1+', title: 'S1 Core: Grammar in context', titleZh: '中一核心：語境文法', description: 'Original past, future, comparison, question and pronoun practice', descriptionZh: '原創過去、未來、比較、問句及代名詞練習', sessions: 16, minGrade: 6, s1Core: true },
-        { id: 's1-core-vocabulary', symbol: 'S1+', title: 'S1 Core: Vocabulary builder', titleZh: '中一核心：詞彙建構', description: 'Original learning-habit and school-community vocabulary', descriptionZh: '原創學習習慣及校園社區詞彙', sessions: 18, minGrade: 6, s1Core: true },
-        { id: 's2-develop-grammar', symbol: 'S2', title: 'S2 Develop: Grammar in context', titleZh: '中二發展：語境文法', description: 'Original experience, modal and comparison practice', descriptionZh: '原創經驗、情態動詞及比較練習', sessions: 16, minGrade: 6, s2Develop: true },
-        { id: 's2-develop-vocabulary', symbol: 'S2', title: 'S2 Develop: Vocabulary choices', titleZh: '中二發展：選擇詞彙', description: 'Original vocabulary for progress, choices and responsibility', descriptionZh: '原創進展、選擇及責任詞彙', sessions: 18, minGrade: 6, s2Develop: true },
-        { id: 's2-connect-grammar', symbol: 'S2+', title: 'S2 Connect: Grammar in context', titleZh: '中二連結：語境文法', description: 'Original relative-clause, passive and reported-speech practice', descriptionZh: '原創關係子句、被動語態及間接引語練習', sessions: 24, minGrade: 6, s2Connect: true },
-        { id: 's2-connect-vocabulary', symbol: 'S2+', title: 'S2 Connect: Media messages', titleZh: '中二連結：媒體訊息詞彙', description: 'Original vocabulary for reporting, sources and responsible sharing', descriptionZh: '原創報道、資料來源及負責任分享詞彙', sessions: 26, minGrade: 6, s2Connect: true },
-        { id: 's2-action-grammar', symbol: 'S2A', title: 'S2 Action: Grammar in context', titleZh: '中二行動：語境文法', description: 'Original quantity, purpose and first-conditional practice', descriptionZh: '原創數量、目的及第一類條件句練習', sessions: 16, minGrade: 6, s2Action: true },
-        { id: 's2-action-vocabulary', symbol: 'S2A', title: 'S2 Action: Community words', titleZh: '中二行動：社區詞彙', description: 'Original sustainability, facility and participation vocabulary', descriptionZh: '原創可持續生活、設施及參與詞彙', sessions: 18, minGrade: 6, s2Action: true }
       ]
     }
   };

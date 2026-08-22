@@ -1,0 +1,272 @@
+(() => {
+  'use strict';
+
+  const root = document.querySelector('#secondary-app');
+  const $ = (selector) => document.querySelector(selector);
+  const safeGet = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
+  const safeSet = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+  const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' })[char]);
+  const letters = ['A', 'B', 'C', 'D'];
+  const state = { year: 's1', stage: 's1-bridge', route: 'read', moduleId: null, index: 0, selected: null, checked: false };
+  const progressKey = 'secondary-english-studio-progress-v1';
+  const progress = () => safeGet(progressKey, { completed: 0, correct: 0, modules: {} });
+  const mark = (moduleId, correct) => {
+    const record = progress();
+    record.completed += 1;
+    if (correct) record.correct += 1;
+    record.modules[moduleId] = (record.modules[moduleId] || 0) + 1;
+    safeSet(progressKey, record);
+  };
+
+  const stageList = [
+    { id:'s1-bridge', year:'s1', code:'S1 START', title:'School Life', titleZh:'校園生活起步', note:'A gentle bridge from P6 to S1.', noteZh:'由小六平穩銜接中一。' },
+    { id:'s1-core', year:'s1', code:'S1 CORE', title:'Everyday English', titleZh:'中一核心英語', note:'Build clear language for school and community.', noteZh:'建立校園與社區英語基礎。' },
+    { id:'s2-develop', year:'s2', code:'S2 DEVELOP', title:'Experiences & Choices', titleZh:'經驗與選擇', note:'Compare evidence and make thoughtful choices.', noteZh:'比較證據，作出有理選擇。' },
+    { id:'s2-connect', year:'s2', code:'S2 CONNECT', title:'Messages & Media', titleZh:'訊息與媒體', note:'Understand sources, audience and purpose.', noteZh:'理解來源、受眾與目的。' },
+    { id:'s2-action', year:'s2', code:'S2 ACTION', title:'Community & Environment', titleZh:'社區與環境', note:'Notice a problem. Propose an action.', noteZh:'發現問題，提出行動。' }
+  ];
+
+  const routeMeta = {
+    read: { token:'R', title:'Read', zh:'閱讀', note:'Read closely. Find evidence.', noteZh:'細讀文章，找出證據。' },
+    write: { token:'W', title:'Write', zh:'寫作', note:'Plan clearly. Write with purpose.', noteZh:'清楚規劃，有目的地寫作。' },
+    listen: { token:'L', title:'Listen & Speak', zh:'聽說', note:'Listen for meaning. Respond clearly.', noteZh:'聽懂意思，清楚回應。' },
+    language: { token:'A', title:'Apply', zh:'語言運用', note:'Use grammar and words in context.', noteZh:'在情境中運用文法與詞彙。' }
+  };
+
+  const moduleRegistry = [
+    { id:'s1-bridge-grammar', stage:'s1-bridge', route:'language', symbol:'G', title:'Grammar in school life', zh:'校園語境文法', kind:'bridgeGrammar' },
+    { id:'s1-bridge-vocabulary', stage:'s1-bridge', route:'language', symbol:'V', title:'School life words', zh:'校園生活詞彙', kind:'bridgeVocabulary' },
+    { id:'s1-bridge-reading', stage:'s1-bridge', route:'read', symbol:'R', title:'Reading & cloze', zh:'閱讀與綜合填空', kind:'bridgeReading' },
+    { id:'s1-bridge-listening', stage:'s1-bridge', route:'listen', symbol:'L', title:'Listening at school', zh:'校園聆聽', kind:'bridgeListening' },
+
+    { id:'s1-core-grammar', stage:'s1-core', route:'language', symbol:'G', title:'Grammar in context', zh:'語境文法', kind:'grammar', source:'S1_CORE_PATH' },
+    { id:'s1-core-vocabulary', stage:'s1-core', route:'language', symbol:'V', title:'Vocabulary builder', zh:'詞彙建構', kind:'vocabulary', source:'S1_CORE_PATH' },
+    { id:'s1-core-reading', stage:'s1-core', route:'read', symbol:'R', title:'Reading workshop', zh:'閱讀工作坊', kind:'reading', source:'S1_CORE_PATH' },
+    { id:'s1-core-listening', stage:'s1-core', route:'listen', symbol:'L', title:'Listening lab', zh:'聆聽練習室', kind:'listening', source:'S1_CORE_PATH' },
+    { id:'s1-core-writing', stage:'s1-core', route:'write', symbol:'W', title:'Writing workshop', zh:'寫作工作坊', kind:'writing', source:'S1_CORE_PATH' },
+    { id:'s1-core-speaking', stage:'s1-core', route:'listen', symbol:'S', title:'Speaking studio', zh:'口語練習室', kind:'speaking', source:'S1_CORE_PATH' },
+
+    { id:'s2-develop-grammar', stage:'s2-develop', route:'language', symbol:'G', title:'Grammar in context', zh:'語境文法', kind:'grammar', source:'S2_EXPERIENCES_CHOICES' },
+    { id:'s2-develop-vocabulary', stage:'s2-develop', route:'language', symbol:'V', title:'Vocabulary choices', zh:'選擇詞彙', kind:'vocabulary', source:'S2_EXPERIENCES_CHOICES' },
+    { id:'s2-develop-reading', stage:'s2-develop', route:'read', symbol:'R', title:'Compare & connect', zh:'比較與連結', kind:'reading', source:'S2_EXPERIENCES_CHOICES' },
+    { id:'s2-develop-listening', stage:'s2-develop', route:'listen', symbol:'L', title:'Listening choices', zh:'選擇聆聽', kind:'listening', source:'S2_EXPERIENCES_CHOICES' },
+    { id:'s2-develop-writing', stage:'s2-develop', route:'write', symbol:'W', title:'Writing choices', zh:'選擇寫作', kind:'writing', source:'S2_EXPERIENCES_CHOICES' },
+    { id:'s2-develop-speaking', stage:'s2-develop', route:'listen', symbol:'S', title:'Speaking choices', zh:'選擇口語', kind:'speaking', source:'S2_EXPERIENCES_CHOICES' },
+
+    { id:'s2-connect-grammar', stage:'s2-connect', route:'language', symbol:'G', title:'Grammar in context', zh:'語境文法', kind:'grammar', source:'S2_MESSAGES_MEDIA' },
+    { id:'s2-connect-vocabulary', stage:'s2-connect', route:'language', symbol:'V', title:'Media messages', zh:'媒體訊息詞彙', kind:'vocabulary', source:'S2_MESSAGES_MEDIA' },
+    { id:'s2-connect-reading', stage:'s2-connect', route:'read', symbol:'R', title:'Sources & voices', zh:'資料來源與聲音', kind:'reading', source:'S2_MESSAGES_MEDIA' },
+    { id:'s2-connect-listening', stage:'s2-connect', route:'listen', symbol:'L', title:'Hear the message', zh:'聽清訊息', kind:'listening', source:'S2_MESSAGES_MEDIA' },
+    { id:'s2-connect-writing', stage:'s2-connect', route:'write', symbol:'W', title:'Inform an audience', zh:'向受眾傳達訊息', kind:'writing', source:'S2_MESSAGES_MEDIA' },
+    { id:'s2-connect-speaking', stage:'s2-connect', route:'listen', symbol:'S', title:'Report & respond', zh:'報告與回應', kind:'speaking', source:'S2_MESSAGES_MEDIA' },
+
+    { id:'s2-action-grammar', stage:'s2-action', route:'language', symbol:'G', title:'Grammar in context', zh:'語境文法', kind:'grammar', source:'S2_COMMUNITY_ENVIRONMENT' },
+    { id:'s2-action-vocabulary', stage:'s2-action', route:'language', symbol:'V', title:'Community words', zh:'社區詞彙', kind:'vocabulary', source:'S2_COMMUNITY_ENVIRONMENT' },
+    { id:'s2-action-reading', stage:'s2-action', route:'read', symbol:'R', title:'Community & environment', zh:'社區與環境閱讀', kind:'reading', source:'S2_COMMUNITY_ENVIRONMENT' },
+    { id:'s2-action-listening', stage:'s2-action', route:'listen', symbol:'L', title:'Hear the plan', zh:'聽懂行動計劃', kind:'listening', source:'S2_COMMUNITY_ENVIRONMENT' },
+    { id:'s2-action-writing', stage:'s2-action', route:'write', symbol:'W', title:'Propose a change', zh:'提出改變建議', kind:'writing', source:'S2_COMMUNITY_ENVIRONMENT' },
+    { id:'s2-action-advanced', stage:'s2-action', route:'write', symbol:'W+', title:'Advanced writing lab', zh:'進階寫作室', kind:'advancedWriting', source:'S2_COMMUNITY_ENVIRONMENT' },
+    { id:'s2-action-dialogue', stage:'s2-action', route:'listen', symbol:'D', title:'Community dialogue lab', zh:'社區對話室', kind:'dialogues', source:'S2_COMMUNITY_ENVIRONMENT' },
+    { id:'s2-action-speaking', stage:'s2-action', route:'listen', symbol:'S', title:'Recommend & report', zh:'推薦與報告', kind:'speaking', source:'S2_COMMUNITY_ENVIRONMENT' }
+  ];
+
+  const source = (name) => window[name] || {};
+  const stage = () => stageList.find((item) => item.id === state.stage) || stageList[0];
+  const modulesForStage = () => moduleRegistry.filter((module) => module.stage === state.stage);
+  const modulesForRoute = () => modulesForStage().filter((module) => module.route === state.route);
+  const currentModule = () => moduleRegistry.find((module) => module.id === state.moduleId) || modulesForRoute()[0] || modulesForStage()[0];
+
+  function normalizeTuple(tuple, type) {
+    if (!Array.isArray(tuple)) return tuple || {};
+    if (type === 'grammar') return { id: tuple[0], contextTitle: tuple[1], prompt: tuple[2], promptZh: tuple[3], options: tuple[4], answer: tuple[5], explanation: tuple[6], explanationZh: tuple[7], hint: tuple[8] };
+    if (type === 'reading') return { id: tuple[0], contextTitle: tuple[1], context: tuple[2], prompt: tuple[3], promptZh: tuple[4], options: tuple[5], answer: tuple[6], explanation: tuple[7], explanationZh: tuple[8], hint: tuple[9] };
+    if (type === 'vocabulary') return { word: tuple[0], zh: tuple[1], definition: tuple[2], example: tuple[3], prompt: tuple[4], answer: tuple[5], options: tuple[6] };
+    return {};
+  }
+
+  function itemsFor(module) {
+    if (!module) return [];
+    if (module.kind === 'bridgeGrammar') return (window.S1_BRIDGE_GRAMMAR?.questions || []).map((item) => ({ ...item, type:'quiz' }));
+    if (module.kind === 'bridgeReading') return (window.S1_BRIDGE_SKILLS?.readingCloze?.questions || []).map((item) => ({ ...item, type:'quiz' }));
+    if (module.kind === 'bridgeVocabulary') return (window.S1_BRIDGE_SKILLS?.vocabulary?.items || []).map((item) => ({ ...normalizeTuple(item, 'vocabulary'), type:'vocabulary' }));
+    if (module.kind === 'bridgeListening') return flattenListening(window.S1_BRIDGE_SKILLS?.listening?.scripts || []);
+
+    const data = source(module.source);
+    if (module.kind === 'grammar') return (data.grammar?.questions || []).map((item) => ({ ...normalizeTuple(item, 'grammar'), type:'quiz' }));
+    if (module.kind === 'vocabulary') return (data.vocabulary?.items || []).map((item) => ({ ...normalizeTuple(item, 'vocabulary'), type:'vocabulary' }));
+    if (module.kind === 'reading') {
+      const reading = data.reading || {};
+      if (reading.questions) return reading.questions.map((item) => ({ ...normalizeTuple(item, 'reading'), type:'quiz' }));
+      return (reading.sets || []).flatMap((set) => (set.questions || []).map((tuple) => ({
+        id: tuple[0], contextTitle: set.title, contextTitleZh: set.titleZh,
+        context: (set.texts || []).map((text) => `${text.label || ''} — ${text.title || ''}\n${text.text || ''}`).join('\n\n'),
+        prompt: tuple[1], promptZh: tuple[2], options: tuple[3], answer: tuple[4], explanation: tuple[5], explanationZh: tuple[6], hint: tuple[7], type:'quiz'
+      })));
+    }
+    if (module.kind === 'listening') return flattenListening(data.listening?.scripts || []);
+    if (module.kind === 'writing') return (data.writing || []).filter((item) => item.level !== 'advanced').map((item) => ({ ...item, type:'writing' }));
+    if (module.kind === 'advancedWriting') return (data.advancedWriting || data.writing || []).filter((item) => item.level === 'advanced').map((item) => ({ ...item, type:'advancedWriting' }));
+    if (module.kind === 'speaking') return (data.speaking || []).map((item) => ({ ...item, type:'speaking' }));
+    if (module.kind === 'dialogues') return (data.dialogues || []).map((item) => ({ ...item, type:'dialogue' }));
+    return [];
+  }
+
+  function flattenListening(scripts) {
+    return scripts.flatMap((script) => (script.questions || []).map((raw, questionIndex) => {
+      const item = Array.isArray(raw) ? { prompt:raw[0], promptZh:raw[1], options:raw[2], answer:raw[3], explanation:raw[4], explanationZh:raw[5] } : raw;
+      return { ...item, id:`${script.id || script.title}-${questionIndex}`, type:'listening', contextTitle:script.title, contextTitleZh:script.titleZh, script:script.script || script.text || '' };
+    }));
+  }
+
+  const speak = (text) => {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const voice = new SpeechSynthesisUtterance(text);
+    voice.lang = 'en-GB';
+    voice.rate = .86;
+    window.speechSynthesis.speak(voice);
+  };
+
+  function chooseStage(stageId) {
+    const next = stageList.find((item) => item.id === stageId);
+    state.stage = stageId;
+    state.year = next?.year || 's1';
+    state.route = modulesForStage().some((item) => item.route === 'read') ? 'read' : 'language';
+    state.moduleId = modulesForRoute()[0]?.id || null;
+    state.index = 0; state.selected = null; state.checked = false;
+    render();
+  }
+
+  function chooseRoute(route) {
+    state.route = route;
+    state.moduleId = modulesForRoute()[0]?.id || null;
+    state.index = 0; state.selected = null; state.checked = false;
+    render();
+  }
+
+  function chooseModule(moduleId) {
+    state.moduleId = moduleId;
+    state.index = 0; state.selected = null; state.checked = false;
+    render();
+  }
+
+  function renderShell() {
+    const record = progress();
+    const activeStage = stage();
+    return `
+      <section class="hero">
+        <div>
+          <p class="eyebrow">S1–S2 ENGLISH PRACTICE · 中學英文練習</p>
+          <h1>Read with evidence.<br><em>Respond with purpose.</em></h1>
+          <p>Choose a stage and one skill. Build secure English for school, community and everyday ideas.</p>
+          <p class="zh">選擇階段及技能，逐步建立閱讀、寫作、聆聽、口語與語言運用能力。</p>
+        </div>
+        <aside class="hero-notice"><strong>${escape(activeStage.code)}</strong><p>${escape(activeStage.title)}<br><span class="zh">${escape(activeStage.titleZh)}</span></p><span class="notice-tag">ORIGINAL PRACTICE · 原創練習</span></aside>
+      </section>
+      <section class="workspace">
+        <aside class="rail">
+          <section><p class="eyebrow">YOUR PROGRESS · 學習進度</p><h2>${record.completed} tasks</h2><p>Local to this browser only.<br>只儲存在此瀏覽器。</p><div class="mini-progress"><i style="width:${Math.min(100, record.completed * 3)}%"></i></div></section>
+          <section><p class="eyebrow">CHOOSE A STAGE · 選擇階段</p><div class="stage-list">${stageList.map((item) => `<button class="stage-btn ${item.id === state.stage ? 'active' : ''}" data-stage="${item.id}"><b>${escape(item.code)} · ${escape(item.title)}</b><span>${escape(item.titleZh)}</span></button>`).join('')}</div></section>
+          <section><p class="eyebrow">CHOOSE A SKILL · 選擇技能</p><div class="route-list">${Object.entries(routeMeta).map(([id, meta]) => `<button class="route-btn ${id === state.route ? 'active' : ''}" data-route="${id}"><i class="route-token">${meta.token}</i><b>${meta.title}<span>${meta.zh}</span></b></button>`).join('')}</div></section>
+        </aside>
+        <section class="main-panel">${renderModules()}${renderTask()}</section>
+      </section>`;
+  }
+
+  function renderModules() {
+    const route = routeMeta[state.route];
+    const modules = modulesForRoute();
+    return `<header class="section-head"><div><p class="eyebrow">${escape(stage().code)} · ${escape(route.title.toUpperCase())}</p><h2>${escape(route.title)} <span class="zh">${escape(route.zh)}</span></h2></div><p>${escape(route.note)}<br><span class="zh">${escape(route.noteZh)}</span></p></header>
+      <div class="module-grid">${modules.length ? modules.map((module) => `<button class="module-card ${module.id === currentModule()?.id ? 'active' : ''}" data-module="${module.id}"><i class="module-symbol">${escape(module.symbol)}</i><h3>${escape(module.title)}</h3><p>${escape(module.zh)}</p><small>${escape(stage().code)} · ORIGINAL</small></button>`).join('') : '<div class="empty">Choose another skill. · 請選擇其他技能。</div>'}</div>`;
+  }
+
+  function renderTask() {
+    const module = currentModule();
+    if (!module) return '<section class="task-board"><div class="empty">This stage is being prepared. · 此階段正在準備中。</div></section>';
+    const items = itemsFor(module);
+    if (!items.length) return `<section class="task-board"><div class="empty">This original module is being prepared. · 此原創單元正在準備中。</div></section>`;
+    if (state.index >= items.length) state.index = 0;
+    const item = items[state.index];
+    const header = `<section class="task-board"><header class="task-top"><div><p class="eyebrow">${escape(stage().code)} · ${escape(module.title.toUpperCase())}</p><h2>${escape(module.title)} <span class="zh">${escape(module.zh)}</span></h2><small>Original practice · 原創練習</small></div><span class="step">${state.index + 1} / ${items.length}</span></header>`;
+    const body = renderItem(item, module, items.length);
+    return `${header}${body}</section>`;
+  }
+
+  function bilingualLine(english, chinese) {
+    return `${escape(english || '')}${chinese ? `<span class="zh">${escape(chinese)}</span>` : ''}`;
+  }
+
+  function renderItem(item, module) {
+    if (item.type === 'writing' || item.type === 'advancedWriting') return renderWriting(item, module);
+    if (item.type === 'speaking') return renderSpeaking(item, module);
+    if (item.type === 'dialogue') return renderDialogue(item, module);
+    const context = item.context || item.script || '';
+    const title = item.contextTitle || item.word || '';
+    const prompt = item.type === 'vocabulary' ? (item.prompt || `Which word matches: ${item.definition || item.word}?`) : item.prompt;
+    const promptZh = item.type === 'vocabulary' ? (item.zh || '') : item.promptZh;
+    const options = item.options || [];
+    const answer = Number(item.answer || 0);
+    return `${context ? `<article class="context"><strong>${escape(title || (item.type === 'listening' ? 'Listening script' : 'Read this text'))}</strong>${item.type === 'listening' ? `<button class="secondary" data-say="${escape(context)}">▶ Replay script · 重播內容</button>` : ''}<div>${escape(context)}</div></article>` : (item.type === 'vocabulary' ? `<article class="context"><strong>${escape(item.word)}</strong><span class="zh">${escape(item.zh || '')}</span><div>${escape(item.definition || '')}<br><em>${escape(item.example || '')}</em></div></article>` : '')}
+      <p class="prompt">${bilingualLine(prompt, promptZh)}</p>
+      <div class="options">${options.map((option, index) => { const resultClass = state.checked ? (index === answer ? 'correct' : (index === state.selected ? 'wrong' : '')) : (index === state.selected ? 'selected' : ''); return `<button class="option ${resultClass}" data-option="${index}"><b>${letters[index] || index + 1}</b><span>${escape(option)}</span></button>`; }).join('')}</div>
+      <div class="controls"><button class="primary" data-check="true">Check answer · 核對答案</button><button class="secondary" data-next="true">Next · 下一題</button>${item.hint ? `<button class="secondary" data-hint="${escape(item.hint)}">Hint · 提示</button>` : ''}</div>
+      ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Good thinking.' : 'Try the evidence again.'}</strong><br>${bilingualLine(item.explanation || '', item.explanationZh || '')}</div>` : ''}`;
+  }
+
+  function renderWriting(item) {
+    const pack = item.sourcePack || item.pack || [];
+    const plan = Array.isArray(item.paragraphMap || item.plan) ? (item.paragraphMap || item.plan) : (item.plan ? [item.plan] : []);
+    const target = item.minWords || item.minimumWords || (item.type === 'advancedWriting' ? 140 : 100);
+    return `${pack.length ? `<div class="writing-pack">${pack.map((part) => { const pair = Array.isArray(part) ? { title:part[0], text:part[1] } : part; return `<article><strong>${escape(pair.title || pair.label || '')}</strong><p>${escape(pair.text || pair.detail || pair.value || '')}</p></article>`; }).join('')}</div>` : ''}
+      <p class="prompt">${bilingualLine(item.prompt || item.title || 'Write your response.', item.promptZh || item.titleZh || '')}</p>
+      ${plan.length ? `<ol class="plan-list">${plan.map((step) => { const pair = Array.isArray(step) ? { title:step[0], text:step[1] } : step; return `<li>${escape(typeof pair === 'string' ? pair : pair.title || pair.text || '')}${typeof pair === 'object' && (pair.text || pair.zh) ? `<span class="zh">${escape(pair.text || pair.zh)}</span>` : ''}</li>`; }).join('')}</ol>` : ''}
+      ${item.languageBank?.length ? `<article class="context"><strong>Language bank · 句式庫</strong>${item.languageBank.map(escape).join(' · ')}</article>` : ''}
+      <textarea class="draft" id="draft" placeholder="Write in English here… · 在此以英文寫作…"></textarea>
+      <div class="word-row"><span id="word-count">0 words · 0 字</span><span>Target: ${target}+ words · 最少 ${target} 字</span></div>
+      <div class="controls"><button class="primary" data-record-writing="${target}">Record completion · 記錄完成</button><button class="secondary" data-say="${escape(item.model || item.prompt || '')}">▶ Replay task · 重播題目</button></div>
+      <div class="feedback">This is a completion self-check. It does not score language quality automatically.<span class="zh">此為完成自我檢查，不會自動評核語言質素。</span></div>`;
+  }
+
+  function renderSpeaking(item) {
+    const model = item.model || item.example || '';
+    const checks = Array.isArray(item.selfCheck || item.checklist) ? (item.selfCheck || item.checklist) : (item.selfCheck ? [item.selfCheck] : []);
+    return `<p class="prompt">${bilingualLine(item.prompt || item.title || 'Speak clearly and use your plan.', item.promptZh || item.titleZh || '')}</p>
+      ${model ? `<article class="context"><strong>Model · 示範</strong>${escape(model)}</article>` : ''}
+      <div class="controls"><button class="primary" data-say="${escape(model || item.prompt || '')}">▶ Play model · 播放示範</button></div>
+      ${checks.length ? `<ol class="plan-list">${checks.map((check) => `<li>${escape(check)}</li>`).join('')}</ol>` : ''}
+      <div class="feedback">Speak, adapt one detail, then self-check your completion. No automated speech-quality score is given.<span class="zh">先說一遍，再自行改動一個細節；本頁不會自動評核口語質素。</span></div>`;
+  }
+
+  function renderDialogue(item) {
+    const lines = item.lines || item.dialogue || [];
+    const checkpoint = item.checkpoints?.[0] || item.questions?.[0] || {};
+    const cleanLines = lines.map((line) => Array.isArray(line) ? { speaker:line[0], text:line[1] } : (typeof line === 'string' ? { speaker:'', text:line } : line));
+    const options = checkpoint.options || [];
+    const answer = Number(checkpoint.answer || 0);
+    return `<p class="prompt">${bilingualLine(item.goal || item.prompt || item.title || 'Listen, respond and adapt.', item.goalZh || item.promptZh || item.titleZh || '')}</p>
+      <div class="controls"><button class="primary" data-say="${escape(cleanLines.map((line) => line.text || line.line || '').join(' '))}">▶ Play dialogue · 播放完整對話</button></div>
+      <div class="dialogue">${cleanLines.map((line, index) => `<div class="line ${index % 2 ? 'b' : ''}"><b>${escape(line.speaker || line.role || '')}</b>${escape(line.text || line.line || '')}</div>`).join('')}</div>
+      ${checkpoint.prompt ? `<article class="context"><strong>${escape(checkpoint.prompt)}</strong><span class="zh">${escape(checkpoint.promptZh || '')}</span></article>
+      <div class="options">${options.map((option, index) => { const resultClass = state.checked ? (index === answer ? 'correct' : (index === state.selected ? 'wrong' : '')) : (index === state.selected ? 'selected' : ''); return `<button class="option ${resultClass}" data-option="${index}"><b>${letters[index] || index + 1}</b><span>${escape(option)}</span></button>`; }).join('')}</div>
+      <div class="controls"><button class="primary" data-check>Check answer · 核對答案</button>${state.checked ? '<button class="secondary" data-next>Next dialogue · 下一個對話</button>' : ''}</div>
+      ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Good thinking.' : 'Try the evidence again.'}</strong><br>${bilingualLine(checkpoint.explanation || '', checkpoint.explanationZh || '')}</div>` : ''}` : '<div class="feedback">Practise both roles. Then change one detail to make the dialogue your own.<span class="zh">練習兩個角色後，修改一個細節，讓對話變成你自己的版本。</span></div>'}`;
+  }
+
+  function bind() {
+    root.querySelectorAll('[data-stage]').forEach((button) => button.addEventListener('click', () => chooseStage(button.dataset.stage)));
+    root.querySelectorAll('[data-route]').forEach((button) => button.addEventListener('click', () => chooseRoute(button.dataset.route)));
+    root.querySelectorAll('[data-module]').forEach((button) => button.addEventListener('click', () => chooseModule(button.dataset.module)));
+    root.querySelectorAll('[data-option]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.selected = Number(button.dataset.option); render(); } }));
+    root.querySelectorAll('[data-check]').forEach((button) => button.addEventListener('click', () => { if (state.selected !== null) { const items = itemsFor(currentModule()); const item = items[state.index]; const answer = item.type === 'dialogue' ? item.checkpoints?.[0]?.answer : item.answer; state.checked = true; mark(currentModule().id, Number(answer || 0) === state.selected); render(); } }));
+    root.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => { const items = itemsFor(currentModule()); state.index = (state.index + 1) % items.length; state.selected = null; state.checked = false; render(); }));
+    root.querySelectorAll('[data-hint]').forEach((button) => button.addEventListener('click', () => { const message = document.createElement('div'); message.className = 'feedback'; message.innerHTML = `<strong>Hint · 提示</strong><br>${escape(button.dataset.hint)}`; button.closest('.task-board').appendChild(message); button.remove(); }));
+    root.querySelectorAll('[data-say]').forEach((button) => button.addEventListener('click', () => speak(button.dataset.say)));
+    const draft = $('#draft');
+    if (draft) draft.addEventListener('input', () => { const count = draft.value.trim().split(/\s+/).filter(Boolean).length; $('#word-count').textContent = `${count} words · ${count} 字`; });
+    root.querySelectorAll('[data-record-writing]').forEach((button) => button.addEventListener('click', () => { const count = ($('#draft')?.value || '').trim().split(/\s+/).filter(Boolean).length; const target = Number(button.dataset.recordWriting); const box = document.createElement('div'); box.className = `feedback ${count >= target ? 'good' : 'bad'}`; box.innerHTML = count >= target ? '<strong>✓ Completion recorded locally.</strong><br>Keep checking your evidence, organisation and accuracy.' : `<strong>Keep writing.</strong><br>You have ${count} words. Aim for at least ${target}.`; button.closest('.task-board').appendChild(box); if (count >= target) mark(currentModule().id, true); }));
+  }
+
+  function render() { root.innerHTML = renderShell(); bind(); }
+  state.moduleId = modulesForRoute()[0]?.id || null;
+  render();
+})();
