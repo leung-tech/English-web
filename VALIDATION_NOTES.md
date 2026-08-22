@@ -345,3 +345,5 @@ Public S3 DSE-preparation and learning-insights verification succeeded at the ca
 S1–S2 grammar-quest and genre-writing local verification succeeded. S1 Grammar Quest loaded round 1 of 12 with a three-item Grammar clues bank and four answer choices. S2 Narrative & Argument Scaffolds loaded item 1 of 2 with a three-card prompt pack, five-step paragraph map and original model exemplar.
 
 S1–S2 grammar-quest and genre-writing quality audit passed. S1 Grammar Quest includes 12 basic-to-intermediate contextual rounds and S2 Grammar Quest includes 12 intermediate argument-building rounds. Each year has two original genre scaffolds: narrative and argument, each with a source/prompt pack, paragraph map, language bank, model for analysis and self-check. Existing site and Gemini-page audits also passed.
+
+Public S1–S2 grammar-quest and genre-writing verification succeeded at the cache-busted secondary URL. S1 Grammar Quest loaded round 1 of 12 with a three-item Grammar clues bank and four answer choices. S2 Narrative & Argument Scaffolds loaded item 1 of 2 with a three-card pack, five-step plan and original model exemplar.
