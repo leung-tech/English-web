@@ -132,6 +132,9 @@
     { id:'s3-ready-advanced', stage:'s3-ready', route:'write', symbol:'W+', title:'Advanced writing lab', zh:'進階寫作室', kind:'advancedWriting', source:'S3_READY_PATHWAY' },
     { id:'s3-dse-grammar', stage:'s3-ready', route:'language', symbol:'D', title:'Senior-secondary grammar lab', zh:'高中銜接文法室', kind:'grammar', source:'S3_DSE_PREP' },
     { id:'s3-dse-writing', stage:'s3-ready', route:'write', symbol:'D+', title:'DSE bridge writing models', zh:'DSE 銜接寫作範本', kind:'advancedWriting', source:'S3_DSE_PREP' },
+    { id:'s3-integrated-assessment', stage:'s3-ready', route:'read', symbol:'IS', title:'Integrated skills assessment', zh:'綜合能力測驗', kind:'integrated', source:'S3_DSE_INTEGRATED' },
+    { id:'s3-integrated-writing', stage:'s3-ready', route:'write', symbol:'IR', title:'Integrated response planner', zh:'綜合回應規劃', kind:'advancedWriting', source:'S3_DSE_INTEGRATED' },
+    { id:'s3-listen-speak-integration', stage:'s3-ready', route:'listen', symbol:'LS', title:'Listen-to-speak simulations', zh:'聽力轉口語模擬', kind:'simulation', source:'S3_DSE_INTEGRATED' },
     { id:'s3-ready-dialogue', stage:'s3-ready', route:'listen', symbol:'D', title:'Evaluate and revise', zh:'評估與修訂', kind:'dialogues', source:'S3_READY_PATHWAY' },
     { id:'s3-ready-speaking', stage:'s3-ready', route:'listen', symbol:'S', title:'Present with evidence', zh:'以證據表達', kind:'speaking', source:'S3_READY_PATHWAY' },
     { id:'s3-critical-grammar', stage:'s3-ready', route:'language', symbol:'G+', title:'Critical grammar clinic', zh:'批判性思考文法診所', kind:'grammar', source:'S3_CRITICAL_PLUS' },
@@ -177,6 +180,11 @@
       })));
     }
     if (module.kind === 'listening') return flattenListening(data.listening?.scripts || []);
+    if (module.kind === 'integrated') return (data.integratedAssessments || []).flatMap((set) => (set.questions || []).map((tuple) => ({
+      id:tuple[0], contextTitle:set.title, contextTitleZh:set.titleZh,
+      context:(set.materials || []).map((material) => `${material[0]}\n${material[1]}`).join('\n\n'),
+      prompt:tuple[1], promptZh:tuple[2], options:tuple[3], answer:tuple[4], explanation:tuple[5], explanationZh:tuple[6], hint:tuple[7], type:'quiz'
+    })));
     if (module.kind === 'writing') return (data.writing || []).filter((item) => item.level !== 'advanced').map((item) => ({ ...item, type:'writing' }));
     if (module.kind === 'advancedWriting') return (data.advancedWriting || data.writing || []).filter((item) => item.level === 'advanced').map((item) => ({ ...item, type:'advancedWriting' }));
     if (module.kind === 'speaking') return (data.speaking || []).map((item) => ({ ...item, type:'speaking' }));
@@ -265,6 +273,7 @@
           <h1>Read with evidence.<br><em>Respond with purpose.</em></h1>
           <p>Choose a stage and one skill. Build secure English for school, community and everyday ideas.</p>
           <p class="zh">選擇階段及技能，逐步建立閱讀、寫作、聆聽、口語與語言運用能力。</p>
+          <div class="hero-actions"><button class="primary" data-try-s1-quest>Try S1 Grammar Quest · 試玩 S1 文法闖關</button><small>Choose an answer, then check it to see live feedback. · 選擇答案後核對，即可查看即時回饋。</small></div>
         </div>
         <aside class="hero-notice"><strong>${escape(activeStage.code)}</strong><p>${escape(activeStage.title)}<br><span class="zh">${escape(activeStage.titleZh)}</span></p><span class="notice-tag">ORIGINAL PRACTICE · 原創練習</span></aside>
       </section>
@@ -321,7 +330,7 @@
       ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Good thinking.' : 'Try the evidence again.'}</strong><br>${bilingualLine(item.explanation || '', item.explanationZh || '')}</div>${objectiveFeedback(module.id)}` : ''}`;
   }
 
-  function renderGame(item) {
+  function renderGame(item, module) {
     const options = item.options || [];
     const answer = Number(item.answer || 0);
     return `${item.phraseBank?.length ? `<article class="phrase-bank"><strong>${escape(item.bankLabel || 'Phrase bank · 片語庫')}</strong><div>${item.phraseBank.map((phrase) => `<span>${escape(phrase)}</span>`).join('')}</div></article>` : ''}
@@ -334,7 +343,9 @@
   function renderSimulation(item) {
     const rubric = item.rubric || [];
     const checks = item.selfCheck || [];
-    return `<article class="simulation-card"><strong>Scenario · 情境</strong><p>${escape(item.roleCard || '')}</p><span class="zh">${escape(item.roleCardZh || '')}</span><small>${escape(item.time || '')}<span class="zh">${escape(item.timeZh || '')}</span></small></article>
+    return `${item.audioScript ? `<article class="context"><strong>${escape(item.audioTitle || 'Listening input · 聆聽內容')}</strong><button class="secondary" data-say="${escape(item.audioScript)}">▶ Replay input · 重播內容</button><div>${escape(item.audioScript)}</div></article>` : ''}
+      ${item.listeningFocus?.length ? `<article class="phrase-bank"><strong>Listening note targets · 聆聽筆記重點</strong><div>${item.listeningFocus.map((focus) => `<span>${escape(focus)}</span>`).join('')}</div></article>` : ''}
+      <article class="simulation-card"><strong>Scenario · 情境</strong><p>${escape(item.roleCard || '')}</p><span class="zh">${escape(item.roleCardZh || '')}</span><small>${escape(item.time || '')}<span class="zh">${escape(item.timeZh || '')}</span></small></article>
       ${item.languageBank?.length ? `<article class="phrase-bank"><strong>Useful language · 有用語句</strong><div>${item.languageBank.map((phrase) => `<span>${escape(phrase)}</span>`).join('')}</div></article>` : ''}
       <div class="controls"><button class="primary" data-say="${escape(item.model || item.roleCard || '')}">▶ Play model · 播放示範</button></div>
       ${item.model ? `<article class="context"><strong>Model response · 示範回應</strong>${escape(item.model)}</article>` : ''}
@@ -350,6 +361,7 @@
     return `${pack.length ? `<div class="writing-pack">${pack.map((part) => { const pair = Array.isArray(part) ? { title:part[0], text:part[1] } : part; return `<article><strong>${escape(pair.title || pair.label || '')}</strong><p>${escape(pair.text || pair.detail || pair.value || '')}</p></article>`; }).join('')}</div>` : ''}
       <p class="prompt">${bilingualLine(item.prompt || item.title || 'Write your response.', item.promptZh || item.titleZh || '')}</p>
       ${plan.length ? `<ol class="plan-list">${plan.map((step) => { const pair = Array.isArray(step) ? { title:step[0], text:step[1] } : step; return `<li>${escape(typeof pair === 'string' ? pair : pair.title || pair.text || '')}${typeof pair === 'object' && (pair.text || pair.zh) ? `<span class="zh">${escape(pair.text || pair.zh)}</span>` : ''}</li>`; }).join('')}</ol>` : ''}
+      ${item.audioScript ? `<article class="context"><strong>${escape(item.audioTitle || 'Listening input · 聆聽內容')}</strong><button class="secondary" data-say="${escape(item.audioScript)}">▶ Replay input · 重播內容</button><div>${escape(item.audioScript)}</div></article>` : ''}
       ${item.languageBank?.length ? `<article class="context"><strong>Language bank · 句式庫</strong>${item.languageBank.map(escape).join(' · ')}</article>` : ''}
       ${item.model ? `<article class="model-exemplar"><strong>Original model for analysis · 原創範本供分析</strong><p>${escape(item.model)}</p><span>This is original practice support, not an official HKDSE script or marking exemplar.<br>此為原創練習支援，並非官方 HKDSE 範本或評分示例。</span></article>` : ''}
       <textarea class="draft" id="draft" placeholder="Write in English here… · 在此以英文寫作…">${escape(getDraft(currentModule().id))}</textarea>
@@ -383,12 +395,24 @@
       ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Good thinking.' : 'Try the evidence again.'}</strong><br>${bilingualLine(checkpoint.explanation || '', checkpoint.explanationZh || '')}</div>${objectiveFeedback(module.id)}` : ''}` : '<div class="feedback">Practise both roles. Then change one detail to make the dialogue your own.<span class="zh">練習兩個角色後，修改一個細節，讓對話變成你自己的版本。</span></div>'}`;
   }
 
+  function checkCurrentAnswer() {
+    if (state.selected === null) return;
+    const items = itemsFor(currentModule());
+    const item = items[state.index];
+    if (!item) return;
+    const answer = item.type === 'dialogue' ? item.checkpoints?.[0]?.answer : item.answer;
+    state.checked = true;
+    mark(currentModule().id, Number(answer || 0) === state.selected);
+    render();
+  }
+
   function bind() {
     root.querySelectorAll('[data-stage]').forEach((button) => button.addEventListener('click', () => chooseStage(button.dataset.stage)));
+    root.querySelectorAll('[data-try-s1-quest]').forEach((button) => button.addEventListener('click', () => { state.stage = 's1-extend'; state.year = 's1'; state.route = 'language'; state.moduleId = 's1-grammar-quest'; state.index = 0; state.selected = null; state.checked = false; render(); }));
     root.querySelectorAll('[data-route]').forEach((button) => button.addEventListener('click', () => chooseRoute(button.dataset.route)));
     root.querySelectorAll('[data-module]').forEach((button) => button.addEventListener('click', () => chooseModule(button.dataset.module)));
     root.querySelectorAll('[data-option]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.selected = Number(button.dataset.option); render(); } }));
-    root.querySelectorAll('[data-check]').forEach((button) => button.addEventListener('click', () => { if (state.selected !== null) { const items = itemsFor(currentModule()); const item = items[state.index]; const answer = item.type === 'dialogue' ? item.checkpoints?.[0]?.answer : item.answer; state.checked = true; mark(currentModule().id, Number(answer || 0) === state.selected); render(); } }));
+    root.querySelectorAll('[data-check]').forEach((button) => { button.onclick = checkCurrentAnswer; });
     root.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => { const items = itemsFor(currentModule()); state.index = (state.index + 1) % items.length; state.selected = null; state.checked = false; render(); }));
     root.querySelectorAll('[data-hint]').forEach((button) => button.addEventListener('click', () => { const message = document.createElement('div'); message.className = 'feedback'; message.innerHTML = `<strong>Hint · 提示</strong><br>${escape(button.dataset.hint)}`; button.closest('.task-board').appendChild(message); button.remove(); }));
     root.querySelectorAll('[data-say]').forEach((button) => button.addEventListener('click', () => speak(button.dataset.say)));

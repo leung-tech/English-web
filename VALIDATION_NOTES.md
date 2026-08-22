@@ -347,3 +347,13 @@ S1–S2 grammar-quest and genre-writing local verification succeeded. S1 Grammar
 S1–S2 grammar-quest and genre-writing quality audit passed. S1 Grammar Quest includes 12 basic-to-intermediate contextual rounds and S2 Grammar Quest includes 12 intermediate argument-building rounds. Each year has two original genre scaffolds: narrative and argument, each with a source/prompt pack, paragraph map, language bank, model for analysis and self-check. Existing site and Gemini-page audits also passed.
 
 Public S1–S2 grammar-quest and genre-writing verification succeeded at the cache-busted secondary URL. S1 Grammar Quest loaded round 1 of 12 with a three-item Grammar clues bank and four answer choices. S2 Narrative & Argument Scaffolds loaded item 1 of 2 with a three-card pack, five-step plan and original model exemplar.
+
+Local integrated-skills verification: S3 Integrated Skills Assessment loaded 1/8 with three source/listening materials and four response options; Listen-to-Speak Simulations loaded 1/2 with replay control, listening-note targets and four rubric rows. The new S1 Grammar Quest hero entry opened the intended quest and allowed answer selection, but the post-check correct-state class did not appear in the initial browser-console check. This interaction display issue requires correction before release.
+
+S1 Grammar Quest interaction follow-up: the initial selection state rendered but the browser-console check did not trigger the prior check handler. The check control was refactored to use an explicit `checkCurrentAnswer` handler assigned directly to each check button; syntax verification passed before retesting.
+
+Root cause found for the S1 Grammar Quest check display: `renderGame` attempted to call objective feedback with an undefined `module` reference after answer checking, which interrupted rerendering. The game renderer signature was corrected to receive the current module from `renderItem`; a full syntax and interaction retest follows.
+
+S1 Grammar Quest demo retest succeeded after the renderer fix. The hero entry opened Grammar Quest 1/12; selecting the correct answer and checking it produced the `option correct` state and the expected bilingual explanation: “Each student is singular, so use wears.”
+
+S3 DSE-bridge integrated-skills and listen-to-speak quality audit passed. The original integrated assessment includes 8 objective questions, the integrated response planner includes 1 source-and-listening-led advanced writing task, and the listening-to-speaking toolkit includes 2 simulations. The S1 live Grammar Quest entry and post-check feedback retest passed after the renderer fix. Existing full-site and Gemini-page audits also passed.
