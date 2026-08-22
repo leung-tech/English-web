@@ -9,7 +9,12 @@
   const letters = ['A', 'B', 'C', 'D'];
   const state = { year: 's1', stage: 's1-bridge', route: 'read', moduleId: null, index: 0, selected: null, checked: false };
   const progressKey = 'secondary-english-studio-progress-v1';
+  const draftKey = 'secondary-english-studio-drafts-v1';
   const progress = () => safeGet(progressKey, { completed: 0, correct: 0, modules: {} });
+  const drafts = () => safeGet(draftKey, {});
+  const getDraft = (moduleId) => drafts()[moduleId] || '';
+  const saveDraft = (moduleId, value) => { const all = drafts(); all[moduleId] = value; safeSet(draftKey, all); };
+  const clearDraft = (moduleId) => { const all = drafts(); delete all[moduleId]; safeSet(draftKey, all); };
   const mark = (moduleId, correct) => {
     const record = progress();
     record.completed += 1;
@@ -21,9 +26,12 @@
   const stageList = [
     { id:'s1-bridge', year:'s1', code:'S1 START', title:'School Life', titleZh:'校園生活起步', note:'A gentle bridge from P6 to S1.', noteZh:'由小六平穩銜接中一。' },
     { id:'s1-core', year:'s1', code:'S1 CORE', title:'Everyday English', titleZh:'中一核心英語', note:'Build clear language for school and community.', noteZh:'建立校園與社區英語基礎。' },
+    { id:'s1-extend', year:'s1', code:'S1 EXTEND', title:'Community & Voice', titleZh:'社區與表達', note:'Use English to notice needs and share practical ideas.', noteZh:'用英語發現需要，提出實際想法。' },
     { id:'s2-develop', year:'s2', code:'S2 DEVELOP', title:'Experiences & Choices', titleZh:'經驗與選擇', note:'Compare evidence and make thoughtful choices.', noteZh:'比較證據，作出有理選擇。' },
     { id:'s2-connect', year:'s2', code:'S2 CONNECT', title:'Messages & Media', titleZh:'訊息與媒體', note:'Understand sources, audience and purpose.', noteZh:'理解來源、受眾與目的。' },
-    { id:'s2-action', year:'s2', code:'S2 ACTION', title:'Community & Environment', titleZh:'社區與環境', note:'Notice a problem. Propose an action.', noteZh:'發現問題，提出行動。' }
+    { id:'s2-action', year:'s2', code:'S2 ACTION', title:'Community & Environment', titleZh:'社區與環境', note:'Notice a problem. Propose an action.', noteZh:'發現問題，提出行動。' },
+    { id:'s2-consolidate', year:'s2', code:'S2 CONSOLIDATE', title:'Evidence & Perspectives', titleZh:'證據與觀點', note:'Check sources, compare perspectives and respond fairly.', noteZh:'核實來源、比較觀點，作出公平回應。' },
+    { id:'s3-ready', year:'s3', code:'S3 READY', title:'Future & Response', titleZh:'未來與回應', note:'Interpret evidence, respond formally and prepare for the next stage.', noteZh:'解讀證據，正式回應，為下一階段作準備。' }
   ];
 
   const routeMeta = {
@@ -46,6 +54,14 @@
     { id:'s1-core-writing', stage:'s1-core', route:'write', symbol:'W', title:'Writing workshop', zh:'寫作工作坊', kind:'writing', source:'S1_CORE_PATH' },
     { id:'s1-core-speaking', stage:'s1-core', route:'listen', symbol:'S', title:'Speaking studio', zh:'口語練習室', kind:'speaking', source:'S1_CORE_PATH' },
 
+    { id:'s1-extend-grammar', stage:'s1-extend', route:'language', symbol:'G', title:'Grammar in action', zh:'行動語境文法', kind:'grammar', source:'S1_EXTEND_COMMUNITY_VOICE' },
+    { id:'s1-extend-vocabulary', stage:'s1-extend', route:'language', symbol:'V', title:'Community words', zh:'社區詞彙', kind:'vocabulary', source:'S1_EXTEND_COMMUNITY_VOICE' },
+    { id:'s1-extend-reading', stage:'s1-extend', route:'read', symbol:'R', title:'Community reading', zh:'社區閱讀', kind:'reading', source:'S1_EXTEND_COMMUNITY_VOICE' },
+    { id:'s1-extend-listening', stage:'s1-extend', route:'listen', symbol:'L', title:'Listen for action', zh:'聽懂行動訊息', kind:'listening', source:'S1_EXTEND_COMMUNITY_VOICE' },
+    { id:'s1-extend-writing', stage:'s1-extend', route:'write', symbol:'W', title:'Write to improve', zh:'寫作以改善', kind:'writing', source:'S1_EXTEND_COMMUNITY_VOICE' },
+    { id:'s1-extend-dialogue', stage:'s1-extend', route:'listen', symbol:'D', title:'Community dialogue', zh:'社區對話', kind:'dialogues', source:'S1_EXTEND_COMMUNITY_VOICE' },
+    { id:'s1-extend-speaking', stage:'s1-extend', route:'listen', symbol:'S', title:'Speak with purpose', zh:'有目的地說', kind:'speaking', source:'S1_EXTEND_COMMUNITY_VOICE' },
+
     { id:'s2-develop-grammar', stage:'s2-develop', route:'language', symbol:'G', title:'Grammar in context', zh:'語境文法', kind:'grammar', source:'S2_EXPERIENCES_CHOICES' },
     { id:'s2-develop-vocabulary', stage:'s2-develop', route:'language', symbol:'V', title:'Vocabulary choices', zh:'選擇詞彙', kind:'vocabulary', source:'S2_EXPERIENCES_CHOICES' },
     { id:'s2-develop-reading', stage:'s2-develop', route:'read', symbol:'R', title:'Compare & connect', zh:'比較與連結', kind:'reading', source:'S2_EXPERIENCES_CHOICES' },
@@ -67,7 +83,24 @@
     { id:'s2-action-writing', stage:'s2-action', route:'write', symbol:'W', title:'Propose a change', zh:'提出改變建議', kind:'writing', source:'S2_COMMUNITY_ENVIRONMENT' },
     { id:'s2-action-advanced', stage:'s2-action', route:'write', symbol:'W+', title:'Advanced writing lab', zh:'進階寫作室', kind:'advancedWriting', source:'S2_COMMUNITY_ENVIRONMENT' },
     { id:'s2-action-dialogue', stage:'s2-action', route:'listen', symbol:'D', title:'Community dialogue lab', zh:'社區對話室', kind:'dialogues', source:'S2_COMMUNITY_ENVIRONMENT' },
-    { id:'s2-action-speaking', stage:'s2-action', route:'listen', symbol:'S', title:'Recommend & report', zh:'推薦與報告', kind:'speaking', source:'S2_COMMUNITY_ENVIRONMENT' }
+    { id:'s2-action-speaking', stage:'s2-action', route:'listen', symbol:'S', title:'Recommend & report', zh:'推薦與報告', kind:'speaking', source:'S2_COMMUNITY_ENVIRONMENT' },
+
+    { id:'s2-consolidate-grammar', stage:'s2-consolidate', route:'language', symbol:'G', title:'Grammar with evidence', zh:'證據語境文法', kind:'grammar', source:'S2_CONSOLIDATE_EVIDENCE' },
+    { id:'s2-consolidate-vocabulary', stage:'s2-consolidate', route:'language', symbol:'V', title:'Source words', zh:'來源詞彙', kind:'vocabulary', source:'S2_CONSOLIDATE_EVIDENCE' },
+    { id:'s2-consolidate-reading', stage:'s2-consolidate', route:'read', symbol:'R', title:'Compare sources', zh:'比較來源', kind:'reading', source:'S2_CONSOLIDATE_EVIDENCE' },
+    { id:'s2-consolidate-listening', stage:'s2-consolidate', route:'listen', symbol:'L', title:'Hear and check', zh:'聆聽與核實', kind:'listening', source:'S2_CONSOLIDATE_EVIDENCE' },
+    { id:'s2-consolidate-writing', stage:'s2-consolidate', route:'write', symbol:'W', title:'Write with evidence', zh:'以證據寫作', kind:'writing', source:'S2_CONSOLIDATE_EVIDENCE' },
+    { id:'s2-consolidate-dialogue', stage:'s2-consolidate', route:'listen', symbol:'D', title:'Source dialogue', zh:'來源對話', kind:'dialogues', source:'S2_CONSOLIDATE_EVIDENCE' },
+    { id:'s2-consolidate-speaking', stage:'s2-consolidate', route:'listen', symbol:'S', title:'Compare and respond', zh:'比較與回應', kind:'speaking', source:'S2_CONSOLIDATE_EVIDENCE' },
+
+    { id:'s3-ready-grammar', stage:'s3-ready', route:'language', symbol:'G', title:'Grammar for precision', zh:'精準文法', kind:'grammar', source:'S3_READY_PATHWAY' },
+    { id:'s3-ready-vocabulary', stage:'s3-ready', route:'language', symbol:'V', title:'Academic word bank', zh:'學術詞彙庫', kind:'vocabulary', source:'S3_READY_PATHWAY' },
+    { id:'s3-ready-reading', stage:'s3-ready', route:'read', symbol:'R', title:'Evaluate sources', zh:'評估來源', kind:'reading', source:'S3_READY_PATHWAY' },
+    { id:'s3-ready-listening', stage:'s3-ready', route:'listen', symbol:'L', title:'Listen and respond', zh:'聆聽與回應', kind:'listening', source:'S3_READY_PATHWAY' },
+    { id:'s3-ready-writing', stage:'s3-ready', route:'write', symbol:'W', title:'Formal response', zh:'正式回應寫作', kind:'writing', source:'S3_READY_PATHWAY' },
+    { id:'s3-ready-advanced', stage:'s3-ready', route:'write', symbol:'W+', title:'Advanced writing lab', zh:'進階寫作室', kind:'advancedWriting', source:'S3_READY_PATHWAY' },
+    { id:'s3-ready-dialogue', stage:'s3-ready', route:'listen', symbol:'D', title:'Evaluate and revise', zh:'評估與修訂', kind:'dialogues', source:'S3_READY_PATHWAY' },
+    { id:'s3-ready-speaking', stage:'s3-ready', route:'listen', symbol:'S', title:'Present with evidence', zh:'以證據表達', kind:'speaking', source:'S3_READY_PATHWAY' }
   ];
 
   const source = (name) => window[name] || {};
@@ -150,13 +183,19 @@
     render();
   }
 
+  function stageSkillProgress(stageId) {
+    const record = progress();
+    return Object.entries(routeMeta).map(([route, meta]) => ({ label:meta.token, zh:meta.zh, count:moduleRegistry.filter((module) => module.stage === stageId && module.route === route).reduce((sum, module) => sum + (record.modules[module.id] || 0), 0) }));
+  }
+
   function renderShell() {
     const record = progress();
     const activeStage = stage();
+    const stageProgress = stageSkillProgress(activeStage.id);
     return `
       <section class="hero">
         <div>
-          <p class="eyebrow">S1–S2 ENGLISH PRACTICE · 中學英文練習</p>
+          <p class="eyebrow">S1–S3 ENGLISH PRACTICE · 中學英文練習</p>
           <h1>Read with evidence.<br><em>Respond with purpose.</em></h1>
           <p>Choose a stage and one skill. Build secure English for school, community and everyday ideas.</p>
           <p class="zh">選擇階段及技能，逐步建立閱讀、寫作、聆聽、口語與語言運用能力。</p>
@@ -165,7 +204,7 @@
       </section>
       <section class="workspace">
         <aside class="rail">
-          <section><p class="eyebrow">YOUR PROGRESS · 學習進度</p><h2>${record.completed} tasks</h2><p>Local to this browser only.<br>只儲存在此瀏覽器。</p><div class="mini-progress"><i style="width:${Math.min(100, record.completed * 3)}%"></i></div></section>
+          <section><p class="eyebrow">YOUR PROGRESS · 學習進度</p><h2>${record.completed} tasks</h2><p>Local to this browser only.<br>只儲存在此瀏覽器。</p><div class="mini-progress"><i style="width:${Math.min(100, record.completed * 3)}%"></i></div><div class="skill-progress">${stageProgress.map((item) => `<span><b>${item.label}</b>${item.count} ${escape(item.zh)}</span>`).join('')}</div></section>
           <section><p class="eyebrow">CHOOSE A STAGE · 選擇階段</p><div class="stage-list">${stageList.map((item) => `<button class="stage-btn ${item.id === state.stage ? 'active' : ''}" data-stage="${item.id}"><b>${escape(item.code)} · ${escape(item.title)}</b><span>${escape(item.titleZh)}</span></button>`).join('')}</div></section>
           <section><p class="eyebrow">CHOOSE A SKILL · 選擇技能</p><div class="route-list">${Object.entries(routeMeta).map(([id, meta]) => `<button class="route-btn ${id === state.route ? 'active' : ''}" data-route="${id}"><i class="route-token">${meta.token}</i><b>${meta.title}<span>${meta.zh}</span></b></button>`).join('')}</div></section>
         </aside>
@@ -221,9 +260,9 @@
       <p class="prompt">${bilingualLine(item.prompt || item.title || 'Write your response.', item.promptZh || item.titleZh || '')}</p>
       ${plan.length ? `<ol class="plan-list">${plan.map((step) => { const pair = Array.isArray(step) ? { title:step[0], text:step[1] } : step; return `<li>${escape(typeof pair === 'string' ? pair : pair.title || pair.text || '')}${typeof pair === 'object' && (pair.text || pair.zh) ? `<span class="zh">${escape(pair.text || pair.zh)}</span>` : ''}</li>`; }).join('')}</ol>` : ''}
       ${item.languageBank?.length ? `<article class="context"><strong>Language bank · 句式庫</strong>${item.languageBank.map(escape).join(' · ')}</article>` : ''}
-      <textarea class="draft" id="draft" placeholder="Write in English here… · 在此以英文寫作…"></textarea>
-      <div class="word-row"><span id="word-count">0 words · 0 字</span><span>Target: ${target}+ words · 最少 ${target} 字</span></div>
-      <div class="controls"><button class="primary" data-record-writing="${target}">Record completion · 記錄完成</button><button class="secondary" data-say="${escape(item.model || item.prompt || '')}">▶ Replay task · 重播題目</button></div>
+      <textarea class="draft" id="draft" placeholder="Write in English here… · 在此以英文寫作…">${escape(getDraft(currentModule().id))}</textarea>
+      <div class="word-row"><span id="word-count">${getDraft(currentModule().id).trim().split(/\s+/).filter(Boolean).length} words · ${getDraft(currentModule().id).trim().split(/\s+/).filter(Boolean).length} 字</span><span>Target: ${target}+ words · 最少 ${target} 字</span></div>
+      <div class="controls"><button class="primary" data-record-writing="${target}">Record completion · 記錄完成</button><button class="secondary" data-say="${escape(item.model || item.prompt || '')}">▶ Replay task · 重播題目</button><button class="secondary" data-clear-draft>Clear saved draft · 清除已儲存草稿</button></div>
       <div class="feedback">This is a completion self-check. It does not score language quality automatically.<span class="zh">此為完成自我檢查，不會自動評核語言質素。</span></div>`;
   }
 
@@ -262,7 +301,8 @@
     root.querySelectorAll('[data-hint]').forEach((button) => button.addEventListener('click', () => { const message = document.createElement('div'); message.className = 'feedback'; message.innerHTML = `<strong>Hint · 提示</strong><br>${escape(button.dataset.hint)}`; button.closest('.task-board').appendChild(message); button.remove(); }));
     root.querySelectorAll('[data-say]').forEach((button) => button.addEventListener('click', () => speak(button.dataset.say)));
     const draft = $('#draft');
-    if (draft) draft.addEventListener('input', () => { const count = draft.value.trim().split(/\s+/).filter(Boolean).length; $('#word-count').textContent = `${count} words · ${count} 字`; });
+    if (draft) draft.addEventListener('input', () => { const count = draft.value.trim().split(/\s+/).filter(Boolean).length; $('#word-count').textContent = `${count} words · ${count} 字`; saveDraft(currentModule().id, draft.value); });
+    root.querySelectorAll('[data-clear-draft]').forEach((button) => button.addEventListener('click', () => { clearDraft(currentModule().id); render(); }));
     root.querySelectorAll('[data-record-writing]').forEach((button) => button.addEventListener('click', () => { const count = ($('#draft')?.value || '').trim().split(/\s+/).filter(Boolean).length; const target = Number(button.dataset.recordWriting); const box = document.createElement('div'); box.className = `feedback ${count >= target ? 'good' : 'bad'}`; box.innerHTML = count >= target ? '<strong>✓ Completion recorded locally.</strong><br>Keep checking your evidence, organisation and accuracy.' : `<strong>Keep writing.</strong><br>You have ${count} words. Aim for at least ${target}.`; button.closest('.task-board').appendChild(box); if (count >= target) mark(currentModule().id, true); }));
   }
 

@@ -303,3 +303,11 @@ Public deployment verification began successfully at the cache-busted primary UR
 The public P6 route was checked next and showed only three reading, four writing, five listening and four language-use primary modules; no S1 or S2 module card was present. The public Secondary English Studio then opened at `/secondary/` with separate Primary return navigation, all five S1–S2 stages, bilingual support, original-practice labels and browser-local progress wording.
 
 On the public S2 Action page, the paired-reading task loaded both Text A and Text B with four answer options. The Community Dialogue Lab also loaded with four selectable bilingual checkpoint choices and a Check Answer control, confirming that the interactive S2 Action content is live on the independent secondary entry page.
+
+S1 Extend local verification: the independent secondary page now lists the new **S1 EXTEND · Community & Voice** stage. Its Community Reading module loaded successfully with a full bilingual passage and four selectable answer options.
+
+S1–S3 local expansion verification: the secondary interface now shows eight learning stages from S1 Start to S3 Ready and a browser-local skill-progress summary. The S3 Ready source-evaluation reading task loaded paired Text A/Text B context with four answer options.
+
+The S3 formal-writing draft feature was tested locally. A nine-word draft was saved under the browser-local draft namespace, survived a route change and reappeared when the writing route was reopened; the student-facing clear-draft control is present. No account, upload or automated language-quality score is used.
+
+The S1–S3 expansion audit passed: S1 Extend contains 18 grammar, 20 vocabulary, 12 reading, 12 listening, 4 writing, 4 speaking and 2 dialogue tasks; S2 Consolidate contains 12 grammar, 12 vocabulary, 8 paired-reading, 8 listening, 3 writing, 3 speaking and 2 dialogue tasks; S3 Ready contains 12 grammar, 12 vocabulary, 8 paired-reading, 8 listening, 4 writing, 4 speaking, 2 dialogue tasks and one advanced source-led writing lab. The existing site content audit, Gemini-page audit and whitespace-difference check also passed. S2 Consolidate’s paired-reading view was sampled locally and displayed both sources with four selectable answers.
