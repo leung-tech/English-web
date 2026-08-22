@@ -271,3 +271,9 @@ The local S2 Action paired-reading module showed the `S2 ACTION · ORIGINAL PAIR
 The expanded S2 Connect standalone grammar page displayed a 24-task sequence and its data-file reference. The S2 Action standalone listening page displayed a 12-task sequence, the Green Week briefing, four options, the browser speech replay control and the third-unit editing reference.
 
 Selecting the correct S2 Action listening option marked the correct choice, returned the expected English and Traditional Chinese explanation, and revealed the listening transcript after checking the answer.
+
+## S2 Action and S2 Connect expansion — Public deployment verification
+
+GitHub Pages workflow `32542545903` for commit `c1c6b11` completed successfully. The public platform loaded `window.S2_COMMUNITY_ENVIRONMENT`; after selecting P6, all six S2 Action module identifiers were present across the language, reading, listening and writing routes.
+
+The public S2 Connect grammar module opened with `Question 1 of 24`, four interactive options and bilingual content. The public Gemini S2 Action reading page displayed the Original Practice label, the two School Refill Station texts, 12-task sequence, four options, the third-unit data-file reference and the registry-defined Evidence and Action learning focus.
