@@ -8,8 +8,8 @@ const checks = [
   { file:'s1-s3-interaction-critical-extension.js', key:'S1_INTERACTION_PLUS', min:{ grammar:12, speaking:4, dialogues:3 } },
   { file:'s1-s3-interaction-critical-extension.js', key:'S2_INTERACTION_PLUS', min:{ grammar:12, speaking:4, dialogues:3 } },
   { file:'s1-s3-interaction-critical-extension.js', key:'S3_CRITICAL_PLUS', min:{ grammar:12, speaking:4, dialogues:3, advancedWriting:2 } },
-  { file:'s1-s3-vocab-games-speaking.js', key:'S1_VOCAB_GAMES', min:{ games:6 } },
-  { file:'s1-s3-vocab-games-speaking.js', key:'S2_VOCAB_GAMES', min:{ games:24 } },
+  { file:'s1-s3-vocab-games-speaking.js', key:'S1_VOCAB_GAMES', min:{ games:18 } },
+  { file:'s1-s3-vocab-games-speaking.js', key:'S2_VOCAB_GAMES', min:{ games:36 } },
   { file:'s1-s3-vocab-games-speaking.js', key:'S3_VOCAB_GAMES', min:{ games:6 } },
   { file:'s1-s3-vocab-games-speaking.js', key:'S3_SPEAKING_SIMULATIONS', min:{ simulations:3 } },
   { file:'s1-s2-varied-practice.js', key:'S1_VARIED_PRACTICE', min:{ grammar:6, reading:4, listening:8, writing:1 } },
@@ -21,7 +21,7 @@ const checks = [
   { file:'s1-s2-grammar-writing-extension.js', key:'S1_GENRE_WRITING', min:{ advancedWriting:2 } },
   { file:'s1-s2-grammar-writing-extension.js', key:'S2_GENRE_WRITING', min:{ advancedWriting:2 } },
   { file:'s3-integrated-listen-speak.js', key:'S3_DSE_INTEGRATED', min:{ integrated:8, advancedWriting:1, simulations:2 } },
-  { file:'s1-s3-grammar-quest-bank.js', key:'S1_S3_GRAMMAR_EXPANSION', min:{ passiveGames:12, conditionalGames:12, s1Grammar:18, s2Grammar:18, s3Grammar:18, s3DseAnalysis:18 } }
+  { file:'s1-s3-grammar-quest-bank.js', key:'S1_S3_GRAMMAR_EXPANSION', min:{ passiveGames:12, conditionalGames:12, s1Grammar:24, s2Grammar:18, s3Grammar:30, s3DseAnalysis:30 } }
 ];
 
 function load(file, key) {
