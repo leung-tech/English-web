@@ -319,3 +319,7 @@ S1–S3 interaction extension local verification: S3 Critical Writing Lab displa
 S1–S3 interaction and critical-thinking extension audit passed. Each new year-level extension contains 12 contextual grammar questions, 4 structured speaking tasks and 3 checkpointed role-play dialogues. S3 Critical Plus additionally contains two 180–220 word evidence-led writing source packs. Existing site and Gemini-page audits also passed.
 
 Public interaction and critical-thinking verification succeeded at the cache-busted secondary URL. S3 Critical Writing Lab displayed four source-pack cards and four paragraph-map steps, while S3 Critical Grammar Clinic loaded question 1 of 12 with four selectable answers.
+
+S1–S3 vocabulary-game and S3 speaking-simulation local verification: S1 Phrase Builder displayed a three-item phrase bank, four answer options and a phrase-check control. S3 Speaking Simulation Toolkit loaded scenario 1 of 3, a playable model response and four descriptive rubric dimensions.
+
+S1–S3 vocabulary games and S3 speaking simulations passed local validation and expanded audit. Each year level has six interactive phrase-game rounds; S3 has three original exam-style practice scenarios, each with a model response, target language, four descriptive rubric dimensions and self-check prompts. The rubric is explicitly not an official marking scheme and does not generate an automated score.

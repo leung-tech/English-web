@@ -7,7 +7,11 @@ const checks = [
   { file:'s3-ready-pathway.js', key:'S3_READY_PATHWAY', min:{ grammar:12, vocabulary:12, reading:8, listening:8, writing:4, speaking:4, dialogues:2, advancedWriting:1 } },
   { file:'s1-s3-interaction-critical-extension.js', key:'S1_INTERACTION_PLUS', min:{ grammar:12, speaking:4, dialogues:3 } },
   { file:'s1-s3-interaction-critical-extension.js', key:'S2_INTERACTION_PLUS', min:{ grammar:12, speaking:4, dialogues:3 } },
-  { file:'s1-s3-interaction-critical-extension.js', key:'S3_CRITICAL_PLUS', min:{ grammar:12, speaking:4, dialogues:3, advancedWriting:2 } }
+  { file:'s1-s3-interaction-critical-extension.js', key:'S3_CRITICAL_PLUS', min:{ grammar:12, speaking:4, dialogues:3, advancedWriting:2 } },
+  { file:'s1-s3-vocab-games-speaking.js', key:'S1_VOCAB_GAMES', min:{ games:6 } },
+  { file:'s1-s3-vocab-games-speaking.js', key:'S2_VOCAB_GAMES', min:{ games:6 } },
+  { file:'s1-s3-vocab-games-speaking.js', key:'S3_VOCAB_GAMES', min:{ games:6 } },
+  { file:'s1-s3-vocab-games-speaking.js', key:'S3_SPEAKING_SIMULATIONS', min:{ simulations:3 } }
 ];
 
 function load(file, key) {
@@ -31,7 +35,8 @@ const report = checks.map(({ file, key, min }) => {
   const counts = {
     grammar: count(data.grammar), vocabulary: count(data.vocabulary), reading: count(data.reading),
     listening: count(data.listening), writing: count(data.writing), speaking: count(data.speaking),
-    dialogues: count(data.dialogues), advancedWriting: count(data.advancedWriting)
+    dialogues: count(data.dialogues), advancedWriting: count(data.advancedWriting),
+    games: count(data.games), simulations: count(data.simulations)
   };
   Object.entries(min).forEach(([skill, target]) => { if (counts[skill] < target) failures.push(`${key}: ${skill} ${counts[skill]} < ${target}`); });
   return { key, counts };

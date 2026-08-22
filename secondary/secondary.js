@@ -62,6 +62,7 @@
     { id:'s1-extend-dialogue', stage:'s1-extend', route:'listen', symbol:'D', title:'Community dialogue', zh:'社區對話', kind:'dialogues', source:'S1_EXTEND_COMMUNITY_VOICE' },
     { id:'s1-extend-speaking', stage:'s1-extend', route:'listen', symbol:'S', title:'Speak with purpose', zh:'有目的地說', kind:'speaking', source:'S1_EXTEND_COMMUNITY_VOICE' },
     { id:'s1-interaction-grammar', stage:'s1-extend', route:'language', symbol:'G+', title:'Interaction grammar clinic', zh:'互動文法診所', kind:'grammar', source:'S1_INTERACTION_PLUS' },
+    { id:'s1-vocab-game', stage:'s1-extend', route:'language', symbol:'P', title:'Phrase builder game', zh:'片語建構遊戲', kind:'game', source:'S1_VOCAB_GAMES' },
     { id:'s1-interaction-dialogue', stage:'s1-extend', route:'listen', symbol:'D+', title:'Interaction dialogue lab', zh:'互動對話室', kind:'dialogues', source:'S1_INTERACTION_PLUS' },
     { id:'s1-interaction-speaking', stage:'s1-extend', route:'listen', symbol:'S+', title:'Speaking response studio', zh:'口語回應工作坊', kind:'speaking', source:'S1_INTERACTION_PLUS' },
 
@@ -96,6 +97,7 @@
     { id:'s2-consolidate-dialogue', stage:'s2-consolidate', route:'listen', symbol:'D', title:'Source dialogue', zh:'來源對話', kind:'dialogues', source:'S2_CONSOLIDATE_EVIDENCE' },
     { id:'s2-consolidate-speaking', stage:'s2-consolidate', route:'listen', symbol:'S', title:'Compare and respond', zh:'比較與回應', kind:'speaking', source:'S2_CONSOLIDATE_EVIDENCE' },
     { id:'s2-interaction-grammar', stage:'s2-consolidate', route:'language', symbol:'G+', title:'Interaction grammar clinic', zh:'互動文法診所', kind:'grammar', source:'S2_INTERACTION_PLUS' },
+    { id:'s2-vocab-game', stage:'s2-consolidate', route:'language', symbol:'P', title:'Meaning in context game', zh:'語境片語遊戲', kind:'game', source:'S2_VOCAB_GAMES' },
     { id:'s2-interaction-dialogue', stage:'s2-consolidate', route:'listen', symbol:'D+', title:'Interaction dialogue lab', zh:'互動對話室', kind:'dialogues', source:'S2_INTERACTION_PLUS' },
     { id:'s2-interaction-speaking', stage:'s2-consolidate', route:'listen', symbol:'S+', title:'Speaking response studio', zh:'口語回應工作坊', kind:'speaking', source:'S2_INTERACTION_PLUS' },
 
@@ -108,8 +110,10 @@
     { id:'s3-ready-dialogue', stage:'s3-ready', route:'listen', symbol:'D', title:'Evaluate and revise', zh:'評估與修訂', kind:'dialogues', source:'S3_READY_PATHWAY' },
     { id:'s3-ready-speaking', stage:'s3-ready', route:'listen', symbol:'S', title:'Present with evidence', zh:'以證據表達', kind:'speaking', source:'S3_READY_PATHWAY' },
     { id:'s3-critical-grammar', stage:'s3-ready', route:'language', symbol:'G+', title:'Critical grammar clinic', zh:'批判性思考文法診所', kind:'grammar', source:'S3_CRITICAL_PLUS' },
+    { id:'s3-vocab-game', stage:'s3-ready', route:'language', symbol:'P', title:'Precision challenge game', zh:'精準片語挑戰', kind:'game', source:'S3_VOCAB_GAMES' },
     { id:'s3-critical-dialogue', stage:'s3-ready', route:'listen', symbol:'D+', title:'Critical dialogue lab', zh:'批判性對話室', kind:'dialogues', source:'S3_CRITICAL_PLUS' },
     { id:'s3-critical-speaking', stage:'s3-ready', route:'listen', symbol:'S+', title:'Critical response studio', zh:'批判性回應工作坊', kind:'speaking', source:'S3_CRITICAL_PLUS' },
+    { id:'s3-speaking-simulation', stage:'s3-ready', route:'listen', symbol:'SIM', title:'Speaking simulation toolkit', zh:'口語模擬與量規', kind:'simulation', source:'S3_SPEAKING_SIMULATIONS' },
     { id:'s3-critical-writing', stage:'s3-ready', route:'write', symbol:'W+', title:'Critical writing lab', zh:'批判性寫作室', kind:'advancedWriting', source:'S3_CRITICAL_PLUS' }
   ];
 
@@ -151,6 +155,8 @@
     if (module.kind === 'advancedWriting') return (data.advancedWriting || data.writing || []).filter((item) => item.level === 'advanced').map((item) => ({ ...item, type:'advancedWriting' }));
     if (module.kind === 'speaking') return (data.speaking || []).map((item) => ({ ...item, type:'speaking' }));
     if (module.kind === 'dialogues') return (data.dialogues || []).map((item) => ({ ...item, type:'dialogue' }));
+    if (module.kind === 'game') return (data.games || []).map((item) => ({ ...item, type:'game' }));
+    if (module.kind === 'simulation') return (data.simulations || []).map((item) => ({ ...item, type:'simulation' }));
     return [];
   }
 
@@ -249,6 +255,8 @@
     if (item.type === 'writing' || item.type === 'advancedWriting') return renderWriting(item, module);
     if (item.type === 'speaking') return renderSpeaking(item, module);
     if (item.type === 'dialogue') return renderDialogue(item, module);
+    if (item.type === 'game') return renderGame(item, module);
+    if (item.type === 'simulation') return renderSimulation(item, module);
     const context = item.context || item.script || '';
     const title = item.contextTitle || item.word || '';
     const prompt = item.type === 'vocabulary' ? (item.prompt || `Which word matches: ${item.definition || item.word}?`) : item.prompt;
@@ -260,6 +268,28 @@
       <div class="options">${options.map((option, index) => { const resultClass = state.checked ? (index === answer ? 'correct' : (index === state.selected ? 'wrong' : '')) : (index === state.selected ? 'selected' : ''); return `<button class="option ${resultClass}" data-option="${index}"><b>${letters[index] || index + 1}</b><span>${escape(option)}</span></button>`; }).join('')}</div>
       <div class="controls"><button class="primary" data-check="true">Check answer · 核對答案</button><button class="secondary" data-next="true">Next · 下一題</button>${item.hint ? `<button class="secondary" data-hint="${escape(item.hint)}">Hint · 提示</button>` : ''}</div>
       ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Good thinking.' : 'Try the evidence again.'}</strong><br>${bilingualLine(item.explanation || '', item.explanationZh || '')}</div>` : ''}`;
+  }
+
+  function renderGame(item) {
+    const options = item.options || [];
+    const answer = Number(item.answer || 0);
+    return `${item.phraseBank?.length ? `<article class="phrase-bank"><strong>Phrase bank · 片語庫</strong><div>${item.phraseBank.map((phrase) => `<span>${escape(phrase)}</span>`).join('')}</div></article>` : ''}
+      <p class="prompt">${bilingualLine(item.prompt || 'Choose the best phrase.', item.promptZh || '')}</p>
+      <div class="options">${options.map((option, index) => { const resultClass = state.checked ? (index === answer ? 'correct' : (index === state.selected ? 'wrong' : '')) : (index === state.selected ? 'selected' : ''); return `<button class="option ${resultClass}" data-option="${index}"><b>${letters[index] || index + 1}</b><span>${escape(option)}</span></button>`; }).join('')}</div>
+      <div class="controls"><button class="primary" data-check="true">Check phrase · 核對片語</button><button class="secondary" data-next="true">Next round · 下一回合</button>${item.hint ? `<button class="secondary" data-hint="${escape(item.hint)}">Hint · 提示</button>` : ''}</div>
+      ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Strong choice.' : 'Try for greater precision.'}</strong><br>${bilingualLine(item.explanation || '', item.explanationZh || '')}</div>` : ''}`;
+  }
+
+  function renderSimulation(item) {
+    const rubric = item.rubric || [];
+    const checks = item.selfCheck || [];
+    return `<article class="simulation-card"><strong>Scenario · 情境</strong><p>${escape(item.roleCard || '')}</p><span class="zh">${escape(item.roleCardZh || '')}</span><small>${escape(item.time || '')}<span class="zh">${escape(item.timeZh || '')}</span></small></article>
+      ${item.languageBank?.length ? `<article class="phrase-bank"><strong>Useful language · 有用語句</strong><div>${item.languageBank.map((phrase) => `<span>${escape(phrase)}</span>`).join('')}</div></article>` : ''}
+      <div class="controls"><button class="primary" data-say="${escape(item.model || item.roleCard || '')}">▶ Play model · 播放示範</button></div>
+      ${item.model ? `<article class="context"><strong>Model response · 示範回應</strong>${escape(item.model)}</article>` : ''}
+      <section class="rubric"><h3>Practice rubric · 練習評量量規</h3><p>This descriptive rubric supports self-checking or teacher feedback. It is not an official marking scheme and does not create an automated score.<span class="zh">此描述性量規供自評或老師回饋，並非官方評分準則，亦不會產生自動分數。</span></p>${rubric.map((row) => { const pair = Array.isArray(row) ? { title:row[0], text:row[1] } : row; return `<article><strong>${escape(pair.title || '')}</strong><span>${escape(pair.text || '')}</span></article>`; }).join('')}</section>
+      ${checks.length ? `<ol class="plan-list">${checks.map((check) => `<li>${escape(check)}</li>`).join('')}</ol>` : ''}
+      <div class="feedback">Practise once, adapt the situation, then use the rubric to set one next-step goal.<span class="zh">先練習一次，再調整情境；使用量規訂立一項下一步目標。</span></div>`;
   }
 
   function renderWriting(item) {
