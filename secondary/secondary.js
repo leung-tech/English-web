@@ -74,6 +74,8 @@
     { id:'s1-extend-speaking', stage:'s1-extend', route:'listen', symbol:'S', title:'Speak with purpose', zh:'有目的地說', kind:'speaking', source:'S1_EXTEND_COMMUNITY_VOICE' },
     { id:'s1-interaction-grammar', stage:'s1-extend', route:'language', symbol:'G+', title:'Interaction grammar clinic', zh:'互動文法診所', kind:'grammar', source:'S1_INTERACTION_PLUS' },
     { id:'s1-vocab-game', stage:'s1-extend', route:'language', symbol:'P', title:'Phrase builder game', zh:'片語建構遊戲', kind:'game', source:'S1_VOCAB_GAMES' },
+    { id:'s1-grammar-quest', stage:'s1-extend', route:'language', symbol:'Q', title:'Grammar Quest: Build the message', zh:'文法闖關：建構訊息', kind:'game', source:'S1_GRAMMAR_QUEST' },
+    { id:'s1-genre-writing', stage:'s1-extend', route:'write', symbol:'W+', title:'Narrative & argument scaffolds', zh:'記敘與議論寫作鷹架', kind:'advancedWriting', source:'S1_GENRE_WRITING' },
     { id:'s1-varied-grammar', stage:'s1-extend', route:'language', symbol:'E', title:'Sentence repair clinic', zh:'句子修訂診所', kind:'grammar', source:'S1_VARIED_PRACTICE' },
     { id:'s1-varied-reading', stage:'s1-extend', route:'read', symbol:'R+', title:'Practical-text reading', zh:'實用文本閱讀', kind:'reading', source:'S1_VARIED_PRACTICE' },
     { id:'s1-varied-listening', stage:'s1-extend', route:'listen', symbol:'L+', title:'Key-detail listening', zh:'重點聆聽', kind:'listening', source:'S1_VARIED_PRACTICE' },
@@ -113,6 +115,8 @@
     { id:'s2-consolidate-speaking', stage:'s2-consolidate', route:'listen', symbol:'S', title:'Compare and respond', zh:'比較與回應', kind:'speaking', source:'S2_CONSOLIDATE_EVIDENCE' },
     { id:'s2-interaction-grammar', stage:'s2-consolidate', route:'language', symbol:'G+', title:'Interaction grammar clinic', zh:'互動文法診所', kind:'grammar', source:'S2_INTERACTION_PLUS' },
     { id:'s2-vocab-game', stage:'s2-consolidate', route:'language', symbol:'P', title:'Meaning in context game', zh:'語境片語遊戲', kind:'game', source:'S2_VOCAB_GAMES' },
+    { id:'s2-grammar-quest', stage:'s2-consolidate', route:'language', symbol:'Q', title:'Grammar Quest: Shape the argument', zh:'文法闖關：建構論點', kind:'game', source:'S2_GRAMMAR_QUEST' },
+    { id:'s2-genre-writing', stage:'s2-consolidate', route:'write', symbol:'W+', title:'Narrative & argument scaffolds', zh:'記敘與議論寫作鷹架', kind:'advancedWriting', source:'S2_GENRE_WRITING' },
     { id:'s2-varied-grammar', stage:'s2-consolidate', route:'language', symbol:'E', title:'Editing and evidence clinic', zh:'修訂與證據診所', kind:'grammar', source:'S2_VARIED_PRACTICE' },
     { id:'s2-varied-reading', stage:'s2-consolidate', route:'read', symbol:'R+', title:'Paired message reading', zh:'配對訊息閱讀', kind:'reading', source:'S2_VARIED_PRACTICE' },
     { id:'s2-varied-listening', stage:'s2-consolidate', route:'listen', symbol:'L+', title:'Meeting-note listening', zh:'會議筆記聆聽', kind:'listening', source:'S2_VARIED_PRACTICE' },
@@ -320,7 +324,7 @@
   function renderGame(item) {
     const options = item.options || [];
     const answer = Number(item.answer || 0);
-    return `${item.phraseBank?.length ? `<article class="phrase-bank"><strong>Phrase bank · 片語庫</strong><div>${item.phraseBank.map((phrase) => `<span>${escape(phrase)}</span>`).join('')}</div></article>` : ''}
+    return `${item.phraseBank?.length ? `<article class="phrase-bank"><strong>${escape(item.bankLabel || 'Phrase bank · 片語庫')}</strong><div>${item.phraseBank.map((phrase) => `<span>${escape(phrase)}</span>`).join('')}</div></article>` : ''}
       <p class="prompt">${bilingualLine(item.prompt || 'Choose the best phrase.', item.promptZh || '')}</p>
       <div class="options">${options.map((option, index) => { const resultClass = state.checked ? (index === answer ? 'correct' : (index === state.selected ? 'wrong' : '')) : (index === state.selected ? 'selected' : ''); return `<button class="option ${resultClass}" data-option="${index}"><b>${letters[index] || index + 1}</b><span>${escape(option)}</span></button>`; }).join('')}</div>
       <div class="controls"><button class="primary" data-check="true">Check phrase · 核對片語</button><button class="secondary" data-next="true">Next round · 下一回合</button>${item.hint ? `<button class="secondary" data-hint="${escape(item.hint)}">Hint · 提示</button>` : ''}</div>
