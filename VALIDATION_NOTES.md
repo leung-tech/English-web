@@ -261,3 +261,13 @@ The local standalone page `gemini-pages/s2/s2_connect_read_sources_voices.html` 
 ## S2 Connect: Messages and Media — Public deployment verification
 
 GitHub Pages workflow `32444165167` for commit `bb5afad` completed successfully. The public platform loaded `window.S2_MESSAGES_MEDIA`; after selecting P6, all six S2 Connect module identifiers were present across the language, reading, listening and writing routes.
+
+## S2 Action: Community and Environment — Local platform verification
+
+The local full platform loaded `window.S2_COMMUNITY_ENVIRONMENT`. After selecting P6, the S2 Action original-practice cards appeared across all four routes: Grammar in Context and Community Words in Apply; Community and Environment in Read; Hear the Plan and Recommend and Report in Listen; and Propose a Change in Write.
+
+The local S2 Action paired-reading module showed the `S2 ACTION · ORIGINAL PAIRED TEXTS` label, two source texts, a bilingual question and four options in the full platform. The Gemini standalone page loaded the same two texts and 12-task sequence, showed `data/s2-community-and-environment-data.js` as the editing source, and used the new registry-provided learning focus: Evidence and action.
+
+The expanded S2 Connect standalone grammar page displayed a 24-task sequence and its data-file reference. The S2 Action standalone listening page displayed a 12-task sequence, the Green Week briefing, four options, the browser speech replay control and the third-unit editing reference.
+
+Selecting the correct S2 Action listening option marked the correct choice, returned the expected English and Traditional Chinese explanation, and revealed the listening transcript after checking the answer.

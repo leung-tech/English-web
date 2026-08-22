@@ -15,8 +15,25 @@
     titleZh: body.dataset.pageTitleZh
   };
   const storageKey = 'primary-english-studio-standalone-progress-v1';
-  const unitLabel = config.unit === 's2-messages-and-media' ? 'S2 CONNECT' : 'S2 DEVELOP';
-  const unitDataFile = config.unit === 's2-messages-and-media' ? 's2-messages-and-media-data.js' : 's2-experiences-and-choices-data.js';
+  // Add one entry here when a new standalone S2 unit is created.
+  // The lesson pages and audit can then reuse the same explicit unit identity.
+  const UNIT_REGISTRY = {
+    's2-experiences-and-choices': {
+      globalName: 'S2_EXPERIENCES_CHOICES', label: 'S2 DEVELOP', dataFile: 's2-experiences-and-choices-data.js',
+      focusTitle: 'Evidence and choices', focusText: 'Explain a choice with a reason and a practical example.'
+    },
+    's2-messages-and-media': {
+      globalName: 'S2_MESSAGES_MEDIA', label: 'S2 CONNECT', dataFile: 's2-messages-and-media-data.js',
+      focusTitle: 'Evidence and communication', focusText: 'Explain a message with accurate information, a reason and a source when useful.'
+    },
+    's2-community-and-environment': {
+      globalName: 'S2_COMMUNITY_ENVIRONMENT', label: 'S2 ACTION', dataFile: 's2-community-and-environment-data.js',
+      focusTitle: 'Evidence and action', focusText: 'State a practical problem, recommend an action and explain a likely result.'
+    }
+  };
+  const unitMeta = UNIT_REGISTRY[config.unit] || {};
+  const unitLabel = unitMeta.label || 'S2 LESSON';
+  const unitDataFile = unitMeta.dataFile || 'unknown-data-file.js';
   let items = [];
   let current = 0;
   let checked = false;
@@ -53,9 +70,7 @@
   };
 
   function sourceUnit() {
-    if (config.unit === 's2-experiences-and-choices') return window.S2_EXPERIENCES_CHOICES;
-    if (config.unit === 's2-messages-and-media') return window.S2_MESSAGES_MEDIA;
-    return null;
+    return unitMeta.globalName ? window[unitMeta.globalName] : null;
   }
 
   function buildItems() {
@@ -133,7 +148,7 @@
     item.renderOptions = objective;
     const prompt = item.kind === 'writing' || item.kind === 'speaking' ? item.prompt : item.prompt;
     const bodyMarkup = item.kind === 'objective' ? objectiveMarkup(item, objective) : item.kind === 'writing' ? writingMarkup(item) : speakingMarkup(item);
-    app.innerHTML = `<header class="lesson-hero"><div><p class="eyebrow">${unitLabel} · ORIGINAL PRACTICE · 原創練習</p><h1>${escape(config.title)}<small>${escape(config.titleZh)}</small></h1><p>Independent bilingual practice page. You can safely edit lesson content in its data file. · 獨立的中英對照練習頁，可在資料檔安全修改內容。</p></div><aside class="original-note"><strong>ORIGINAL PRACTICE · 原創練習</strong>This is not an official examination paper. · 本練習並非官方試卷。</aside></header><main class="lesson-layout"><section class="lesson-panel"><div class="question-meta"><span>${current + 1} / ${items.length}</span>${escape(item.skill)} · ${unitLabel}</div>${audioMarkup(item)}${pairedReadingMarkup(item)}${item.context ? `<article class="context-passage"><strong>${escape(item.title)} · ${unitLabel}</strong>${escape(item.context)}</article>` : ''}<h2 class="question-title">${escape(prompt)}<small class="question-zh">${escape(item.promptZh || '')}</small></h2>${bodyMarkup}<div class="lesson-actions"><button id="hint-button" class="secondary-button" type="button">Hint · 提示</button><div class="button-row">${item.kind === 'objective' ? '<button id="check-button" class="primary-button" type="button" disabled>Check answer · 檢查答案</button>' : '<button id="complete-button" class="primary-button" type="button">Record completion · 記錄完成</button>'}<button id="next-button" class="secondary-button" type="button" ${current === items.length - 1 ? 'disabled' : ''}>Next · 下一題</button></div></div></section><aside class="lesson-sidebar"><section class="side-panel"><h2>Your lesson · 你的練習</h2><p>${items.length} tasks in this standalone page. Progress stays in this browser only. · 此獨立頁有 ${items.length} 個任務，進度只保存在此瀏覽器。</p><div class="progress-track"><i style="width:${((current + 1) / items.length) * 100}%"></i></div><span class="counter">Task ${current + 1} of ${items.length} · 第 ${current + 1} / ${items.length} 題</span></section><section class="side-panel"><h2>Editing note · 修改提示</h2><p>Lesson words and questions are in <b>data/${unitDataFile}</b>. This page only selects the skill module. · 詞語與題目位於資料檔，本頁只選擇技能模組。</p></section><section class="side-panel"><h2>Learning focus · 學習重點</h2><ul class="status-list"><li><b>English first</b><br>Use Chinese support after reading the English task.</li><li><b>Evidence and communication</b><br>Explain a message with accurate information, a reason and a source when useful.</li><li><b>Local only</b><br>No account or upload is required.</li></ul></section></aside></main>`;
+    app.innerHTML = `<header class="lesson-hero"><div><p class="eyebrow">${unitLabel} · ORIGINAL PRACTICE · 原創練習</p><h1>${escape(config.title)}<small>${escape(config.titleZh)}</small></h1><p>Independent bilingual practice page. You can safely edit lesson content in its data file. · 獨立的中英對照練習頁，可在資料檔安全修改內容。</p></div><aside class="original-note"><strong>ORIGINAL PRACTICE · 原創練習</strong>This is not an official examination paper. · 本練習並非官方試卷。</aside></header><main class="lesson-layout"><section class="lesson-panel"><div class="question-meta"><span>${current + 1} / ${items.length}</span>${escape(item.skill)} · ${unitLabel}</div>${audioMarkup(item)}${pairedReadingMarkup(item)}${item.context ? `<article class="context-passage"><strong>${escape(item.title)} · ${unitLabel}</strong>${escape(item.context)}</article>` : ''}<h2 class="question-title">${escape(prompt)}<small class="question-zh">${escape(item.promptZh || '')}</small></h2>${bodyMarkup}<div class="lesson-actions"><button id="hint-button" class="secondary-button" type="button">Hint · 提示</button><div class="button-row">${item.kind === 'objective' ? '<button id="check-button" class="primary-button" type="button" disabled>Check answer · 檢查答案</button>' : '<button id="complete-button" class="primary-button" type="button">Record completion · 記錄完成</button>'}<button id="next-button" class="secondary-button" type="button" ${current === items.length - 1 ? 'disabled' : ''}>Next · 下一題</button></div></div></section><aside class="lesson-sidebar"><section class="side-panel"><h2>Your lesson · 你的練習</h2><p>${items.length} tasks in this standalone page. Progress stays in this browser only. · 此獨立頁有 ${items.length} 個任務，進度只保存在此瀏覽器。</p><div class="progress-track"><i style="width:${((current + 1) / items.length) * 100}%"></i></div><span class="counter">Task ${current + 1} of ${items.length} · 第 ${current + 1} / ${items.length} 題</span></section><section class="side-panel"><h2>Editing note · 修改提示</h2><p>Lesson words and questions are in <b>data/${unitDataFile}</b>. This page only selects the skill module. · 詞語與題目位於資料檔，本頁只選擇技能模組。</p></section><section class="side-panel"><h2>Learning focus · 學習重點</h2><ul class="status-list"><li><b>English first</b><br>Use Chinese support after reading the English task.</li><li><b>${escape(unitMeta.focusTitle || 'Evidence and action')}</b><br>${escape(unitMeta.focusText || 'Explain your idea with a reason and an example.')}</li><li><b>Local only</b><br>No account or upload is required.</li></ul></section></aside></main>`;
     bindEvents(item);
   }
 
