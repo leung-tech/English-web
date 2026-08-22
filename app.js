@@ -90,7 +90,8 @@
         { id: 's1-core-writing', symbol: 'S1+', title: 'S1 Core: Writing workshop', titleZh: '中一核心：寫作工作坊', description: 'Original email, recount and school-improvement responses', descriptionZh: '原創電郵、記敘及校園改善回應寫作', sessions: 3, minGrade: 6, s1Core: true },
         { id: 's2-develop-writing', symbol: 'S2', title: 'S2 Develop: Writing choices', titleZh: '中二發展：選擇寫作', description: 'Original recommendation, recount and comparison responses', descriptionZh: '原創推薦、記敘及比較回應寫作', sessions: 3, minGrade: 6, s2Develop: true },
         { id: 's2-connect-writing', symbol: 'S2+', title: 'S2 Connect: Inform an audience', titleZh: '中二連結：向受眾傳達訊息', description: 'Original news, update-email and responsible-notice writing', descriptionZh: '原創新聞、更新電郵及負責任通告寫作', sessions: 3, minGrade: 6, s2Connect: true },
-        { id: 's2-action-writing', symbol: 'S2A', title: 'S2 Action: Propose a change', titleZh: '中二行動：提出改變建議', description: 'Original persuasive email, proposal and community-action article', descriptionZh: '原創說服電郵、建議書及社區行動文章', sessions: 3, minGrade: 6, s2Action: true }
+        { id: 's2-action-writing', symbol: 'S2A', title: 'S2 Action: Propose a change', titleZh: '中二行動：提出改變建議', description: 'Original persuasive email, proposal and community-action article', descriptionZh: '原創說服電郵、建議書及社區行動文章', sessions: 3, minGrade: 6, s2Action: true },
+        { id: 's2-action-writing-advanced', symbol: 'S2A+', title: 'S2 Action: Advanced writing lab', titleZh: '中二行動：進階寫作室', description: 'Evidence-led proposal writing with source-pack guidance', descriptionZh: '運用資料包引導的證據型建議書寫作', sessions: 1, minGrade: 6, s2Action: true }
       ]
     },
     listen: {
@@ -111,7 +112,8 @@
         { id: 's2-connect-listening', symbol: 'S2+', title: 'S2 Connect: Hear the message', titleZh: '中二連結：聽清訊息', description: 'Original briefings, club meetings and digital-safety listening', descriptionZh: '原創簡介會、學會會議及網絡安全聆聽', sessions: 12, minGrade: 6, s2Connect: true },
         { id: 's2-connect-speaking', symbol: 'S2+', title: 'S2 Connect: Report and respond', titleZh: '中二連結：報告與回應', description: 'Original event-report, summary and message-response speaking', descriptionZh: '原創活動報告、總結及訊息回應口語', sessions: 3, minGrade: 6, s2Connect: true },
         { id: 's2-action-listening', symbol: 'S2A', title: 'S2 Action: Hear the plan', titleZh: '中二行動：聽懂行動計劃', description: 'Original school briefing, club meeting and community interview', descriptionZh: '原創學校簡介會、學會會議及社區訪問', sessions: 12, minGrade: 6, s2Action: true },
-        { id: 's2-action-speaking', symbol: 'S2A', title: 'S2 Action: Recommend and report', titleZh: '中二行動：推薦與報告', description: 'Original green-action, project-comparison and survey-report speaking', descriptionZh: '原創環保行動、專題比較及調查報告口語', sessions: 3, minGrade: 6, s2Action: true }
+        { id: 's2-action-speaking', symbol: 'S2A', title: 'S2 Action: Recommend and report', titleZh: '中二行動：推薦與報告', description: 'Original green-action, project-comparison and survey-report speaking', descriptionZh: '原創環保行動、專題比較及調查報告口語', sessions: 3, minGrade: 6, s2Action: true },
+        { id: 's2-action-dialogues', symbol: 'S2A+', title: 'S2 Action: Community dialogue lab', titleZh: '中二行動：社區對話室', description: 'Original evidence-led meetings with role replay and response choices', descriptionZh: '原創證據型會議對話，附角色重播及回應選擇', sessions: 4, minGrade: 6, s2Action: true }
       ]
     },
     language: {
@@ -709,14 +711,40 @@
   }
 
   function createS2ActionWriting() {
-    const tasks = window.S2_COMMUNITY_ENVIRONMENT?.writing;
-    if (!tasks) return [];
+    const tasks = (window.S2_COMMUNITY_ENVIRONMENT?.writing || []).filter((item) => item.level !== 'advanced');
+    if (!tasks.length) return [];
     return tasks.map((item) => question(item.id, 'write', `S2 Action · ${item.title}`, item.prompt, 'draft', 'Your response is recorded as a writing self-check after it reaches the target length. It is original practice and does not provide an automated quality score.', null, {
       promptZh: item.promptZh,
       writing: true, multiline: true,
       writingTask: { target: '100–120 words', minWords: 100, plan: [['Plan · 寫作規劃', item.plan], ['Self-check · 自我檢查', item.selfCheck]] },
       hint: 'State a practical problem, organise evidence and actions clearly, then check quantity words, conditionals, purpose and linking words. 說明實際問題，清楚組織證據和行動，然後檢查數量詞、條件句、目的和連接詞。',
       s2Action: true, originalPractice: true
+    }));
+  }
+
+  function createS2ActionAdvancedWriting() {
+    const tasks = (window.S2_COMMUNITY_ENVIRONMENT?.writing || []).filter((item) => item.level === 'advanced');
+    return tasks.map((item) => question(item.id, 'write', `S2 Action · ${item.title}`, item.prompt, 'draft', 'Your response is recorded as a writing self-check after it reaches the target length. It is original practice and does not provide an automated quality score.', null, {
+      promptZh: item.promptZh,
+      writing: true, multiline: true,
+      passage: { title: 'Source pack · 資料包', text: item.sourcePack.map(([label, detail]) => `${label}: ${detail}`).join('\n\n') },
+      writingTask: { target: '140–170 words', minWords: 140, plan: [...item.paragraphMap, ['Language bank · 句式庫', item.languageBank.join(' · ')]] },
+      hint: 'Select accurate evidence first. Then build a clear proposal that addresses a concern, gives a workable response and predicts a likely result. 先選取準確證據；再寫出能回應關注、提供可行做法並預測可能結果的清楚建議書。',
+      s2Action: true, originalPractice: true
+    }));
+  }
+
+  function createS2ActionDialogues() {
+    const dialogues = window.S2_COMMUNITY_ENVIRONMENT?.dialogues || [];
+    return dialogues.flatMap((dialogue) => dialogue.checkpoints.map((checkpoint, index) => {
+      const shuffled = randomize(checkpoint.options);
+      return question(`${dialogue.id}-check-${index + 1}`, 'listen', `S2 Action · ${dialogue.title}`, checkpoint.prompt, shuffled.indexOf(checkpoint.options[checkpoint.answer]), checkpoint.explanation, shuffled, {
+        promptZh: checkpoint.promptZh, explanationZh: checkpoint.explanationZh,
+        audioText: dialogue.dialogue.map(([speaker, line]) => `Role ${speaker}: ${line}`).join(' '), scriptTitle: dialogue.title, scriptTitleZh: dialogue.titleZh,
+        roleplay: dialogue,
+        hint: 'Listen to both roles. Choose the reply that uses evidence, responds safely to a concern or gives a realistic next step. 聆聽兩個角色；選擇運用證據、安全回應關注或提出實際下一步的回應。',
+        s2Action: true, originalPractice: true
+      });
     }));
   }
 
@@ -865,6 +893,8 @@
     if (state.module === 's2-action-reading') return createS2ActionReading();
     if (state.module === 's2-action-listening') return createS2ActionListening();
     if (state.module === 's2-action-writing') return createS2ActionWriting();
+    if (state.module === 's2-action-writing-advanced') return createS2ActionAdvancedWriting();
+    if (state.module === 's2-action-dialogues') return createS2ActionDialogues();
     if (state.module === 's2-action-speaking') return createS2ActionSpeaking();
     if (state.module === 'sentence-builder') return createSentenceBuilder();
     if (state.module === 'proofreading') return createProofreading();

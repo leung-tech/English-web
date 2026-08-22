@@ -97,10 +97,25 @@
       })));
     }
     if (config.module === 'writing') {
-      return unit.writing.map((task) => ({
+      return unit.writing.filter((task) => task.level !== 'advanced').map((task) => ({
         ...task, kind: 'writing', skill: 'Writing · 寫作', minWords: 100,
         hint: 'Write for a real audience, organise accurate information and check grammar, tone and linking words. 為真實受眾寫作，組織準確資料，並檢查文法、語氣和連接詞。'
       }));
+    }
+    if (config.module === 'writing-advanced') {
+      return unit.writing.filter((task) => task.level === 'advanced').map((task) => ({
+        ...task, kind: 'writing', skill: 'Advanced writing · 進階寫作', minWords: 140, advancedWriting: true,
+        hint: 'Select evidence first. Then organise a clear proposal that answers one concern and predicts a likely result. 先選取證據；再組織一份回應一項關注並預測可能結果的清楚建議書。'
+      }));
+    }
+    if (config.module === 'dialogue') {
+      return (unit.dialogues || []).flatMap((dialogue) => dialogue.checkpoints.map((checkpoint, index) => ({
+        id: `${dialogue.id}-standalone-check-${index + 1}`, kind: 'objective', skill: 'Dialogue · 對話', title: dialogue.title, titleZh: dialogue.titleZh,
+        audioText: dialogue.dialogue.map(([speaker, line]) => `Role ${speaker}: ${line}`).join(' '), dialogue,
+        prompt: checkpoint.prompt, promptZh: checkpoint.promptZh, options: checkpoint.options, answer: checkpoint.answer,
+        explanation: checkpoint.explanation, explanationZh: checkpoint.explanationZh,
+        hint: 'Listen to both roles. Choose the reply that uses evidence, responds safely to a concern or gives a realistic next step. 聆聽兩個角色；選擇運用證據、安全回應關注或提出實際下一步的回應。'
+      })));
     }
     if (config.module === 'speaking') {
       return unit.speaking.map((task) => ({
@@ -128,7 +143,15 @@
   }
 
   function writingMarkup(item) {
-    return `<section class="task-card"><h2>Plan before writing · 寫前規劃</h2><p>${escape(item.plan)}</p><ol><li>Write an opening that makes your purpose clear. · 以清楚交代目的的開首起筆。</li><li>Develop ideas with reasons, comparisons or a relevant example. · 用理由、比較或相關例子發展內容。</li><li>Read your draft once and check every sentence. · 重讀草稿一次並檢查每一句。</li></ol></section><textarea id="written-answer" class="answer-area" placeholder="Write your response in English here… · 在此以英文寫作…"></textarea><small id="word-count" class="word-count">0 words · 0 字</small><label class="speaking-check"><input type="checkbox" id="task-check"><span>${escape(item.selfCheck)}<br><small>This page records a completion self-check only. It does not give an automated quality score. · 本頁只記錄完成自我檢查，不會自動評核寫作品質。</small></span></label><div id="feedback" class="feedback"></div>`;
+    const sourcePack = item.advancedWriting ? `<section class="advanced-source-pack"><h2>Source pack · 資料包</h2><div>${item.sourcePack.map(([label, detail]) => `<article><b>${escape(label)}</b><p>${escape(detail)}</p></article>`).join('')}</div></section>` : '';
+    const plan = item.advancedWriting ? `<ol>${item.paragraphMap.map(([label, detail]) => `<li><b>${escape(label)}</b><br>${escape(detail)}</li>`).join('')}</ol><p class="language-bank">${item.languageBank.map((line) => `<em>${escape(line)}</em>`).join('')}</p>` : `<p>${escape(item.plan)}</p><ol><li>Write an opening that makes your purpose clear. · 以清楚交代目的的開首起筆。</li><li>Develop ideas with reasons, comparisons or a relevant example. · 用理由、比較或相關例子發展內容。</li><li>Read your draft once and check every sentence. · 重讀草稿一次並檢查每一句。</li></ol>`;
+    return `${sourcePack}<section class="task-card"><h2>${item.advancedWriting ? 'Evidence-led paragraph map · 證據型段落規劃' : 'Plan before writing · 寫前規劃'}</h2>${plan}</section><textarea id="written-answer" class="answer-area" placeholder="Write your response in English here… · 在此以英文寫作…"></textarea><small id="word-count" class="word-count">0 words · 0 字</small><label class="speaking-check"><input type="checkbox" id="task-check"><span>${escape(item.selfCheck)}<br><small>This page records a completion self-check only. It does not give an automated quality score. · 本頁只記錄完成自我檢查，不會自動評核寫作品質。</small></span></label><div id="feedback" class="feedback"></div>`;
+  }
+
+  function dialogueMarkup(item) {
+    if (!item.dialogue) return '';
+    const dialogue = item.dialogue;
+    return `<section class="standalone-dialogue"><header><p class="eyebrow">COMMUNITY DIALOGUE LAB · 社區對話室</p><strong>${escape(dialogue.title)}<small>${escape(dialogue.titleZh)}</small></strong><p>${escape(dialogue.goal)}<i>${escape(dialogue.goalZh)}</i></p></header><div class="roleplay-actions"><button class="secondary-button" data-dialogue-role="A">Listen to A · 聽 A 角色</button><button class="secondary-button" data-dialogue-role="B">Listen to B · 聽 B 角色</button></div><div class="standalone-dialogue-lines">${dialogue.dialogue.map(([speaker, line]) => `<p class="line-${speaker.toLowerCase()}"><b>Role ${speaker}</b><span>${escape(line)}</span></p>`).join('')}</div><footer><b>Useful phrases · 實用語句</b><p>${dialogue.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>`;
   }
 
   function speakingMarkup(item) {
@@ -148,7 +171,7 @@
     item.renderOptions = objective;
     const prompt = item.kind === 'writing' || item.kind === 'speaking' ? item.prompt : item.prompt;
     const bodyMarkup = item.kind === 'objective' ? objectiveMarkup(item, objective) : item.kind === 'writing' ? writingMarkup(item) : speakingMarkup(item);
-    app.innerHTML = `<header class="lesson-hero"><div><p class="eyebrow">${unitLabel} · ORIGINAL PRACTICE · 原創練習</p><h1>${escape(config.title)}<small>${escape(config.titleZh)}</small></h1><p>Independent bilingual practice page. You can safely edit lesson content in its data file. · 獨立的中英對照練習頁，可在資料檔安全修改內容。</p></div><aside class="original-note"><strong>ORIGINAL PRACTICE · 原創練習</strong>This is not an official examination paper. · 本練習並非官方試卷。</aside></header><main class="lesson-layout"><section class="lesson-panel"><div class="question-meta"><span>${current + 1} / ${items.length}</span>${escape(item.skill)} · ${unitLabel}</div>${audioMarkup(item)}${pairedReadingMarkup(item)}${item.context ? `<article class="context-passage"><strong>${escape(item.title)} · ${unitLabel}</strong>${escape(item.context)}</article>` : ''}<h2 class="question-title">${escape(prompt)}<small class="question-zh">${escape(item.promptZh || '')}</small></h2>${bodyMarkup}<div class="lesson-actions"><button id="hint-button" class="secondary-button" type="button">Hint · 提示</button><div class="button-row">${item.kind === 'objective' ? '<button id="check-button" class="primary-button" type="button" disabled>Check answer · 檢查答案</button>' : '<button id="complete-button" class="primary-button" type="button">Record completion · 記錄完成</button>'}<button id="next-button" class="secondary-button" type="button" ${current === items.length - 1 ? 'disabled' : ''}>Next · 下一題</button></div></div></section><aside class="lesson-sidebar"><section class="side-panel"><h2>Your lesson · 你的練習</h2><p>${items.length} tasks in this standalone page. Progress stays in this browser only. · 此獨立頁有 ${items.length} 個任務，進度只保存在此瀏覽器。</p><div class="progress-track"><i style="width:${((current + 1) / items.length) * 100}%"></i></div><span class="counter">Task ${current + 1} of ${items.length} · 第 ${current + 1} / ${items.length} 題</span></section><section class="side-panel"><h2>Editing note · 修改提示</h2><p>Lesson words and questions are in <b>data/${unitDataFile}</b>. This page only selects the skill module. · 詞語與題目位於資料檔，本頁只選擇技能模組。</p></section><section class="side-panel"><h2>Learning focus · 學習重點</h2><ul class="status-list"><li><b>English first</b><br>Use Chinese support after reading the English task.</li><li><b>${escape(unitMeta.focusTitle || 'Evidence and action')}</b><br>${escape(unitMeta.focusText || 'Explain your idea with a reason and an example.')}</li><li><b>Local only</b><br>No account or upload is required.</li></ul></section></aside></main>`;
+    app.innerHTML = `<header class="lesson-hero"><div><p class="eyebrow">${unitLabel} · ORIGINAL PRACTICE · 原創練習</p><h1>${escape(config.title)}<small>${escape(config.titleZh)}</small></h1><p>Independent bilingual practice page. You can safely edit lesson content in its data file. · 獨立的中英對照練習頁，可在資料檔安全修改內容。</p></div><aside class="original-note"><strong>ORIGINAL PRACTICE · 原創練習</strong>This is not an official examination paper. · 本練習並非官方試卷。</aside></header><main class="lesson-layout"><section class="lesson-panel"><div class="question-meta"><span>${current + 1} / ${items.length}</span>${escape(item.skill)} · ${unitLabel}</div>${audioMarkup(item)}${pairedReadingMarkup(item)}${dialogueMarkup(item)}${item.context ? `<article class="context-passage"><strong>${escape(item.title)} · ${unitLabel}</strong>${escape(item.context)}</article>` : ''}<h2 class="question-title">${escape(prompt)}<small class="question-zh">${escape(item.promptZh || '')}</small></h2>${bodyMarkup}<div class="lesson-actions"><button id="hint-button" class="secondary-button" type="button">Hint · 提示</button><div class="button-row">${item.kind === 'objective' ? '<button id="check-button" class="primary-button" type="button" disabled>Check answer · 檢查答案</button>' : '<button id="complete-button" class="primary-button" type="button">Record completion · 記錄完成</button>'}<button id="next-button" class="secondary-button" type="button" ${current === items.length - 1 ? 'disabled' : ''}>Next · 下一題</button></div></div></section><aside class="lesson-sidebar"><section class="side-panel"><h2>Your lesson · 你的練習</h2><p>${items.length} tasks in this standalone page. Progress stays in this browser only. · 此獨立頁有 ${items.length} 個任務，進度只保存在此瀏覽器。</p><div class="progress-track"><i style="width:${((current + 1) / items.length) * 100}%"></i></div><span class="counter">Task ${current + 1} of ${items.length} · 第 ${current + 1} / ${items.length} 題</span></section><section class="side-panel"><h2>Editing note · 修改提示</h2><p>Lesson words and questions are in <b>data/${unitDataFile}</b>. This page only selects the skill module. · 詞語與題目位於資料檔，本頁只選擇技能模組。</p></section><section class="side-panel"><h2>Learning focus · 學習重點</h2><ul class="status-list"><li><b>English first</b><br>Use Chinese support after reading the English task.</li><li><b>${escape(unitMeta.focusTitle || 'Evidence and action')}</b><br>${escape(unitMeta.focusText || 'Explain your idea with a reason and an example.')}</li><li><b>Local only</b><br>No account or upload is required.</li></ul></section></aside></main>`;
     bindEvents(item);
   }
 
@@ -162,6 +185,10 @@
     document.querySelector('#hint-button').addEventListener('click', () => feedback('Hint', item.hint || 'Read the task carefully and choose the best evidence.', false));
     document.querySelector('#next-button')?.addEventListener('click', () => { if (current < items.length - 1) { current += 1; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); } });
     document.querySelector('#play-audio')?.addEventListener('click', () => speak(item.audioText));
+    document.querySelectorAll('[data-dialogue-role]').forEach((button) => button.addEventListener('click', () => {
+      const role = button.dataset.dialogueRole;
+      speak(item.dialogue.dialogue.filter(([speaker]) => speaker === role).map(([, line]) => line).join(' '));
+    }));
 
     if (item.kind === 'objective') {
       document.querySelectorAll('[data-choice]').forEach((button) => {

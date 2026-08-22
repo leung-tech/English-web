@@ -199,7 +199,13 @@ expect(s2ActionListening.length === 3 && s2ActionListening.every((script) => scr
 expect(s2ActionListening.flatMap((script) => script.questions).every((item) => Array.isArray(item) && item[0] && item[1] && Array.isArray(item[2]) && item[2].length === 4 && Number.isInteger(item[3]) && item[3] >= 0 && item[3] < item[2].length && item[4] && item[5]), 'S2 Action listening questions require bilingual prompts, valid options and explanations');
 
 const s2ActionWriting = s2Action?.writing || [];
-expect(s2ActionWriting.length === 3 && s2ActionWriting.every((item) => item.id && item.title && item.titleZh && item.prompt && item.promptZh && item.plan && item.selfCheck), 'S2 Action writing should contain three bilingual planned self-check tasks');
+expect(s2ActionWriting.length === 4 && s2ActionWriting.every((item) => item.id && item.title && item.titleZh && item.prompt && item.promptZh && item.plan && item.selfCheck), 'S2 Action writing should contain three standard and one advanced bilingual planned self-check task');
+const s2ActionAdvancedWriting = s2ActionWriting.filter((item) => item.level === 'advanced');
+expect(s2ActionAdvancedWriting.length === 1 && s2ActionAdvancedWriting.every((item) => Array.isArray(item.sourcePack) && item.sourcePack.length === 3 && Array.isArray(item.paragraphMap) && item.paragraphMap.length === 4 && Array.isArray(item.languageBank) && item.languageBank.length >= 4), 'S2 Action advanced writing requires a three-source pack, four-part paragraph map and language bank');
+const s2ActionDialogues = s2Action?.dialogues || [];
+expect(s2ActionDialogues.length === 2 && s2ActionDialogues.every((item) => item.id && item.title && item.titleZh && item.goal && item.goalZh && Array.isArray(item.roles) && item.roles.length === 2 && Array.isArray(item.dialogue) && item.dialogue.length >= 6 && Array.isArray(item.language) && item.language.length >= 4 && item.selfCheck), 'S2 Action should contain two bilingual interactive dialogue tasks');
+const s2ActionDialogueChecks = s2ActionDialogues.flatMap((item) => item.checkpoints || []);
+expect(s2ActionDialogueChecks.length === 4 && s2ActionDialogueChecks.every((item) => item.prompt && item.promptZh && Array.isArray(item.options) && item.options.length === 4 && Number.isInteger(item.answer) && item.answer >= 0 && item.answer < item.options.length && item.explanation && item.explanationZh), 'S2 Action dialogue checkpoints require bilingual prompts, four valid options and explanations');
 const s2ActionSpeaking = s2Action?.speaking || [];
 expect(s2ActionSpeaking.length === 3 && s2ActionSpeaking.every((item) => item.id && item.title && item.titleZh && item.prompt && item.promptZh && item.model && item.selfCheck), 'S2 Action speaking should contain three bilingual model and self-check tasks');
 expect(new Set([...s2ActionWriting, ...s2ActionSpeaking].map((item) => item.id)).size === s2ActionWriting.length + s2ActionSpeaking.length, 'S2 Action writing and speaking task IDs must be unique');
@@ -225,6 +231,6 @@ info.push(`Pre-S1 revision items checked: ${(preS1Guide?.vocabulary || []).flatM
 info.push(`S1 Core items checked: ${s1CoreGrammar.length + s1CoreVocabulary.length + s1CoreReading.length + s1CoreListening.flatMap((script) => script.questions).length + s1CoreWriting.length + s1CoreSpeaking.length}`);
 info.push(`S2 Develop items checked: ${s2Grammar.length + s2Vocabulary.length + s2ReadingQuestions.length + s2Listening.flatMap((script) => script.questions).length + s2Writing.length + s2Speaking.length}`);
 info.push(`S2 Connect items checked: ${s2ConnectGrammar.length + s2ConnectVocabulary.length + s2ConnectReadingQuestions.length + s2ConnectListening.flatMap((script) => script.questions).length + s2ConnectWriting.length + s2ConnectSpeaking.length}`);
-info.push(`S2 Action items checked: ${s2ActionGrammar.length + s2ActionVocabulary.length + s2ActionReadingQuestions.length + s2ActionListening.flatMap((script) => script.questions).length + s2ActionWriting.length + s2ActionSpeaking.length}`);
+info.push(`S2 Action items checked: ${s2ActionGrammar.length + s2ActionVocabulary.length + s2ActionReadingQuestions.length + s2ActionListening.flatMap((script) => script.questions).length + s2ActionWriting.length + s2ActionSpeaking.length + s2ActionDialogueChecks.length}`);
 console.log(JSON.stringify({ status: issues.length ? 'issues_found' : 'passed', info, issues }, null, 2));
 process.exitCode = issues.length ? 1 : 0;

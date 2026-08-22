@@ -22,6 +22,8 @@ const expectedPages = [
   ['s2/s2_action_read_community_environment.html', 'reading', 's2-community-and-environment', 's2-community-and-environment-data.js'],
   ['s2/s2_action_listen_community_environment.html', 'listening', 's2-community-and-environment', 's2-community-and-environment-data.js'],
   ['s2/s2_action_write_propose_change.html', 'writing', 's2-community-and-environment', 's2-community-and-environment-data.js'],
+  ['s2/s2_action_write_advanced_green_proposal.html', 'writing-advanced', 's2-community-and-environment', 's2-community-and-environment-data.js'],
+  ['s2/s2_action_dialogue_community_environment.html', 'dialogue', 's2-community-and-environment', 's2-community-and-environment-data.js'],
   ['s2/s2_action_speak_recommend_report.html', 'speaking', 's2-community-and-environment', 's2-community-and-environment-data.js']
 ];
 const expect = (condition, message) => { if (!condition) errors.push(message); };
@@ -29,6 +31,10 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
 expect(fs.existsSync(path.join(root, 'assets/lesson.css')), 'Missing shared lesson.css');
 expect(fs.existsSync(path.join(root, 'assets/lesson.js')), 'Missing shared lesson.js');
+expect(fs.existsSync(path.join(root, 'assets/s2-action-complete.css')), 'Missing S2 Action complete preview CSS');
+expect(fs.existsSync(path.join(root, 'assets/s2-action-complete.js')), 'Missing S2 Action complete preview JavaScript');
+expect(fs.existsSync(path.join(root, 's2-action-complete.html')), 'Missing S2 Action complete preview HTML');
+expect(fs.existsSync(path.join(root, 'S2_ACTION_COMPLETE_PREVIEW_GUIDE.md')), 'Missing S2 Action complete preview editing guide');
 expect(fs.existsSync(path.join(root, 'data/s2-experiences-and-choices-data.js')), 'Missing S2 Develop data file');
 expect(fs.existsSync(path.join(root, 'data/s2-messages-and-media-data.js')), 'Missing S2 Connect data file');
 expect(fs.existsSync(path.join(root, 'data/s2-community-and-environment-data.js')), 'Missing S2 Action data file');
@@ -49,6 +55,9 @@ for (const [file, moduleName, unitId, dataFile] of expectedPages) {
 
 const directory = read('index.html');
 for (const [file] of expectedPages) expect(directory.includes(file), `Gemini page directory must link to ${file}`);
+expect(directory.includes('s2-action-complete.html'), 'Gemini page directory must link to the S2 Action complete preview');
+const completePreview = read('s2-action-complete.html');
+expect(completePreview.includes('data/s2-community-and-environment-data.js') && completePreview.includes('assets/s2-action-complete.css') && completePreview.includes('assets/s2-action-complete.js'), 'S2 Action complete preview must load its data, CSS and JavaScript');
 
 const context = { window: {} };
 context.window.window = context.window;
@@ -83,12 +92,15 @@ expect(s2Action?.vocabulary?.items?.length === 18, 'S2 Action standalone vocabul
 expect(s2Action?.reading?.sets?.length === 4, 'S2 Action standalone reading requires four paired-text sets');
 expect(s2Action?.reading?.sets?.every((set) => set.texts?.length === 2 && set.questions?.length === 3), 'Each S2 Action paired-text set needs two texts and three questions');
 expect(s2Action?.listening?.scripts?.length === 3 && s2Action?.listening?.scripts?.every((script) => script.questions?.length === 4), 'S2 Action standalone listening requires three scripts with four questions each');
-expect(s2Action?.writing?.length === 3, 'S2 Action standalone writing requires three tasks');
+expect(s2Action?.writing?.length === 4, 'S2 Action standalone writing requires three standard tasks and one advanced task');
+const s2ActionAdvanced = (s2Action?.writing || []).filter((task) => task.level === 'advanced');
+expect(s2ActionAdvanced.length === 1 && s2ActionAdvanced.every((task) => task.sourcePack?.length === 3 && task.paragraphMap?.length === 4 && task.languageBank?.length >= 4), 'S2 Action advanced standalone writing requires source-pack and paragraph-map guidance');
+expect(s2Action?.dialogues?.length === 2 && s2Action.dialogues.every((task) => task.dialogue?.length >= 6 && task.checkpoints?.length === 2 && task.checkpoints.every((check) => check.options?.length === 4 && Number.isInteger(check.answer))), 'S2 Action standalone dialogue lab requires two dialogues and four valid checkpoints');
 expect(s2Action?.speaking?.length === 3, 'S2 Action standalone speaking requires three tasks');
 
 console.log(JSON.stringify({
   status: errors.length ? 'issues_found' : 'passed',
-  info: [`Standalone S2 pages checked: ${expectedPages.length}`, 'Standalone S2 content items checked: 208'],
+  info: [`Standalone S2 pages checked: ${expectedPages.length}`, 'Standalone S2 content items checked: 213'],
   errors
 }, null, 2));
 process.exitCode = errors.length ? 1 : 0;
