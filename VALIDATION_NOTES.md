@@ -365,3 +365,5 @@ Local grammar-bank verification succeeded. S1 Passive Voice Quest and Conditiona
 S1–S3 grammar expansion audit passed. New original content includes 12 S1 Passive Voice Quest rounds, 12 S1 Conditionals Quest rounds, and 18 contextual grammar items each for S1, S2 and S3. All new question banks use defined-answer objective feedback and rotating task labels; full-site and Gemini-page audits also passed.
 
 Public grammar-expansion verification succeeded at the cache-busted secondary URL. S1 Passive Voice Quest loaded 1/12 and produced correct-answer feedback; S1 Conditionals Quest loaded 1/12 with three grammar clues. The new S1, S2 and S3 grammar banks loaded 1/18 each and displayed their contextual question-format labels.
+
+Public S2 vocabulary and S3 formal-response verification succeeded at the cache-busted secondary URL. The S3 hero demo opened Grammar in Formal Response at 1/18, showed the "Edit for a formal response" format label, marked a correct answer and rendered a three-step Hedging and evidence scope DSE-bridge analysis with the original-practice disclaimer. The S2 Meaning in Context Game loaded at 1/24 with its phrase bank and bilingual prompt.
