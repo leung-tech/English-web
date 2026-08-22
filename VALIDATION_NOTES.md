@@ -325,3 +325,9 @@ S1–S3 vocabulary-game and S3 speaking-simulation local verification: S1 Phrase
 S1–S3 vocabulary games and S3 speaking simulations passed local validation and expanded audit. Each year level has six interactive phrase-game rounds; S3 has three original exam-style practice scenarios, each with a model response, target language, four descriptive rubric dimensions and self-check prompts. The rubric is explicitly not an official marking scheme and does not generate an automated score.
 
 Public vocabulary-game and speaking-simulation verification succeeded at the cache-busted secondary URL. S3 Precision Challenge loaded round 1 of 6 with a three-item phrase bank and four selectable answers. S3 Speaking Simulation Toolkit loaded scenario 1 of 3 with four rubric dimensions and the explicit non-official, non-automated-score notice.
+
+S1–S2 varied-practice local verification: S1 Practical-text Reading loaded four questions with four selectable answers. S2 Paired Message Reading loaded dual Text A/Text B context, question 1 of 4 and four selectable answers.
+
+S3 varied-practice local verification: Applied Source Review loaded paired Text A/Text B, question 1 of 4 and four selectable answers. Applied Writing Planners loaded planner 1 of 2 with a five-step plan and language bank.
+
+S1–S3 varied-practice audit passed. New coverage adds practical and paired-source reading, key-detail and panel listening, contextual sentence repair, evidence editing, precision editing and writing planners. S1 includes 6 grammar, 4 reading, 8 listening and 1 writing-planning item; S2 includes 6 grammar, 4 paired-reading, 4 listening and 1 proposal planner; S3 includes 6 precision-editing, 4 applied source-review, 4 panel-listening and 2 applied writing-planning items. Existing site and Gemini-page audits also passed.
