@@ -4,7 +4,10 @@ const vm = require('vm');
 const checks = [
   { file:'s1-extend-community-voice.js', key:'S1_EXTEND_COMMUNITY_VOICE', min:{ grammar:18, vocabulary:20, reading:12, listening:12, writing:4, speaking:4, dialogues:2 } },
   { file:'s2-consolidate-evidence.js', key:'S2_CONSOLIDATE_EVIDENCE', min:{ grammar:12, vocabulary:12, reading:8, listening:8, writing:3, speaking:3, dialogues:2 } },
-  { file:'s3-ready-pathway.js', key:'S3_READY_PATHWAY', min:{ grammar:12, vocabulary:12, reading:8, listening:8, writing:4, speaking:4, dialogues:2, advancedWriting:1 } }
+  { file:'s3-ready-pathway.js', key:'S3_READY_PATHWAY', min:{ grammar:12, vocabulary:12, reading:8, listening:8, writing:4, speaking:4, dialogues:2, advancedWriting:1 } },
+  { file:'s1-s3-interaction-critical-extension.js', key:'S1_INTERACTION_PLUS', min:{ grammar:12, speaking:4, dialogues:3 } },
+  { file:'s1-s3-interaction-critical-extension.js', key:'S2_INTERACTION_PLUS', min:{ grammar:12, speaking:4, dialogues:3 } },
+  { file:'s1-s3-interaction-critical-extension.js', key:'S3_CRITICAL_PLUS', min:{ grammar:12, speaking:4, dialogues:3, advancedWriting:2 } }
 ];
 
 function load(file, key) {

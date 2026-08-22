@@ -61,6 +61,9 @@
     { id:'s1-extend-writing', stage:'s1-extend', route:'write', symbol:'W', title:'Write to improve', zh:'寫作以改善', kind:'writing', source:'S1_EXTEND_COMMUNITY_VOICE' },
     { id:'s1-extend-dialogue', stage:'s1-extend', route:'listen', symbol:'D', title:'Community dialogue', zh:'社區對話', kind:'dialogues', source:'S1_EXTEND_COMMUNITY_VOICE' },
     { id:'s1-extend-speaking', stage:'s1-extend', route:'listen', symbol:'S', title:'Speak with purpose', zh:'有目的地說', kind:'speaking', source:'S1_EXTEND_COMMUNITY_VOICE' },
+    { id:'s1-interaction-grammar', stage:'s1-extend', route:'language', symbol:'G+', title:'Interaction grammar clinic', zh:'互動文法診所', kind:'grammar', source:'S1_INTERACTION_PLUS' },
+    { id:'s1-interaction-dialogue', stage:'s1-extend', route:'listen', symbol:'D+', title:'Interaction dialogue lab', zh:'互動對話室', kind:'dialogues', source:'S1_INTERACTION_PLUS' },
+    { id:'s1-interaction-speaking', stage:'s1-extend', route:'listen', symbol:'S+', title:'Speaking response studio', zh:'口語回應工作坊', kind:'speaking', source:'S1_INTERACTION_PLUS' },
 
     { id:'s2-develop-grammar', stage:'s2-develop', route:'language', symbol:'G', title:'Grammar in context', zh:'語境文法', kind:'grammar', source:'S2_EXPERIENCES_CHOICES' },
     { id:'s2-develop-vocabulary', stage:'s2-develop', route:'language', symbol:'V', title:'Vocabulary choices', zh:'選擇詞彙', kind:'vocabulary', source:'S2_EXPERIENCES_CHOICES' },
@@ -92,6 +95,9 @@
     { id:'s2-consolidate-writing', stage:'s2-consolidate', route:'write', symbol:'W', title:'Write with evidence', zh:'以證據寫作', kind:'writing', source:'S2_CONSOLIDATE_EVIDENCE' },
     { id:'s2-consolidate-dialogue', stage:'s2-consolidate', route:'listen', symbol:'D', title:'Source dialogue', zh:'來源對話', kind:'dialogues', source:'S2_CONSOLIDATE_EVIDENCE' },
     { id:'s2-consolidate-speaking', stage:'s2-consolidate', route:'listen', symbol:'S', title:'Compare and respond', zh:'比較與回應', kind:'speaking', source:'S2_CONSOLIDATE_EVIDENCE' },
+    { id:'s2-interaction-grammar', stage:'s2-consolidate', route:'language', symbol:'G+', title:'Interaction grammar clinic', zh:'互動文法診所', kind:'grammar', source:'S2_INTERACTION_PLUS' },
+    { id:'s2-interaction-dialogue', stage:'s2-consolidate', route:'listen', symbol:'D+', title:'Interaction dialogue lab', zh:'互動對話室', kind:'dialogues', source:'S2_INTERACTION_PLUS' },
+    { id:'s2-interaction-speaking', stage:'s2-consolidate', route:'listen', symbol:'S+', title:'Speaking response studio', zh:'口語回應工作坊', kind:'speaking', source:'S2_INTERACTION_PLUS' },
 
     { id:'s3-ready-grammar', stage:'s3-ready', route:'language', symbol:'G', title:'Grammar for precision', zh:'精準文法', kind:'grammar', source:'S3_READY_PATHWAY' },
     { id:'s3-ready-vocabulary', stage:'s3-ready', route:'language', symbol:'V', title:'Academic word bank', zh:'學術詞彙庫', kind:'vocabulary', source:'S3_READY_PATHWAY' },
@@ -100,7 +106,11 @@
     { id:'s3-ready-writing', stage:'s3-ready', route:'write', symbol:'W', title:'Formal response', zh:'正式回應寫作', kind:'writing', source:'S3_READY_PATHWAY' },
     { id:'s3-ready-advanced', stage:'s3-ready', route:'write', symbol:'W+', title:'Advanced writing lab', zh:'進階寫作室', kind:'advancedWriting', source:'S3_READY_PATHWAY' },
     { id:'s3-ready-dialogue', stage:'s3-ready', route:'listen', symbol:'D', title:'Evaluate and revise', zh:'評估與修訂', kind:'dialogues', source:'S3_READY_PATHWAY' },
-    { id:'s3-ready-speaking', stage:'s3-ready', route:'listen', symbol:'S', title:'Present with evidence', zh:'以證據表達', kind:'speaking', source:'S3_READY_PATHWAY' }
+    { id:'s3-ready-speaking', stage:'s3-ready', route:'listen', symbol:'S', title:'Present with evidence', zh:'以證據表達', kind:'speaking', source:'S3_READY_PATHWAY' },
+    { id:'s3-critical-grammar', stage:'s3-ready', route:'language', symbol:'G+', title:'Critical grammar clinic', zh:'批判性思考文法診所', kind:'grammar', source:'S3_CRITICAL_PLUS' },
+    { id:'s3-critical-dialogue', stage:'s3-ready', route:'listen', symbol:'D+', title:'Critical dialogue lab', zh:'批判性對話室', kind:'dialogues', source:'S3_CRITICAL_PLUS' },
+    { id:'s3-critical-speaking', stage:'s3-ready', route:'listen', symbol:'S+', title:'Critical response studio', zh:'批判性回應工作坊', kind:'speaking', source:'S3_CRITICAL_PLUS' },
+    { id:'s3-critical-writing', stage:'s3-ready', route:'write', symbol:'W+', title:'Critical writing lab', zh:'批判性寫作室', kind:'advancedWriting', source:'S3_CRITICAL_PLUS' }
   ];
 
   const source = (name) => window[name] || {};
