@@ -75,6 +75,9 @@
     { id:'s1-interaction-grammar', stage:'s1-extend', route:'language', symbol:'G+', title:'Interaction grammar clinic', zh:'互動文法診所', kind:'grammar', source:'S1_INTERACTION_PLUS' },
     { id:'s1-vocab-game', stage:'s1-extend', route:'language', symbol:'P', title:'Phrase builder game', zh:'片語建構遊戲', kind:'game', source:'S1_VOCAB_GAMES' },
     { id:'s1-grammar-quest', stage:'s1-extend', route:'language', symbol:'Q', title:'Grammar Quest: Build the message', zh:'文法闖關：建構訊息', kind:'game', source:'S1_GRAMMAR_QUEST' },
+    { id:'s1-passive-quest', stage:'s1-extend', route:'language', symbol:'PV', title:'Passive voice quest', zh:'被動語態闖關', kind:'game', source:'S1_S3_GRAMMAR_EXPANSION', gameSet:'passive' },
+    { id:'s1-conditionals-quest', stage:'s1-extend', route:'language', symbol:'IF', title:'Conditionals quest', zh:'條件句闖關', kind:'game', source:'S1_S3_GRAMMAR_EXPANSION', gameSet:'conditionals' },
+    { id:'s1-varied-grammar-bank', stage:'s1-extend', route:'language', symbol:'G+', title:'Grammar in school and community', zh:'校園及社區文法題庫', kind:'grammar', source:'S1_S3_GRAMMAR_EXPANSION', bank:'s1Grammar' },
     { id:'s1-genre-writing', stage:'s1-extend', route:'write', symbol:'W+', title:'Narrative & argument scaffolds', zh:'記敘與議論寫作鷹架', kind:'advancedWriting', source:'S1_GENRE_WRITING' },
     { id:'s1-varied-grammar', stage:'s1-extend', route:'language', symbol:'E', title:'Sentence repair clinic', zh:'句子修訂診所', kind:'grammar', source:'S1_VARIED_PRACTICE' },
     { id:'s1-varied-reading', stage:'s1-extend', route:'read', symbol:'R+', title:'Practical-text reading', zh:'實用文本閱讀', kind:'reading', source:'S1_VARIED_PRACTICE' },
@@ -107,6 +110,7 @@
     { id:'s2-action-speaking', stage:'s2-action', route:'listen', symbol:'S', title:'Recommend & report', zh:'推薦與報告', kind:'speaking', source:'S2_COMMUNITY_ENVIRONMENT' },
 
     { id:'s2-consolidate-grammar', stage:'s2-consolidate', route:'language', symbol:'G', title:'Grammar with evidence', zh:'證據語境文法', kind:'grammar', source:'S2_CONSOLIDATE_EVIDENCE' },
+    { id:'s2-varied-grammar-bank', stage:'s2-consolidate', route:'language', symbol:'G+', title:'Grammar in evidence and viewpoints', zh:'證據與觀點文法題庫', kind:'grammar', source:'S1_S3_GRAMMAR_EXPANSION', bank:'s2Grammar' },
     { id:'s2-consolidate-vocabulary', stage:'s2-consolidate', route:'language', symbol:'V', title:'Source words', zh:'來源詞彙', kind:'vocabulary', source:'S2_CONSOLIDATE_EVIDENCE' },
     { id:'s2-consolidate-reading', stage:'s2-consolidate', route:'read', symbol:'R', title:'Compare sources', zh:'比較來源', kind:'reading', source:'S2_CONSOLIDATE_EVIDENCE' },
     { id:'s2-consolidate-listening', stage:'s2-consolidate', route:'listen', symbol:'L', title:'Hear and check', zh:'聆聽與核實', kind:'listening', source:'S2_CONSOLIDATE_EVIDENCE' },
@@ -131,6 +135,7 @@
     { id:'s3-ready-writing', stage:'s3-ready', route:'write', symbol:'W', title:'Formal response', zh:'正式回應寫作', kind:'writing', source:'S3_READY_PATHWAY' },
     { id:'s3-ready-advanced', stage:'s3-ready', route:'write', symbol:'W+', title:'Advanced writing lab', zh:'進階寫作室', kind:'advancedWriting', source:'S3_READY_PATHWAY' },
     { id:'s3-dse-grammar', stage:'s3-ready', route:'language', symbol:'D', title:'Senior-secondary grammar lab', zh:'高中銜接文法室', kind:'grammar', source:'S3_DSE_PREP' },
+    { id:'s3-varied-grammar-bank', stage:'s3-ready', route:'language', symbol:'G+', title:'Grammar in formal response', zh:'正式回應文法題庫', kind:'grammar', source:'S1_S3_GRAMMAR_EXPANSION', bank:'s3Grammar' },
     { id:'s3-dse-writing', stage:'s3-ready', route:'write', symbol:'D+', title:'DSE bridge writing models', zh:'DSE 銜接寫作範本', kind:'advancedWriting', source:'S3_DSE_PREP' },
     { id:'s3-integrated-assessment', stage:'s3-ready', route:'read', symbol:'IS', title:'Integrated skills assessment', zh:'綜合能力測驗', kind:'integrated', source:'S3_DSE_INTEGRATED' },
     { id:'s3-integrated-writing', stage:'s3-ready', route:'write', symbol:'IR', title:'Integrated response planner', zh:'綜合回應規劃', kind:'advancedWriting', source:'S3_DSE_INTEGRATED' },
@@ -168,7 +173,7 @@
     if (module.kind === 'bridgeListening') return flattenListening(window.S1_BRIDGE_SKILLS?.listening?.scripts || []);
 
     const data = source(module.source);
-    if (module.kind === 'grammar') return (data.grammar?.questions || []).map((item) => ({ ...normalizeTuple(item, 'grammar'), type:'quiz' }));
+    if (module.kind === 'grammar') return ((module.bank ? data[module.bank] : data.grammar)?.questions || []).map((item) => ({ ...normalizeTuple(item, 'grammar'), type:'quiz' }));
     if (module.kind === 'vocabulary') return (data.vocabulary?.items || []).map((item) => ({ ...normalizeTuple(item, 'vocabulary'), type:'vocabulary' }));
     if (module.kind === 'reading') {
       const reading = data.reading || {};
@@ -189,7 +194,7 @@
     if (module.kind === 'advancedWriting') return (data.advancedWriting || data.writing || []).filter((item) => item.level === 'advanced').map((item) => ({ ...item, type:'advancedWriting' }));
     if (module.kind === 'speaking') return (data.speaking || []).map((item) => ({ ...item, type:'speaking' }));
     if (module.kind === 'dialogues') return (data.dialogues || []).map((item) => ({ ...item, type:'dialogue' }));
-    if (module.kind === 'game') return (data.games || []).map((item) => ({ ...item, type:'game' }));
+    if (module.kind === 'game') return (data.games || []).filter((item) => !module.gameSet || item.set === module.gameSet).map((item) => ({ ...item, type:'game' }));
     if (module.kind === 'simulation') return (data.simulations || []).map((item) => ({ ...item, type:'simulation' }));
     return [];
   }
@@ -324,6 +329,7 @@
     const options = item.options || [];
     const answer = Number(item.answer || 0);
     return `${context ? `<article class="context"><strong>${escape(title || (item.type === 'listening' ? 'Listening script' : 'Read this text'))}</strong>${item.type === 'listening' ? `<button class="secondary" data-say="${escape(context)}">▶ Replay script · 重播內容</button>` : ''}<div>${escape(context)}</div></article>` : (item.type === 'vocabulary' ? `<article class="context"><strong>${escape(item.word)}</strong><span class="zh">${escape(item.zh || '')}</span><div>${escape(item.definition || '')}<br><em>${escape(item.example || '')}</em></div></article>` : '')}
+      ${item.format ? `<span class="format-chip">${escape(item.format)}<em>${escape(item.formatZh || '')}</em></span>` : ''}
       <p class="prompt">${bilingualLine(prompt, promptZh)}</p>
       <div class="options">${options.map((option, index) => { const resultClass = state.checked ? (index === answer ? 'correct' : (index === state.selected ? 'wrong' : '')) : (index === state.selected ? 'selected' : ''); return `<button class="option ${resultClass}" data-option="${index}"><b>${letters[index] || index + 1}</b><span>${escape(option)}</span></button>`; }).join('')}</div>
       <div class="controls"><button class="primary" data-check="true">Check answer · 核對答案</button><button class="secondary" data-next="true">Next · 下一題</button>${item.hint ? `<button class="secondary" data-hint="${escape(item.hint)}">Hint · 提示</button>` : ''}</div>

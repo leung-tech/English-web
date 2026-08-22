@@ -20,7 +20,8 @@ const checks = [
   { file:'s1-s2-grammar-writing-extension.js', key:'S2_GRAMMAR_QUEST', min:{ games:12 } },
   { file:'s1-s2-grammar-writing-extension.js', key:'S1_GENRE_WRITING', min:{ advancedWriting:2 } },
   { file:'s1-s2-grammar-writing-extension.js', key:'S2_GENRE_WRITING', min:{ advancedWriting:2 } },
-  { file:'s3-integrated-listen-speak.js', key:'S3_DSE_INTEGRATED', min:{ integrated:8, advancedWriting:1, simulations:2 } }
+  { file:'s3-integrated-listen-speak.js', key:'S3_DSE_INTEGRATED', min:{ integrated:8, advancedWriting:1, simulations:2 } },
+  { file:'s1-s3-grammar-quest-bank.js', key:'S1_S3_GRAMMAR_EXPANSION', min:{ passiveGames:12, conditionalGames:12, s1Grammar:18, s2Grammar:18, s3Grammar:18 } }
 ];
 
 function load(file, key) {
@@ -46,7 +47,10 @@ const report = checks.map(({ file, key, min }) => {
     listening: count(data.listening), writing: count(data.writing), speaking: count(data.speaking),
     dialogues: count(data.dialogues), advancedWriting: count(data.advancedWriting),
     games: count(data.games), simulations: count(data.simulations),
-    integrated: (data.integratedAssessments || []).reduce((n, item) => n + (item.questions || []).length, 0)
+    integrated: (data.integratedAssessments || []).reduce((n, item) => n + (item.questions || []).length, 0),
+    passiveGames: (data.games || []).filter((item) => item.set === 'passive').length,
+    conditionalGames: (data.games || []).filter((item) => item.set === 'conditionals').length,
+    s1Grammar: count(data.s1Grammar), s2Grammar: count(data.s2Grammar), s3Grammar: count(data.s3Grammar)
   };
   Object.entries(min).forEach(([skill, target]) => { if (counts[skill] < target) failures.push(`${key}: ${skill} ${counts[skill]} < ${target}`); });
   return { key, counts };
