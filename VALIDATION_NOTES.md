@@ -331,3 +331,5 @@ S1–S2 varied-practice local verification: S1 Practical-text Reading loaded fou
 S3 varied-practice local verification: Applied Source Review loaded paired Text A/Text B, question 1 of 4 and four selectable answers. Applied Writing Planners loaded planner 1 of 2 with a five-step plan and language bank.
 
 S1–S3 varied-practice audit passed. New coverage adds practical and paired-source reading, key-detail and panel listening, contextual sentence repair, evidence editing, precision editing and writing planners. S1 includes 6 grammar, 4 reading, 8 listening and 1 writing-planning item; S2 includes 6 grammar, 4 paired-reading, 4 listening and 1 proposal planner; S3 includes 6 precision-editing, 4 applied source-review, 4 panel-listening and 2 applied writing-planning items. Existing site and Gemini-page audits also passed.
+
+Public varied-practice verification succeeded at the cache-busted secondary URL. S3 Applied Source Review loaded paired Text A/Text B with four answer options; Panel Listening loaded a replayable script and four answer options; Applied Writing Planners loaded planner 1 of 2 with five planning steps.
