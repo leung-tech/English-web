@@ -173,7 +173,7 @@
     if (module.kind === 'bridgeListening') return flattenListening(window.S1_BRIDGE_SKILLS?.listening?.scripts || []);
 
     const data = source(module.source);
-    if (module.kind === 'grammar') return ((module.bank ? data[module.bank] : data.grammar)?.questions || []).map((item) => ({ ...normalizeTuple(item, 'grammar'), type:'quiz' }));
+    if (module.kind === 'grammar') return ((module.bank ? data[module.bank] : data.grammar)?.questions || []).map((item) => { const normalized = { ...normalizeTuple(item, 'grammar'), type:'quiz' }; return { ...normalized, dseAnalysis: module.id === 's3-varied-grammar-bank' ? data.s3FormalResponseAnalysis?.[normalized.id] : null }; });
     if (module.kind === 'vocabulary') return (data.vocabulary?.items || []).map((item) => ({ ...normalizeTuple(item, 'vocabulary'), type:'vocabulary' }));
     if (module.kind === 'reading') {
       const reading = data.reading || {};
@@ -278,7 +278,7 @@
           <h1>Read with evidence.<br><em>Respond with purpose.</em></h1>
           <p>Choose a stage and one skill. Build secure English for school, community and everyday ideas.</p>
           <p class="zh">選擇階段及技能，逐步建立閱讀、寫作、聆聽、口語與語言運用能力。</p>
-          <div class="hero-actions"><button class="primary" data-try-s1-quest>Try S1 Grammar Quest · 試玩 S1 文法闖關</button><small>Choose an answer, then check it to see live feedback. · 選擇答案後核對，即可查看即時回饋。</small></div>
+          <div class="hero-actions"><button class="primary" data-try-s1-quest>Try S1 Grammar Quest · 試玩 S1 文法闖關</button><button class="secondary hero-dse-demo" data-try-s3-formal>Try S3 Formal Response Lab · 試玩 S3 正式回應文法室</button><small>Choose an answer, then check it to see live feedback. The S3 lab also shows a DSE-bridge solution path. · 選擇答案後核對，即可查看即時回饋；S3 文法室另有 DSE 銜接解題步驟。</small></div>
         </div>
         <aside class="hero-notice"><strong>${escape(activeStage.code)}</strong><p>${escape(activeStage.title)}<br><span class="zh">${escape(activeStage.titleZh)}</span></p><span class="notice-tag">ORIGINAL PRACTICE · 原創練習</span></aside>
       </section>
@@ -316,6 +316,13 @@
     return `${escape(english || '')}${chinese ? `<span class="zh">${escape(chinese)}</span>` : ''}`;
   }
 
+  function renderDseAnalysis(analysis) {
+    if (!analysis) return '';
+    const steps = Array.isArray(analysis.steps) ? analysis.steps : [];
+    const stepsZh = Array.isArray(analysis.stepsZh) ? analysis.stepsZh : [];
+    return `<section class="dse-analysis"><header><p class="eyebrow">DSE BRIDGE SOLUTION PATH · DSE 銜接解題步驟</p><h3>${escape(analysis.focus || 'Formal response reasoning')} <span class="zh">${escape(analysis.focusZh || '')}</span></h3><p>This original S3 analysis develops transferable senior-secondary response skills. It is not an official HKDSE question, marking scheme or predicted result.<span class="zh">本原創中三解析培養可轉移的高中回應技巧；並非官方 HKDSE 題目、評分準則或成績預測。</span></p></header><ol>${steps.map((step, index) => `<li><b>${index + 1}</b><span>${escape(step)}<em>${escape(stepsZh[index] || '')}</em></span></li>`).join('')}</ol><div class="dse-transfer"><strong>DSE bridge connection · DSE 銜接重點</strong><span>${escape(analysis.transfer || '')}<em>${escape(analysis.transferZh || '')}</em></span></div></section>`;
+  }
+
   function renderItem(item, module) {
     if (item.type === 'writing' || item.type === 'advancedWriting') return renderWriting(item, module);
     if (item.type === 'speaking') return renderSpeaking(item, module);
@@ -333,7 +340,7 @@
       <p class="prompt">${bilingualLine(prompt, promptZh)}</p>
       <div class="options">${options.map((option, index) => { const resultClass = state.checked ? (index === answer ? 'correct' : (index === state.selected ? 'wrong' : '')) : (index === state.selected ? 'selected' : ''); return `<button class="option ${resultClass}" data-option="${index}"><b>${letters[index] || index + 1}</b><span>${escape(option)}</span></button>`; }).join('')}</div>
       <div class="controls"><button class="primary" data-check="true">Check answer · 核對答案</button><button class="secondary" data-next="true">Next · 下一題</button>${item.hint ? `<button class="secondary" data-hint="${escape(item.hint)}">Hint · 提示</button>` : ''}</div>
-      ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Good thinking.' : 'Try the evidence again.'}</strong><br>${bilingualLine(item.explanation || '', item.explanationZh || '')}</div>${objectiveFeedback(module.id)}` : ''}`;
+      ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Good thinking.' : 'Try the evidence again.'}</strong><br>${bilingualLine(item.explanation || '', item.explanationZh || '')}</div>${renderDseAnalysis(item.dseAnalysis)}${objectiveFeedback(module.id)}` : ''}`;
   }
 
   function renderGame(item, module) {
@@ -415,6 +422,7 @@
   function bind() {
     root.querySelectorAll('[data-stage]').forEach((button) => button.addEventListener('click', () => chooseStage(button.dataset.stage)));
     root.querySelectorAll('[data-try-s1-quest]').forEach((button) => button.addEventListener('click', () => { state.stage = 's1-extend'; state.year = 's1'; state.route = 'language'; state.moduleId = 's1-grammar-quest'; state.index = 0; state.selected = null; state.checked = false; render(); }));
+    root.querySelectorAll('[data-try-s3-formal]').forEach((button) => button.addEventListener('click', () => { state.stage = 's3-ready'; state.year = 's3'; state.route = 'language'; state.moduleId = 's3-varied-grammar-bank'; state.index = 0; state.selected = null; state.checked = false; render(); }));
     root.querySelectorAll('[data-route]').forEach((button) => button.addEventListener('click', () => chooseRoute(button.dataset.route)));
     root.querySelectorAll('[data-module]').forEach((button) => button.addEventListener('click', () => chooseModule(button.dataset.module)));
     root.querySelectorAll('[data-option]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.selected = Number(button.dataset.option); render(); } }));
