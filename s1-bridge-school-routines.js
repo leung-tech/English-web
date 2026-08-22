@@ -203,3 +203,51 @@ window.S1_BRIDGE_GRAMMAR = {
     }
   ]
 };
+
+
+window.S1_BRIDGE_WRITING = {
+  writing: [
+    {
+      id:'s1-bw01',
+      title:'School writing starter: Reply to your class teacher',
+      titleZh:'校園寫作起步：回覆班主任',
+      minWords:70,
+      prompt:'Write a 70–90 word email reply to your class teacher. Thank the teacher for the welcome message, explain one thing you need to check about your first-week timetable, and say one action you will take before Friday. Use a polite opening and closing.',
+      promptZh:'寫一封 70–90 字電郵回覆班主任。感謝老師的歡迎訊息，解釋你需要核對第一週時間表的一件事，並說明你會在星期五前採取的一項行動。使用有禮開首及結尾。',
+      sourcePack:[
+        ['Situation · 情境','The welcome notice says that students should return a club-choice form by Friday, but you are unsure whether the music club meets on Monday or Thursday.'],
+        ['Audience and purpose · 受眾與目的','Write respectfully to a teacher and ask one clear question.'],
+        ['Useful words · 有用詞彙','Dear Ms Lee; Thank you for…; Could you please confirm…?; I will…; Kind regards.']
+      ],
+      plan:[
+        ['Opening · 開首','Greet the teacher and thank her for the welcome message.'],
+        ['Question · 問題','Explain one timetable point you need to check.'],
+        ['Action and closing · 行動及結尾','Say what you will do before Friday and close politely.']
+      ],
+      languageBank:['Dear Ms Lee,','Thank you for…','Could you please confirm whether…?','I will return… by Friday.','Kind regards,'],
+      model:'Dear Ms Lee,\n\nThank you for the welcome message. I would like to check whether the music club meets on Monday or Thursday because I want to complete my club-choice form correctly. Could you please confirm the day? I will return the form by Friday.\n\nKind regards,\nAlex',
+      selfCheck:'I used a polite greeting and closing, asked one clear timetable question and stated one action. This original S1 practice supports school communication; it is not an official examination task.'
+    },
+    {
+      id:'s1-bw02',
+      title:'School writing starter: Notice about a room change',
+      titleZh:'校園寫作起步：課室更改通告',
+      minWords:70,
+      prompt:'Write a 70–90 word class notice. The science activity will move from Room 1A to the library because Room 1A is being cleaned. Include the date and time, the new place, one item students should bring, and one clear instruction. Use a simple heading.',
+      promptZh:'寫一則 70–90 字班級通告。科學活動因 1A 課室清潔，將由 1A 改到圖書館。包括日期和時間、新地點、學生應帶的一項物品，以及一項清晰指示。使用簡單標題。',
+      sourcePack:[
+        ['Facts to include · 必須資料','Thursday, 3:30 p.m.; library; notebook; arrive five minutes early.'],
+        ['Purpose · 目的','Help classmates find the right place and prepare for the activity.'],
+        ['Useful words · 有用詞彙','NOTICE; will take place; instead; please bring; arrive by; Thank you.']
+      ],
+      plan:[
+        ['Heading and key facts · 標題與重要資料','Give a clear heading, then state date, time and new place.'],
+        ['Reason and preparation · 原因與準備','Explain the room change and name one item to bring.'],
+        ['Instruction · 指示','End with one direct but polite instruction.']
+      ],
+      languageBank:['NOTICE','The activity will take place…','instead of…','Please bring…','Please arrive…','Thank you.'],
+      model:'NOTICE\n\nThe science activity will take place in the library at 3:30 p.m. on Thursday instead of Room 1A because Room 1A is being cleaned. Please bring your notebook for the activity. Please arrive five minutes early so that we can begin on time.\n\nThank you.',
+      selfCheck:'I included a heading, all key facts, a reason, one preparation item and a clear instruction. This original S1 practice supports practical school writing; it is not an official examination task.'
+    }
+  ]
+};

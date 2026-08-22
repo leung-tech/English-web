@@ -35,14 +35,14 @@
   };
 
   const stageList = [
-    { id:'s1-bridge', year:'s1', code:'S1 START', title:'School Life', titleZh:'校園生活起步', note:'A gentle bridge from P6 to S1.', noteZh:'由小六平穩銜接中一。' },
-    { id:'s1-core', year:'s1', code:'S1 CORE', title:'Everyday English', titleZh:'中一核心英語', note:'Build clear language for school and community.', noteZh:'建立校園與社區英語基礎。' },
-    { id:'s1-extend', year:'s1', code:'S1 EXTEND', title:'Community & Voice', titleZh:'社區與表達', note:'Use English to notice needs and share practical ideas.', noteZh:'用英語發現需要，提出實際想法。' },
-    { id:'s2-develop', year:'s2', code:'S2 DEVELOP', title:'Experiences & Choices', titleZh:'經驗與選擇', note:'Compare evidence and make thoughtful choices.', noteZh:'比較證據，作出有理選擇。' },
-    { id:'s2-connect', year:'s2', code:'S2 CONNECT', title:'Messages & Media', titleZh:'訊息與媒體', note:'Understand sources, audience and purpose.', noteZh:'理解來源、受眾與目的。' },
-    { id:'s2-action', year:'s2', code:'S2 ACTION', title:'Community & Environment', titleZh:'社區與環境', note:'Notice a problem. Propose an action.', noteZh:'發現問題，提出行動。' },
-    { id:'s2-consolidate', year:'s2', code:'S2 CONSOLIDATE', title:'Evidence & Perspectives', titleZh:'證據與觀點', note:'Check sources, compare perspectives and respond fairly.', noteZh:'核實來源、比較觀點，作出公平回應。' },
-    { id:'s3-ready', year:'s3', code:'S3 READY', title:'Future & Response', titleZh:'未來與回應', note:'Interpret evidence, respond formally and prepare for the next stage.', noteZh:'解讀證據，正式回應，為下一階段作準備。' }
+    { id:'s1-bridge', year:'s1', code:'S1 START', title:'School Life', titleZh:'校園生活起步', note:'A gentle bridge from P6 to S1.', noteZh:'由小六平穩銜接中一。', pathway:'Junior-secondary foundation: understand and use clear English in familiar school situations.', pathwayZh:'初中基礎：在熟悉的校園情境中理解及運用清晰英語。' },
+    { id:'s1-core', year:'s1', code:'S1 CORE', title:'Everyday English', titleZh:'中一核心英語', note:'Build clear language for school and community.', noteZh:'建立校園與社區英語基礎。', pathway:'Junior-secondary focus: build vocabulary, grammar, reading and purposeful short responses.', pathwayZh:'初中重點：建立詞彙、文法、閱讀及有目的的短篇回應。' },
+    { id:'s1-extend', year:'s1', code:'S1 EXTEND', title:'Community & Voice', titleZh:'社區與表達', note:'Use English to notice needs and share practical ideas.', noteZh:'用英語發現需要，提出實際想法。', pathway:'Junior-secondary application: explain a reason, cooperate politely and organise a practical message.', pathwayZh:'初中應用：說明理由、有禮合作及組織實用訊息。' },
+    { id:'s2-develop', year:'s2', code:'S2 DEVELOP', title:'Experiences & Choices', titleZh:'經驗與選擇', note:'Compare evidence and make thoughtful choices.', noteZh:'比較證據，作出有理選擇。', pathway:'Junior-secondary development: compare options, explain experience and make supported choices.', pathwayZh:'初中發展：比較選項、說明經驗及作出有支持的選擇。' },
+    { id:'s2-connect', year:'s2', code:'S2 CONNECT', title:'Messages & Media', titleZh:'訊息與媒體', note:'Understand sources, audience and purpose.', noteZh:'理解來源、受眾與目的。', pathway:'Junior-secondary development: identify source, audience and purpose before responding.', pathwayZh:'初中發展：回應前辨識資料來源、受眾及目的。' },
+    { id:'s2-action', year:'s2', code:'S2 ACTION', title:'Community & Environment', titleZh:'社區與環境', note:'Notice a problem. Propose an action.', noteZh:'發現問題，提出行動。', pathway:'Junior-secondary application: turn a local issue into a clear proposal, reason and review plan.', pathwayZh:'初中應用：把社區問題轉化為清晰建議、理由及檢討計劃。' },
+    { id:'s2-consolidate', year:'s2', code:'S2 CONSOLIDATE', title:'Evidence & Perspectives', titleZh:'證據與觀點', note:'Check sources, compare perspectives and respond fairly.', noteZh:'核實來源、比較觀點，作出公平回應。', pathway:'Junior-secondary consolidation: use evidence cautiously, choose register for audience and revise a practical response.', pathwayZh:'初中鞏固：謹慎運用證據、按受眾選擇語體，並修訂實用回應。' },
+    { id:'s3-ready', year:'s3', code:'S3 READY', title:'Future & Response', titleZh:'未來與回應', note:'Interpret evidence, respond formally and prepare for the next stage.', noteZh:'解讀證據，正式回應，為下一階段作準備。', pathway:'Senior-secondary bridge: evaluate evidence limits, control tone and build a coherent formal response. Original preparation only—not an official HKDSE paper or marking scheme.', pathwayZh:'高中銜接：評估證據限制、控制語氣並建構連貫正式回應。只屬原創準備練習，並非官方 HKDSE 試卷或評分準則。' }
   ];
 
   const routeMeta = {
@@ -57,6 +57,7 @@
     { id:'s1-bridge-vocabulary', stage:'s1-bridge', route:'language', symbol:'V', title:'School life words', zh:'校園生活詞彙', kind:'bridgeVocabulary' },
     { id:'s1-bridge-reading', stage:'s1-bridge', route:'read', symbol:'R', title:'Reading & cloze', zh:'閱讀與綜合填空', kind:'bridgeReading' },
     { id:'s1-bridge-listening', stage:'s1-bridge', route:'listen', symbol:'L', title:'Listening at school', zh:'校園聆聽', kind:'bridgeListening' },
+    { id:'s1-bridge-writing', stage:'s1-bridge', route:'write', symbol:'W', title:'School writing starter', zh:'校園寫作起步', kind:'bridgeWriting' },
 
     { id:'s1-core-grammar', stage:'s1-core', route:'language', symbol:'G', title:'Grammar in context', zh:'語境文法', kind:'grammar', source:'S1_CORE_PATH' },
     { id:'s1-core-vocabulary', stage:'s1-core', route:'language', symbol:'V', title:'Vocabulary builder', zh:'詞彙建構', kind:'vocabulary', source:'S1_CORE_PATH' },
@@ -120,6 +121,7 @@
     { id:'s2-interaction-grammar', stage:'s2-consolidate', route:'language', symbol:'G+', title:'Interaction grammar clinic', zh:'互動文法診所', kind:'grammar', source:'S2_INTERACTION_PLUS' },
     { id:'s2-vocab-game', stage:'s2-consolidate', route:'language', symbol:'P', title:'Meaning in context game', zh:'語境片語遊戲', kind:'game', source:'S2_VOCAB_GAMES' },
     { id:'s2-micro-missions', stage:'s2-consolidate', route:'language', symbol:'M', title:'Digital & wellbeing missions', zh:'數碼與身心平衡任務鏈', kind:'game', source:'S2_MICRO_MISSIONS' },
+    { id:'s2-micro-writing', stage:'s2-consolidate', route:'write', symbol:'MW', title:'Digital & wellbeing writing challenges', zh:'數碼與身心平衡寫作挑戰', kind:'advancedWriting', source:'S2_MICRO_MISSIONS' },
     { id:'s2-grammar-quest', stage:'s2-consolidate', route:'language', symbol:'Q', title:'Grammar Quest: Shape the argument', zh:'文法闖關：建構論點', kind:'game', source:'S2_GRAMMAR_QUEST' },
     { id:'s2-genre-writing', stage:'s2-consolidate', route:'write', symbol:'W+', title:'Narrative & argument scaffolds', zh:'記敘與議論寫作鷹架', kind:'advancedWriting', source:'S2_GENRE_WRITING' },
     { id:'s2-varied-grammar', stage:'s2-consolidate', route:'language', symbol:'E', title:'Editing and evidence clinic', zh:'修訂與證據診所', kind:'grammar', source:'S2_VARIED_PRACTICE' },
@@ -172,6 +174,7 @@
     if (module.kind === 'bridgeReading') return (window.S1_BRIDGE_SKILLS?.readingCloze?.questions || []).map((item) => ({ ...item, type:'quiz' }));
     if (module.kind === 'bridgeVocabulary') return (window.S1_BRIDGE_SKILLS?.vocabulary?.items || []).map((item) => ({ ...normalizeTuple(item, 'vocabulary'), type:'vocabulary' }));
     if (module.kind === 'bridgeListening') return flattenListening(window.S1_BRIDGE_SKILLS?.listening?.scripts || []);
+    if (module.kind === 'bridgeWriting') return (window.S1_BRIDGE_WRITING?.writing || []).map((item) => ({ ...item, type:'writing' }));
 
     const data = source(module.source);
     if (module.kind === 'grammar') return ((module.bank ? data[module.bank] : data.grammar)?.questions || []).map((item) => { const normalized = { ...normalizeTuple(item, 'grammar'), type:'quiz' }; return { ...normalized, dseAnalysis: module.id === 's3-varied-grammar-bank' ? data.s3FormalResponseAnalysis?.[normalized.id] : null }; });
@@ -298,6 +301,7 @@
     const route = routeMeta[state.route];
     const modules = modulesForRoute();
     return `<header class="section-head"><div><p class="eyebrow">${escape(stage().code)} · ${escape(route.title.toUpperCase())}</p><h2>${escape(route.title)} <span class="zh">${escape(route.zh)}</span></h2></div><p>${escape(route.note)}<br><span class="zh">${escape(route.noteZh)}</span></p></header>
+      <aside class="pathway-note"><strong>Capability pathway · 能力範圍</strong><span>${escape(stage().pathway || '')}<em>${escape(stage().pathwayZh || '')}</em></span></aside>
       <div class="module-grid">${modules.length ? modules.map((module) => `<button class="module-card ${module.id === currentModule()?.id ? 'active' : ''}" data-module="${module.id}"><i class="module-symbol">${escape(module.symbol)}</i><h3>${escape(module.title)}</h3><p>${escape(module.zh)}</p><small>${escape(stage().code)} · ORIGINAL</small></button>`).join('') : '<div class="empty">Choose another skill. · 請選擇其他技能。</div>'}</div>`;
   }
 
