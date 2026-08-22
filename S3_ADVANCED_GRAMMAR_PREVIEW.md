@@ -1,0 +1,32 @@
+# S3 Advanced Formal-Response Grammar Preview
+
+> **Original S3 senior-secondary bridge practice.** This preview is not an official HKDSE paper, marking scheme, exemplar or score prediction.
+>
+> **原創中三高中銜接練習。** 本預覽並非官方 HKDSE 試卷、評分準則、範例或成績預測。
+
+This preview covers the 12 advanced items added to **Grammar in Formal Response · 正式回應文法題庫**. Each item appears in the live site with four bilingual solution steps after the student checks an answer. The common thread is responsible formal response: use evidence accurately, identify its limits, select a precise grammar or register choice, and state a proportionate next action.
+
+| Item | Question format · 題型 | Context and target | Correct choice | Solution-path preview · 解題重點 | Transferable formal-response skill |
+|---|---|---|---|---|---|
+| **19** | Select the strongest evidence-based revision<br>選擇最有證據基礎的修訂 | **Noise-feedback summary**: 41 of 64 student comments mention noise, but family views are absent. | *The comments suggest that noise may be a concern, although family views still need collecting.* | Separate the numerical finding from the claim; use **suggest** and **may**; state the missing family perspective; reject claims about every family. | Present a pattern **and** its evidence boundary in the same sentence. |
+| **20** | Complete the formal synthesis<br>完成正式綜合句 | **Two-source review**: an attendance log and student request form both point to evening guidance. | **suggest** | Identify both sources; use *Taken together* to synthesise; match plural **sources** with **suggest**; keep *may need* tentative. | Connect two sources before drawing a measured implication. |
+| **21** | Choose the accurate inference<br>選擇準確推論 | **Follow-up survey**: 32 of 50 respondents prefer a later closing time. | *The pattern may warrant a short follow-up survey with more respondents.* | Read the sample size; name the pattern; choose further data collection instead of a final decision; reject claims about all students or families. | Turn limited evidence into a realistic **next investigation**. |
+| **22** | Edit a source-qualifying sentence<br>修訂來源限定句 | **Online announcement**: an undated flyer claims that a rule is new. | *Although the flyer refers to a new rule, its date and issuing organisation should be checked.* | Treat the flyer as a possible, not proven, source; retain its claim; name traceable checks; reject certainty without source details. | Evaluate online sources by naming information a reader can verify. |
+| **23** | Complete the formal recommendation<br>完成正式建議 | **Entrance review**: observation data shows a crowded morning gate. | **be assigned** | Identify the reason for action; volunteers receive the action, so use passive voice; after *recommends that*, use the base-form passive; distinguish a recommendation from a present fact. | Use **recommend that + subject + base form** for precise proposal language. |
+| **24** | Complete the formal concession<br>完成正式讓步句 | **Pilot review**: crowding fell, while some families still found the later collection time difficult. | **Although** | Identify the benefit and the remaining concern; use **Although** to keep both visible; reject *therefore* because the second idea is not a result. | Balance evidence so one positive outcome does not erase another need. |
+| **25** | Edit a condition for action<br>修訂行動條件 | **Extension criteria**: the school will consider extending a study-space service. | **show** | Name the action; find the evidence condition; match plural *attendance records* with **show**; use *only if* to prevent automatic action. | State clear evidence criteria before making a recommendation. |
+| **26** | Choose the precise reporting verb<br>選擇精準報告動詞 | **Attendance pattern**: late arrivals fell in a four-week pilot, without a longer comparison. | *The pilot appears to have reduced late arrivals during the review period.* | Notice the short time frame and missing longer comparison; use **appears to have reduced**; reject *forever*, *proves* and *completely*. | Match certainty to the available duration, sample and comparison. |
+| **27** | Complete the formal emphasis<br>完成正式強調句 | **Access report**: the plan improved access and pickup information. | **did the plan improve** | Recognise *Not only ... but also*; use auxiliary inversion after *Not only*; keep **improve** in the base form after **did**; use emphasis sparingly. | Add controlled emphasis after the logical relationship is already clear. |
+| **28** | Complete a concise formal noun phrase<br>完成精煉正式名詞片語 | **Feedback review**: the committee must study comments in an organised way. | **systematic analysis** | An article **a** needs a noun phrase; select **analysis** to name the process; use **systematic** as its modifier; reject verb forms after *a*. | Use nominalisation to package a process concisely in formal reports. |
+| **29** | Strengthen textual reference<br>加強文本指代 | **Sign-in data**: sign-ins rose by 12%; a draft uses vague *This*. | *This 12% increase in sign-ins may indicate that the change helped during the trial.* | Identify exactly what *This* means; name the 12% increase; use **may indicate**; reject vague pronouns and claims about everyone. | Create a clear evidence chain by replacing vague references with named evidence. |
+| **30** | Select the balanced closing<br>選擇平衡結語 | **Consultation conclusion**: student feedback is useful, but not every family has been consulted. | *In light of the limited sample, the proposal should be a starting point for further consultation rather than a final decision.* | Value the available feedback; state the consultation limit; select a next process; reject unsupported final-decision language. | End a formal response with a proportionate recommendation and a reason it remains provisional. |
+
+## Suggested use · 建議使用方式
+
+Students should first attempt the live item without viewing this list. After checking the answer, they can compare their own reasoning with the four-step solution path. Teachers may use the table as a short conference guide: ask the student to name the **evidence**, the **limitation**, the **language choice**, and the **next action** before revealing the model explanation.
+
+學生應先在網頁完成題目，再閱讀本清單。核對答案後，可把自己的思考與四步解題流程比較。老師可把本表作為短暫面談指引：先請學生說出 **證據**、**限制**、**語言選擇** 和 **下一步行動**，再展示範例解析。
+
+## Reference
+
+The live practice module is available at [Secondary English Studio — Grammar in Formal Response](https://leung-tech.github.io/English-web/secondary/). All examples in this file are original practice materials created for the site.

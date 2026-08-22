@@ -119,6 +119,7 @@
     { id:'s2-consolidate-speaking', stage:'s2-consolidate', route:'listen', symbol:'S', title:'Compare and respond', zh:'比較與回應', kind:'speaking', source:'S2_CONSOLIDATE_EVIDENCE' },
     { id:'s2-interaction-grammar', stage:'s2-consolidate', route:'language', symbol:'G+', title:'Interaction grammar clinic', zh:'互動文法診所', kind:'grammar', source:'S2_INTERACTION_PLUS' },
     { id:'s2-vocab-game', stage:'s2-consolidate', route:'language', symbol:'P', title:'Meaning in context game', zh:'語境片語遊戲', kind:'game', source:'S2_VOCAB_GAMES' },
+    { id:'s2-micro-missions', stage:'s2-consolidate', route:'language', symbol:'M', title:'Digital & wellbeing missions', zh:'數碼與身心平衡任務鏈', kind:'game', source:'S2_MICRO_MISSIONS' },
     { id:'s2-grammar-quest', stage:'s2-consolidate', route:'language', symbol:'Q', title:'Grammar Quest: Shape the argument', zh:'文法闖關：建構論點', kind:'game', source:'S2_GRAMMAR_QUEST' },
     { id:'s2-genre-writing', stage:'s2-consolidate', route:'write', symbol:'W+', title:'Narrative & argument scaffolds', zh:'記敘與議論寫作鷹架', kind:'advancedWriting', source:'S2_GENRE_WRITING' },
     { id:'s2-varied-grammar', stage:'s2-consolidate', route:'language', symbol:'E', title:'Editing and evidence clinic', zh:'修訂與證據診所', kind:'grammar', source:'S2_VARIED_PRACTICE' },
@@ -346,7 +347,8 @@
   function renderGame(item, module) {
     const options = item.options || [];
     const answer = Number(item.answer || 0);
-    return `${item.phraseBank?.length ? `<article class="phrase-bank"><strong>${escape(item.bankLabel || 'Phrase bank · 片語庫')}</strong><div>${item.phraseBank.map((phrase) => `<span>${escape(phrase)}</span>`).join('')}</div></article>` : ''}
+    const mission = item.mission || null;
+    return `${mission ? `<article class="mission-brief"><div class="mission-head"><span>${escape(mission.chain || 'Micro mission · 微型任務')}</span><b>${escape(mission.step || '')}<em>${escape(mission.stepZh || '')}</em></b></div><h3>${escape(item.title || '')}<span class="zh">${escape(item.titleZh || '')}</span></h3><p>${escape(mission.goal || '')}<span class="zh">${escape(mission.goalZh || '')}</span></p><div class="mission-next"><strong>Next move · 下一步</strong><span>${escape(mission.next || '')}<em>${escape(mission.nextZh || '')}</em></span></div></article>` : ''}${item.phraseBank?.length ? `<article class="phrase-bank"><strong>${escape(item.bankLabel || 'Phrase bank · 片語庫')}</strong><div>${item.phraseBank.map((phrase) => `<span>${escape(phrase)}</span>`).join('')}</div></article>` : ''}
       <p class="prompt">${bilingualLine(item.prompt || 'Choose the best phrase.', item.promptZh || '')}</p>
       <div class="options">${options.map((option, index) => { const resultClass = state.checked ? (index === answer ? 'correct' : (index === state.selected ? 'wrong' : '')) : (index === state.selected ? 'selected' : ''); return `<button class="option ${resultClass}" data-option="${index}"><b>${letters[index] || index + 1}</b><span>${escape(option)}</span></button>`; }).join('')}</div>
       <div class="controls"><button class="primary" data-check="true">Check phrase · 核對片語</button><button class="secondary" data-next="true">Next round · 下一回合</button>${item.hint ? `<button class="secondary" data-hint="${escape(item.hint)}">Hint · 提示</button>` : ''}</div>
