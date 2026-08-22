@@ -317,3 +317,5 @@ Public S1–S3 verification succeeded at the cache-busted secondary URL. The dep
 S1–S3 interaction extension local verification: S3 Critical Writing Lab displayed four source-pack cards and a four-step paragraph map. The S3 Critical Dialogue Lab loaded its bilingual role-play with four selectable checkpoint options and the answer-check control.
 
 S1–S3 interaction and critical-thinking extension audit passed. Each new year-level extension contains 12 contextual grammar questions, 4 structured speaking tasks and 3 checkpointed role-play dialogues. S3 Critical Plus additionally contains two 180–220 word evidence-led writing source packs. Existing site and Gemini-page audits also passed.
+
+Public interaction and critical-thinking verification succeeded at the cache-busted secondary URL. S3 Critical Writing Lab displayed four source-pack cards and four paragraph-map steps, while S3 Critical Grammar Clinic loaded question 1 of 12 with four selectable answers.
