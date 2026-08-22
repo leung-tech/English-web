@@ -10,16 +10,27 @@
   const state = { year: 's1', stage: 's1-bridge', route: 'read', moduleId: null, index: 0, selected: null, checked: false };
   const progressKey = 'secondary-english-studio-progress-v1';
   const draftKey = 'secondary-english-studio-drafts-v1';
-  const progress = () => safeGet(progressKey, { completed: 0, correct: 0, modules: {} });
+  const progress = () => {
+    const stored = safeGet(progressKey, { completed: 0, correct: 0, modules: {} });
+    return { completed:Number(stored.completed || 0), correct:Number(stored.correct || 0), modules:stored.modules || {}, moduleStats:stored.moduleStats || {}, stageStats:stored.stageStats || {}, routeStats:stored.routeStats || {}, stageRouteStats:stored.stageRouteStats || {} };
+  };
   const drafts = () => safeGet(draftKey, {});
   const getDraft = (moduleId) => drafts()[moduleId] || '';
   const saveDraft = (moduleId, value) => { const all = drafts(); all[moduleId] = value; safeSet(draftKey, all); };
   const clearDraft = (moduleId) => { const all = drafts(); delete all[moduleId]; safeSet(draftKey, all); };
-  const mark = (moduleId, correct) => {
+  const mark = (moduleId, correct, objective = true) => {
     const record = progress();
     record.completed += 1;
-    if (correct) record.correct += 1;
+    if (objective && correct) record.correct += 1;
     record.modules[moduleId] = (record.modules[moduleId] || 0) + 1;
+    if (objective) {
+      const module = moduleRegistry.find((item) => item.id === moduleId) || {};
+      const update = (bucket, key) => { const item = bucket[key] || { attempted:0, correct:0 }; item.attempted += 1; if (correct) item.correct += 1; bucket[key] = item; };
+      update(record.moduleStats, moduleId);
+      update(record.stageStats, module.stage || 'unknown');
+      update(record.routeStats, module.route || 'unknown');
+      update(record.stageRouteStats, `${module.stage || 'unknown'}:${module.route || 'unknown'}`);
+    }
     safeSet(progressKey, record);
   };
 
@@ -115,6 +126,8 @@
     { id:'s3-ready-listening', stage:'s3-ready', route:'listen', symbol:'L', title:'Listen and respond', zh:'聆聽與回應', kind:'listening', source:'S3_READY_PATHWAY' },
     { id:'s3-ready-writing', stage:'s3-ready', route:'write', symbol:'W', title:'Formal response', zh:'正式回應寫作', kind:'writing', source:'S3_READY_PATHWAY' },
     { id:'s3-ready-advanced', stage:'s3-ready', route:'write', symbol:'W+', title:'Advanced writing lab', zh:'進階寫作室', kind:'advancedWriting', source:'S3_READY_PATHWAY' },
+    { id:'s3-dse-grammar', stage:'s3-ready', route:'language', symbol:'D', title:'Senior-secondary grammar lab', zh:'高中銜接文法室', kind:'grammar', source:'S3_DSE_PREP' },
+    { id:'s3-dse-writing', stage:'s3-ready', route:'write', symbol:'D+', title:'DSE bridge writing models', zh:'DSE 銜接寫作範本', kind:'advancedWriting', source:'S3_DSE_PREP' },
     { id:'s3-ready-dialogue', stage:'s3-ready', route:'listen', symbol:'D', title:'Evaluate and revise', zh:'評估與修訂', kind:'dialogues', source:'S3_READY_PATHWAY' },
     { id:'s3-ready-speaking', stage:'s3-ready', route:'listen', symbol:'S', title:'Present with evidence', zh:'以證據表達', kind:'speaking', source:'S3_READY_PATHWAY' },
     { id:'s3-critical-grammar', stage:'s3-ready', route:'language', symbol:'G+', title:'Critical grammar clinic', zh:'批判性思考文法診所', kind:'grammar', source:'S3_CRITICAL_PLUS' },
@@ -213,6 +226,30 @@
     return Object.entries(routeMeta).map(([route, meta]) => ({ label:meta.token, zh:meta.zh, count:moduleRegistry.filter((module) => module.stage === stageId && module.route === route).reduce((sum, module) => sum + (record.modules[module.id] || 0), 0) }));
   }
 
+  const accuracy = (stat) => stat?.attempted ? Math.round((stat.correct / stat.attempted) * 100) : null;
+
+  function objectiveFeedback(moduleId) {
+    const stat = progress().moduleStats[moduleId];
+    const percent = accuracy(stat);
+    if (percent === null || stat.attempted < 3) return '<section class="learning-feedback"><strong>Practice evidence · 練習證據</strong><span>Answer at least 3 objective questions for a useful pattern. · 完成至少 3 題客觀題後，才會顯示有意義的練習模式。</span></section>';
+    const message = percent >= 75 ? ['Secure practice pattern. Try a new module or explain one answer aloud.','表現穩定；可嘗試新模組，或把其中一題答案說明給自己聽。'] : percent >= 50 ? ['Developing pattern. Re-read the explanation and practise the context again.','正在發展；重看解釋，並再次練習相關情境。'] : ['Review needed. Use the hint and complete one related game or clinic before retrying.','需要重溫；先使用提示，完成相關遊戲或診所，再重試。'];
+    return `<section class="learning-feedback"><strong>Objective practice feedback · 客觀題練習回饋</strong><b>${percent}% · ${stat.correct}/${stat.attempted}</b><span>${message[0]}<em>${message[1]}</em></span></section>`;
+  }
+
+  function learningDashboard(stageId) {
+    const record = progress();
+    const stageStat = record.stageStats[stageId] || { attempted:0, correct:0 };
+    const stagePercent = accuracy(stageStat);
+    const routeRows = Object.entries(routeMeta).map(([route, meta]) => {
+      const stat = record.stageRouteStats[`${stageId}:${route}`] || { attempted:0, correct:0 };
+      const percent = accuracy(stat);
+      return `<span><b>${meta.token}</b>${percent === null ? '—' : `${percent}%`}<small>${stat.attempted} objective · 客觀題</small></span>`;
+    }).join('');
+    const weak = moduleRegistry.filter((module) => module.stage === stageId).map((module) => ({ module, stat:record.moduleStats[module.id] })).filter((item) => item.stat?.attempted >= 3).sort((a, b) => accuracy(a.stat) - accuracy(b.stat))[0];
+    const nextStep = weak ? `Next focus: ${escape(weak.module.title)} · 下一步重點：${escape(weak.module.zh)} (${accuracy(weak.stat)}%)` : 'Answer 3 objective questions in one module to unlock a focused next step. · 在同一模組完成 3 題客觀題以取得個人化下一步。';
+    return `<section class="learning-dashboard"><div><p class="eyebrow">LEARNING INSIGHTS · 學習成效</p><h3>${stagePercent === null ? 'Not enough objective evidence yet' : `${stagePercent}% objective accuracy`}</h3><p>${stageStat.attempted} answered objective items · 已完成 ${stageStat.attempted} 題客觀題</p></div><div class="insight-routes">${routeRows}</div><p class="next-step">${nextStep}</p><p class="privacy-note">Local practice record only. It is not a diagnostic, school record or score prediction. Writing and speaking are not automatically scored.<span class="zh">紀錄只儲存在此瀏覽器；並非診斷、學校紀錄或分數預測。寫作與口語不會被自動評核。</span></p><button class="secondary compact" data-clear-progress>Clear local progress & drafts · 清除本機進度及草稿</button></section>`;
+  }
+
   function renderShell() {
     const record = progress();
     const activeStage = stage();
@@ -230,6 +267,7 @@
       <section class="workspace">
         <aside class="rail">
           <section><p class="eyebrow">YOUR PROGRESS · 學習進度</p><h2>${record.completed} tasks</h2><p>Local to this browser only.<br>只儲存在此瀏覽器。</p><div class="mini-progress"><i style="width:${Math.min(100, record.completed * 3)}%"></i></div><div class="skill-progress">${stageProgress.map((item) => `<span><b>${item.label}</b>${item.count} ${escape(item.zh)}</span>`).join('')}</div></section>
+          ${learningDashboard(activeStage.id)}
           <section><p class="eyebrow">CHOOSE A STAGE · 選擇階段</p><div class="stage-list">${stageList.map((item) => `<button class="stage-btn ${item.id === state.stage ? 'active' : ''}" data-stage="${item.id}"><b>${escape(item.code)} · ${escape(item.title)}</b><span>${escape(item.titleZh)}</span></button>`).join('')}</div></section>
           <section><p class="eyebrow">CHOOSE A SKILL · 選擇技能</p><div class="route-list">${Object.entries(routeMeta).map(([id, meta]) => `<button class="route-btn ${id === state.route ? 'active' : ''}" data-route="${id}"><i class="route-token">${meta.token}</i><b>${meta.title}<span>${meta.zh}</span></b></button>`).join('')}</div></section>
         </aside>
@@ -276,7 +314,7 @@
       <p class="prompt">${bilingualLine(prompt, promptZh)}</p>
       <div class="options">${options.map((option, index) => { const resultClass = state.checked ? (index === answer ? 'correct' : (index === state.selected ? 'wrong' : '')) : (index === state.selected ? 'selected' : ''); return `<button class="option ${resultClass}" data-option="${index}"><b>${letters[index] || index + 1}</b><span>${escape(option)}</span></button>`; }).join('')}</div>
       <div class="controls"><button class="primary" data-check="true">Check answer · 核對答案</button><button class="secondary" data-next="true">Next · 下一題</button>${item.hint ? `<button class="secondary" data-hint="${escape(item.hint)}">Hint · 提示</button>` : ''}</div>
-      ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Good thinking.' : 'Try the evidence again.'}</strong><br>${bilingualLine(item.explanation || '', item.explanationZh || '')}</div>` : ''}`;
+      ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Good thinking.' : 'Try the evidence again.'}</strong><br>${bilingualLine(item.explanation || '', item.explanationZh || '')}</div>${objectiveFeedback(module.id)}` : ''}`;
   }
 
   function renderGame(item) {
@@ -286,7 +324,7 @@
       <p class="prompt">${bilingualLine(item.prompt || 'Choose the best phrase.', item.promptZh || '')}</p>
       <div class="options">${options.map((option, index) => { const resultClass = state.checked ? (index === answer ? 'correct' : (index === state.selected ? 'wrong' : '')) : (index === state.selected ? 'selected' : ''); return `<button class="option ${resultClass}" data-option="${index}"><b>${letters[index] || index + 1}</b><span>${escape(option)}</span></button>`; }).join('')}</div>
       <div class="controls"><button class="primary" data-check="true">Check phrase · 核對片語</button><button class="secondary" data-next="true">Next round · 下一回合</button>${item.hint ? `<button class="secondary" data-hint="${escape(item.hint)}">Hint · 提示</button>` : ''}</div>
-      ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Strong choice.' : 'Try for greater precision.'}</strong><br>${bilingualLine(item.explanation || '', item.explanationZh || '')}</div>` : ''}`;
+      ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Strong choice.' : 'Try for greater precision.'}</strong><br>${bilingualLine(item.explanation || '', item.explanationZh || '')}</div>${objectiveFeedback(module.id)}` : ''}`;
   }
 
   function renderSimulation(item) {
@@ -309,6 +347,7 @@
       <p class="prompt">${bilingualLine(item.prompt || item.title || 'Write your response.', item.promptZh || item.titleZh || '')}</p>
       ${plan.length ? `<ol class="plan-list">${plan.map((step) => { const pair = Array.isArray(step) ? { title:step[0], text:step[1] } : step; return `<li>${escape(typeof pair === 'string' ? pair : pair.title || pair.text || '')}${typeof pair === 'object' && (pair.text || pair.zh) ? `<span class="zh">${escape(pair.text || pair.zh)}</span>` : ''}</li>`; }).join('')}</ol>` : ''}
       ${item.languageBank?.length ? `<article class="context"><strong>Language bank · 句式庫</strong>${item.languageBank.map(escape).join(' · ')}</article>` : ''}
+      ${item.model ? `<article class="model-exemplar"><strong>Original model for analysis · 原創範本供分析</strong><p>${escape(item.model)}</p><span>This is original practice support, not an official HKDSE script or marking exemplar.<br>此為原創練習支援，並非官方 HKDSE 範本或評分示例。</span></article>` : ''}
       <textarea class="draft" id="draft" placeholder="Write in English here… · 在此以英文寫作…">${escape(getDraft(currentModule().id))}</textarea>
       <div class="word-row"><span id="word-count">${getDraft(currentModule().id).trim().split(/\s+/).filter(Boolean).length} words · ${getDraft(currentModule().id).trim().split(/\s+/).filter(Boolean).length} 字</span><span>Target: ${target}+ words · 最少 ${target} 字</span></div>
       <div class="controls"><button class="primary" data-record-writing="${target}">Record completion · 記錄完成</button><button class="secondary" data-say="${escape(item.model || item.prompt || '')}">▶ Replay task · 重播題目</button><button class="secondary" data-clear-draft>Clear saved draft · 清除已儲存草稿</button></div>
@@ -337,7 +376,7 @@
       ${checkpoint.prompt ? `<article class="context"><strong>${escape(checkpoint.prompt)}</strong><span class="zh">${escape(checkpoint.promptZh || '')}</span></article>
       <div class="options">${options.map((option, index) => { const resultClass = state.checked ? (index === answer ? 'correct' : (index === state.selected ? 'wrong' : '')) : (index === state.selected ? 'selected' : ''); return `<button class="option ${resultClass}" data-option="${index}"><b>${letters[index] || index + 1}</b><span>${escape(option)}</span></button>`; }).join('')}</div>
       <div class="controls"><button class="primary" data-check>Check answer · 核對答案</button>${state.checked ? '<button class="secondary" data-next>Next dialogue · 下一個對話</button>' : ''}</div>
-      ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Good thinking.' : 'Try the evidence again.'}</strong><br>${bilingualLine(checkpoint.explanation || '', checkpoint.explanationZh || '')}</div>` : ''}` : '<div class="feedback">Practise both roles. Then change one detail to make the dialogue your own.<span class="zh">練習兩個角色後，修改一個細節，讓對話變成你自己的版本。</span></div>'}`;
+      ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Good thinking.' : 'Try the evidence again.'}</strong><br>${bilingualLine(checkpoint.explanation || '', checkpoint.explanationZh || '')}</div>${objectiveFeedback(module.id)}` : ''}` : '<div class="feedback">Practise both roles. Then change one detail to make the dialogue your own.<span class="zh">練習兩個角色後，修改一個細節，讓對話變成你自己的版本。</span></div>'}`;
   }
 
   function bind() {
@@ -352,7 +391,8 @@
     const draft = $('#draft');
     if (draft) draft.addEventListener('input', () => { const count = draft.value.trim().split(/\s+/).filter(Boolean).length; $('#word-count').textContent = `${count} words · ${count} 字`; saveDraft(currentModule().id, draft.value); });
     root.querySelectorAll('[data-clear-draft]').forEach((button) => button.addEventListener('click', () => { clearDraft(currentModule().id); render(); }));
-    root.querySelectorAll('[data-record-writing]').forEach((button) => button.addEventListener('click', () => { const count = ($('#draft')?.value || '').trim().split(/\s+/).filter(Boolean).length; const target = Number(button.dataset.recordWriting); const box = document.createElement('div'); box.className = `feedback ${count >= target ? 'good' : 'bad'}`; box.innerHTML = count >= target ? '<strong>✓ Completion recorded locally.</strong><br>Keep checking your evidence, organisation and accuracy.' : `<strong>Keep writing.</strong><br>You have ${count} words. Aim for at least ${target}.`; button.closest('.task-board').appendChild(box); if (count >= target) mark(currentModule().id, true); }));
+    root.querySelectorAll('[data-clear-progress]').forEach((button) => button.addEventListener('click', () => { localStorage.removeItem(progressKey); localStorage.removeItem(draftKey); render(); }));
+    root.querySelectorAll('[data-record-writing]').forEach((button) => button.addEventListener('click', () => { const count = ($('#draft')?.value || '').trim().split(/\s+/).filter(Boolean).length; const target = Number(button.dataset.recordWriting); const box = document.createElement('div'); box.className = `feedback ${count >= target ? 'good' : 'bad'}`; box.innerHTML = count >= target ? '<strong>✓ Completion recorded locally.</strong><br>Keep checking your evidence, organisation and accuracy.' : `<strong>Keep writing.</strong><br>You have ${count} words. Aim for at least ${target}.`; button.closest('.task-board').appendChild(box); if (count >= target) mark(currentModule().id, true, false); }));
   }
 
   function render() { root.innerHTML = renderShell(); bind(); }

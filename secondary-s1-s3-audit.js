@@ -14,7 +14,8 @@ const checks = [
   { file:'s1-s3-vocab-games-speaking.js', key:'S3_SPEAKING_SIMULATIONS', min:{ simulations:3 } },
   { file:'s1-s2-varied-practice.js', key:'S1_VARIED_PRACTICE', min:{ grammar:6, reading:4, listening:8, writing:1 } },
   { file:'s1-s2-varied-practice.js', key:'S2_VARIED_PRACTICE', min:{ grammar:6, reading:4, listening:4, writing:1 } },
-  { file:'s3-varied-practice.js', key:'S3_VARIED_PRACTICE', min:{ grammar:6, reading:4, listening:4, writing:2 } }
+  { file:'s3-varied-practice.js', key:'S3_VARIED_PRACTICE', min:{ grammar:6, reading:4, listening:4, writing:2 } },
+  { file:'s3-dse-prep-extension.js', key:'S3_DSE_PREP', min:{ grammar:12, advancedWriting:2 } }
 ];
 
 function load(file, key) {
