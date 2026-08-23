@@ -22,7 +22,8 @@ const checks = [
   { file:'s1-s2-grammar-writing-extension.js', key:'S1_GENRE_WRITING', min:{ advancedWriting:2 } },
   { file:'s1-s2-grammar-writing-extension.js', key:'S2_GENRE_WRITING', min:{ advancedWriting:2 } },
   { file:'s3-integrated-listen-speak.js', key:'S3_DSE_INTEGRATED', min:{ integrated:8, advancedWriting:1, simulations:2 } },
-  { file:'s1-s3-grammar-quest-bank.js', key:'S1_S3_GRAMMAR_EXPANSION', min:{ passiveGames:12, conditionalGames:12, s1Grammar:24, s2Grammar:18, s3Grammar:30, s3DseAnalysis:30 } }
+  { file:'s1-s3-grammar-quest-bank.js', key:'S1_S3_GRAMMAR_EXPANSION', min:{ passiveGames:12, conditionalGames:12, s1Grammar:24, s2Grammar:18, s3Grammar:30, s3DseAnalysis:30 } },
+  { file:'s1-s3-curriculum-practice.js', key:'S1_S3_CURRICULUM_PRACTICE', min:{ s1CurrGrammar:12, s1CurrReading:8, s1CurrWriting:1, s2CurrGrammar:12, s2CurrReading:8, s2CurrWriting:1, s3LexicalLogic:12, s3SentenceRebuild:10, s3CurrReading:8, s3CurrWriting:1 } }
 ];
 
 function load(file, key) {
@@ -52,7 +53,11 @@ const report = checks.map(({ file, key, min }) => {
     passiveGames: (data.games || []).filter((item) => item.set === 'passive').length,
     conditionalGames: (data.games || []).filter((item) => item.set === 'conditionals').length,
     s1Grammar: count(data.s1Grammar), s2Grammar: count(data.s2Grammar), s3Grammar: count(data.s3Grammar),
-    s3DseAnalysis: Object.keys(data.s3FormalResponseAnalysis || {}).length
+    s3DseAnalysis: Object.keys(data.s3FormalResponseAnalysis || {}).length,
+    s1CurrGrammar: count(data.s1Grammar), s1CurrReading: count(data.s1Reading), s1CurrWriting: count(data.s1Writing),
+    s2CurrGrammar: count(data.s2Grammar), s2CurrReading: count(data.s2Reading), s2CurrWriting: count(data.s2Writing),
+    s3LexicalLogic: count(data.s3Logic), s3SentenceRebuild: count(data.s3Reorder?.items),
+    s3CurrReading: count(data.s3Reading), s3CurrWriting: count(data.s3Writing)
   };
   Object.entries(min).forEach(([skill, target]) => { if (counts[skill] < target) failures.push(`${key}: ${skill} ${counts[skill]} < ${target}`); });
   return { key, counts };

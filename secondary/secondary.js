@@ -7,7 +7,7 @@
   const safeSet = (key, value) => localStorage.setItem(key, JSON.stringify(value));
   const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' })[char]);
   const letters = ['A', 'B', 'C', 'D'];
-  const state = { year: 's1', stage: 's1-bridge', route: 'read', moduleId: null, index: 0, selected: null, checked: false };
+  const state = { year: 's1', stage: 's1-bridge', route: 'read', moduleId: null, index: 0, selected: null, reorder: [], checked: false };
   const progressKey = 'secondary-english-studio-progress-v1';
   const draftKey = 'secondary-english-studio-drafts-v1';
   const progress = () => {
@@ -79,6 +79,9 @@
     { id:'s1-passive-quest', stage:'s1-extend', route:'language', symbol:'PV', title:'Passive voice quest', zh:'被動語態闖關', kind:'game', source:'S1_S3_GRAMMAR_EXPANSION', gameSet:'passive' },
     { id:'s1-conditionals-quest', stage:'s1-extend', route:'language', symbol:'IF', title:'Conditionals quest', zh:'條件句闖關', kind:'game', source:'S1_S3_GRAMMAR_EXPANSION', gameSet:'conditionals' },
     { id:'s1-varied-grammar-bank', stage:'s1-extend', route:'language', symbol:'G+', title:'Grammar in school and community', zh:'校園及社區文法題庫', kind:'grammar', source:'S1_S3_GRAMMAR_EXPANSION', bank:'s1Grammar' },
+    { id:'s1-curriculum-grammar', stage:'s1-extend', route:'language', symbol:'CF', title:'Core grammar in context', zh:'核心文法語境練習', kind:'grammar', source:'S1_S3_CURRICULUM_PRACTICE', bank:'s1Grammar' },
+    { id:'s1-curriculum-reading', stage:'s1-extend', route:'read', symbol:'RS', title:'Reading strategy lab', zh:'閱讀策略練習室', kind:'reading', source:'S1_S3_CURRICULUM_PRACTICE', bank:'s1Reading' },
+    { id:'s1-curriculum-writing', stage:'s1-extend', route:'write', symbol:'WS', title:'Narrative & description scaffold', zh:'記敘與描寫寫作鷹架', kind:'advancedWriting', source:'S1_S3_CURRICULUM_PRACTICE', bank:'s1Writing' },
     { id:'s1-genre-writing', stage:'s1-extend', route:'write', symbol:'W+', title:'Narrative & argument scaffolds', zh:'記敘與議論寫作鷹架', kind:'advancedWriting', source:'S1_GENRE_WRITING' },
     { id:'s1-varied-grammar', stage:'s1-extend', route:'language', symbol:'E', title:'Sentence repair clinic', zh:'句子修訂診所', kind:'grammar', source:'S1_VARIED_PRACTICE' },
     { id:'s1-varied-reading', stage:'s1-extend', route:'read', symbol:'R+', title:'Practical-text reading', zh:'實用文本閱讀', kind:'reading', source:'S1_VARIED_PRACTICE' },
@@ -112,6 +115,9 @@
 
     { id:'s2-consolidate-grammar', stage:'s2-consolidate', route:'language', symbol:'G', title:'Grammar with evidence', zh:'證據語境文法', kind:'grammar', source:'S2_CONSOLIDATE_EVIDENCE' },
     { id:'s2-varied-grammar-bank', stage:'s2-consolidate', route:'language', symbol:'G+', title:'Grammar in evidence and viewpoints', zh:'證據與觀點文法題庫', kind:'grammar', source:'S1_S3_GRAMMAR_EXPANSION', bank:'s2Grammar' },
+    { id:'s2-curriculum-grammar', stage:'s2-consolidate', route:'language', symbol:'CF', title:'Core grammar in context', zh:'核心文法語境練習', kind:'grammar', source:'S1_S3_CURRICULUM_PRACTICE', bank:'s2Grammar' },
+    { id:'s2-curriculum-reading', stage:'s2-consolidate', route:'read', symbol:'RS', title:'Reading strategy lab', zh:'閱讀策略練習室', kind:'reading', source:'S1_S3_CURRICULUM_PRACTICE', bank:'s2Reading' },
+    { id:'s2-curriculum-writing', stage:'s2-consolidate', route:'write', symbol:'WS', title:'Formal email & PEEL scaffold', zh:'正式電郵與 PEEL 寫作鷹架', kind:'advancedWriting', source:'S1_S3_CURRICULUM_PRACTICE', bank:'s2Writing' },
     { id:'s2-consolidate-vocabulary', stage:'s2-consolidate', route:'language', symbol:'V', title:'Source words', zh:'來源詞彙', kind:'vocabulary', source:'S2_CONSOLIDATE_EVIDENCE' },
     { id:'s2-consolidate-reading', stage:'s2-consolidate', route:'read', symbol:'R', title:'Compare sources', zh:'比較來源', kind:'reading', source:'S2_CONSOLIDATE_EVIDENCE' },
     { id:'s2-consolidate-listening', stage:'s2-consolidate', route:'listen', symbol:'L', title:'Hear and check', zh:'聆聽與核實', kind:'listening', source:'S2_CONSOLIDATE_EVIDENCE' },
@@ -139,6 +145,10 @@
     { id:'s3-ready-advanced', stage:'s3-ready', route:'write', symbol:'W+', title:'Advanced writing lab', zh:'進階寫作室', kind:'advancedWriting', source:'S3_READY_PATHWAY' },
     { id:'s3-dse-grammar', stage:'s3-ready', route:'language', symbol:'D', title:'Senior-secondary grammar lab', zh:'高中銜接文法室', kind:'grammar', source:'S3_DSE_PREP' },
     { id:'s3-varied-grammar-bank', stage:'s3-ready', route:'language', symbol:'G+', title:'Grammar in formal response', zh:'正式回應文法題庫', kind:'grammar', source:'S1_S3_GRAMMAR_EXPANSION', bank:'s3Grammar' },
+    { id:'s3-lexical-logic', stage:'s3-ready', route:'language', symbol:'LX', title:'Lexical logic lab', zh:'詞彙邏輯室', kind:'grammar', source:'S1_S3_CURRICULUM_PRACTICE', bank:'s3Logic' },
+    { id:'s3-sentence-rebuild', stage:'s3-ready', route:'language', symbol:'↔', title:'Sentence rebuild lab', zh:'句式重組室', kind:'reorder', source:'S1_S3_CURRICULUM_PRACTICE', bank:'s3Reorder' },
+    { id:'s3-curriculum-reading', stage:'s3-ready', route:'read', symbol:'RS', title:'Critical reading strategy lab', zh:'批判閱讀策略練習室', kind:'reading', source:'S1_S3_CURRICULUM_PRACTICE', bank:'s3Reading' },
+    { id:'s3-curriculum-writing', stage:'s3-ready', route:'write', symbol:'WS', title:'Argument & sentence-variety scaffold', zh:'議論與句式變化寫作鷹架', kind:'advancedWriting', source:'S1_S3_CURRICULUM_PRACTICE', bank:'s3Writing' },
     { id:'s3-dse-writing', stage:'s3-ready', route:'write', symbol:'D+', title:'DSE bridge writing models', zh:'DSE 銜接寫作範本', kind:'advancedWriting', source:'S3_DSE_PREP' },
     { id:'s3-integrated-assessment', stage:'s3-ready', route:'read', symbol:'IS', title:'Integrated skills assessment', zh:'綜合能力測驗', kind:'integrated', source:'S3_DSE_INTEGRATED' },
     { id:'s3-integrated-writing', stage:'s3-ready', route:'write', symbol:'IR', title:'Integrated response planner', zh:'綜合回應規劃', kind:'advancedWriting', source:'S3_DSE_INTEGRATED' },
@@ -180,7 +190,7 @@
     if (module.kind === 'grammar') return ((module.bank ? data[module.bank] : data.grammar)?.questions || []).map((item) => { const normalized = { ...normalizeTuple(item, 'grammar'), type:'quiz' }; return { ...normalized, dseAnalysis: module.id === 's3-varied-grammar-bank' ? data.s3FormalResponseAnalysis?.[normalized.id] : null }; });
     if (module.kind === 'vocabulary') return (data.vocabulary?.items || []).map((item) => ({ ...normalizeTuple(item, 'vocabulary'), type:'vocabulary' }));
     if (module.kind === 'reading') {
-      const reading = data.reading || {};
+      const reading = (module.bank ? data[module.bank] : data.reading) || {};
       if (reading.questions) return reading.questions.map((item) => ({ ...normalizeTuple(item, 'reading'), type:'quiz' }));
       return (reading.sets || []).flatMap((set) => (set.questions || []).map((tuple) => ({
         id: tuple[0], contextTitle: set.title, contextTitleZh: set.titleZh,
@@ -195,7 +205,8 @@
       prompt:tuple[1], promptZh:tuple[2], options:tuple[3], answer:tuple[4], explanation:tuple[5], explanationZh:tuple[6], hint:tuple[7], type:'quiz'
     })));
     if (module.kind === 'writing') return (data.writing || []).filter((item) => item.level !== 'advanced').map((item) => ({ ...item, type:'writing' }));
-    if (module.kind === 'advancedWriting') return (data.advancedWriting || data.writing || []).filter((item) => item.level === 'advanced').map((item) => ({ ...item, type:'advancedWriting' }));
+    if (module.kind === 'advancedWriting') return ((module.bank ? data[module.bank] : (data.advancedWriting || data.writing)) || []).filter((item) => item.level === 'advanced').map((item) => ({ ...item, type:'advancedWriting' }));
+    if (module.kind === 'reorder') return (data[module.bank]?.items || []).map((item) => ({ ...item, type:'reorder' }));
     if (module.kind === 'speaking') return (data.speaking || []).map((item) => ({ ...item, type:'speaking' }));
     if (module.kind === 'dialogues') return (data.dialogues || []).map((item) => ({ ...item, type:'dialogue' }));
     if (module.kind === 'game') return (data.games || []).filter((item) => !module.gameSet || item.set === module.gameSet).map((item) => ({ ...item, type:'game' }));
@@ -334,6 +345,7 @@
     if (item.type === 'dialogue') return renderDialogue(item, module);
     if (item.type === 'game') return renderGame(item, module);
     if (item.type === 'simulation') return renderSimulation(item, module);
+    if (item.type === 'reorder') return renderReorder(item, module);
     const context = item.context || item.script || '';
     const title = item.contextTitle || item.word || '';
     const prompt = item.type === 'vocabulary' ? (item.prompt || `Which word matches: ${item.definition || item.word}?`) : item.prompt;
@@ -346,6 +358,13 @@
       <div class="options">${options.map((option, index) => { const resultClass = state.checked ? (index === answer ? 'correct' : (index === state.selected ? 'wrong' : '')) : (index === state.selected ? 'selected' : ''); return `<button class="option ${resultClass}" data-option="${index}"><b>${letters[index] || index + 1}</b><span>${escape(option)}</span></button>`; }).join('')}</div>
       <div class="controls"><button class="primary" data-check="true">Check answer · 核對答案</button><button class="secondary" data-next="true">Next · 下一題</button>${item.hint ? `<button class="secondary" data-hint="${escape(item.hint)}">Hint · 提示</button>` : ''}</div>
       ${state.checked ? `<div class="feedback ${state.selected === answer ? 'good' : 'bad'}"><strong>${state.selected === answer ? '✓ Good thinking.' : 'Try the evidence again.'}</strong><br>${bilingualLine(item.explanation || '', item.explanationZh || '')}</div>${renderDseAnalysis(item.dseAnalysis)}${objectiveFeedback(module.id)}` : ''}`;
+  }
+
+  function renderReorder(item, module) {
+    const selected = state.reorder || [];
+    const available = (item.chunks || []).map((chunk, index) => ({ chunk, index })).filter((part) => !selected.includes(part.index));
+    const correct = Array.isArray(item.answer) && selected.length === item.answer.length && selected.every((part, index) => part === item.answer[index]);
+    return `<article class="rebuild-card"><p class="eyebrow">SENTENCE REBUILD · 句式重組</p><h3>${escape(item.title || '')}<span class="zh">${escape(item.titleZh || '')}</span></h3><p>${bilingualLine(item.prompt || '', item.promptZh || '')}</p><section class="rebuild-answer"><strong>Your sequence · 你的排序</strong><div>${selected.length ? selected.map((index, order) => `<button class="rebuild-chip selected" data-reorder-remove="${index}" ${state.checked ? 'disabled' : ''}><b>${order + 1}</b>${escape(item.chunks[index])}</button>`).join('') : '<span class="rebuild-empty">Select the chunks below. · 從下方選擇句塊。</span>'}</div></section><section class="rebuild-bank"><strong>Sentence chunks · 句子組件</strong><div>${available.map((part) => `<button class="rebuild-chip" data-reorder-add="${part.index}" ${state.checked ? 'disabled' : ''}>${escape(part.chunk)}</button>`).join('')}</div></section><div class="controls"><button class="primary" data-check-reorder>Check sequence · 核對排序</button><button class="secondary" data-reorder-reset ${state.checked ? 'disabled' : ''}>Reset · 重設</button><button class="secondary" data-next>Next rebuild · 下一題</button>${item.hint ? `<button class="secondary" data-hint="${escape(item.hint)}">Hint · 提示</button>` : ''}</div>${state.checked ? `<div class="feedback ${correct ? 'good' : 'bad'}"><strong>${correct ? '✓ Accurate rebuild.' : 'Check the sentence pattern again.'}</strong><br>${bilingualLine(item.explanation || '', item.explanationZh || '')}<span class="correct-sentence">${escape(item.correctSentence || '')}</span></div>${objectiveFeedback(module.id)}` : ''}</article>`;
   }
 
   function renderGame(item, module) {
@@ -415,10 +434,18 @@
   }
 
   function checkCurrentAnswer() {
-    if (state.selected === null) return;
     const items = itemsFor(currentModule());
     const item = items[state.index];
     if (!item) return;
+    if (item.type === 'reorder') {
+      const answer = item.answer || [];
+      if ((state.reorder || []).length !== answer.length) return;
+      state.checked = true;
+      mark(currentModule().id, state.reorder.every((part, index) => part === answer[index]));
+      render();
+      return;
+    }
+    if (state.selected === null) return;
     const answer = item.type === 'dialogue' ? item.checkpoints?.[0]?.answer : item.answer;
     state.checked = true;
     mark(currentModule().id, Number(answer || 0) === state.selected);
@@ -427,13 +454,17 @@
 
   function bind() {
     root.querySelectorAll('[data-stage]').forEach((button) => button.addEventListener('click', () => chooseStage(button.dataset.stage)));
-    root.querySelectorAll('[data-try-s1-quest]').forEach((button) => button.addEventListener('click', () => { state.stage = 's1-extend'; state.year = 's1'; state.route = 'language'; state.moduleId = 's1-grammar-quest'; state.index = 0; state.selected = null; state.checked = false; render(); }));
-    root.querySelectorAll('[data-try-s3-formal]').forEach((button) => button.addEventListener('click', () => { state.stage = 's3-ready'; state.year = 's3'; state.route = 'language'; state.moduleId = 's3-varied-grammar-bank'; state.index = 0; state.selected = null; state.checked = false; render(); }));
+    root.querySelectorAll('[data-try-s1-quest]').forEach((button) => button.addEventListener('click', () => { state.stage = 's1-extend'; state.year = 's1'; state.route = 'language'; state.moduleId = 's1-grammar-quest'; state.index = 0; state.selected = null; state.reorder = []; state.checked = false; render(); }));
+    root.querySelectorAll('[data-try-s3-formal]').forEach((button) => button.addEventListener('click', () => { state.stage = 's3-ready'; state.year = 's3'; state.route = 'language'; state.moduleId = 's3-varied-grammar-bank'; state.index = 0; state.selected = null; state.reorder = []; state.checked = false; render(); }));
     root.querySelectorAll('[data-route]').forEach((button) => button.addEventListener('click', () => chooseRoute(button.dataset.route)));
     root.querySelectorAll('[data-module]').forEach((button) => button.addEventListener('click', () => chooseModule(button.dataset.module)));
     root.querySelectorAll('[data-option]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.selected = Number(button.dataset.option); render(); } }));
     root.querySelectorAll('[data-check]').forEach((button) => { button.onclick = checkCurrentAnswer; });
-    root.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => { const items = itemsFor(currentModule()); state.index = (state.index + 1) % items.length; state.selected = null; state.checked = false; render(); }));
+    root.querySelectorAll('[data-check-reorder]').forEach((button) => { button.onclick = checkCurrentAnswer; });
+    root.querySelectorAll('[data-reorder-add]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.reorder.push(Number(button.dataset.reorderAdd)); render(); } }));
+    root.querySelectorAll('[data-reorder-remove]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.reorder = state.reorder.filter((index) => index !== Number(button.dataset.reorderRemove)); render(); } }));
+    root.querySelectorAll('[data-reorder-reset]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.reorder = []; render(); } }));
+    root.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => { const items = itemsFor(currentModule()); state.index = (state.index + 1) % items.length; state.selected = null; state.reorder = []; state.checked = false; render(); }));
     root.querySelectorAll('[data-hint]').forEach((button) => button.addEventListener('click', () => { const message = document.createElement('div'); message.className = 'feedback'; message.innerHTML = `<strong>Hint · 提示</strong><br>${escape(button.dataset.hint)}`; button.closest('.task-board').appendChild(message); button.remove(); }));
     root.querySelectorAll('[data-say]').forEach((button) => button.addEventListener('click', () => speak(button.dataset.say)));
     const draft = $('#draft');

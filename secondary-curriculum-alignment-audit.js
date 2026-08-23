@@ -7,6 +7,7 @@ const alignment = fs.readFileSync('SECONDARY_ALIGNMENT_AUDIT.md', 'utf8');
 const context = { window: {} };
 vm.createContext(context);
 vm.runInContext(fs.readFileSync('s2-micro-missions.js', 'utf8'), context, { filename:'s2-micro-missions.js' });
+vm.runInContext(fs.readFileSync('s1-s3-curriculum-practice.js', 'utf8'), context, { filename:'s1-s3-curriculum-practice.js' });
 
 const stages = ['s1-bridge', 's1-core', 's1-extend', 's2-develop', 's2-connect', 's2-action', 's2-consolidate', 's3-ready'];
 const routes = ['read', 'write', 'listen', 'language'];
@@ -25,6 +26,7 @@ if (!secondary.includes('Original preparation only—not an official HKDSE paper
   failures.push('S3: missing bounded senior-secondary bridge statement');
 }
 if (!index.includes('s2-micro-missions.js')) failures.push('S2 micro-mission data file is not loaded');
+if (!index.includes('s1-s3-curriculum-practice.js')) failures.push('curriculum framework data file is not loaded');
 if (!alignment.includes('HKEAA endorsement')) failures.push('alignment report missing scope boundary');
 if (!alignment.includes('## References')) failures.push('alignment report missing official source references');
 
@@ -36,6 +38,24 @@ const wellbeingAware = (missions.games || []).filter((item) => /wellbeing|bounda
 if (sourceAware < 4) failures.push(`S2 micro missions: source/evidence coverage ${sourceAware} < 4`);
 if (wellbeingAware < 4) failures.push(`S2 micro missions: wellbeing coverage ${wellbeingAware} < 4`);
 
+const curriculum = context.window.S1_S3_CURRICULUM_PRACTICE || {};
+const curriculumCounts = {
+  s1Grammar: curriculum.s1Grammar?.questions?.length || 0,
+  s1Reading: curriculum.s1Reading?.questions?.length || 0,
+  s1Writing: curriculum.s1Writing?.length || 0,
+  s2Grammar: curriculum.s2Grammar?.questions?.length || 0,
+  s2Reading: curriculum.s2Reading?.questions?.length || 0,
+  s2Writing: curriculum.s2Writing?.length || 0,
+  s3LexicalLogic: curriculum.s3Logic?.questions?.length || 0,
+  s3SentenceRebuild: curriculum.s3Reorder?.items?.length || 0,
+  s3Reading: curriculum.s3Reading?.questions?.length || 0,
+  s3Writing: curriculum.s3Writing?.length || 0
+};
+const curriculumMinimums = { s1Grammar:12, s1Reading:8, s1Writing:1, s2Grammar:12, s2Reading:8, s2Writing:1, s3LexicalLogic:12, s3SentenceRebuild:10, s3Reading:8, s3Writing:1 };
+Object.entries(curriculumMinimums).forEach(([key, minimum]) => { if (curriculumCounts[key] < minimum) failures.push(`curriculum framework: ${key} ${curriculumCounts[key]} < ${minimum}`); });
+if (!secondary.includes("id:'s3-sentence-rebuild'")) failures.push('S3: missing sentence rebuild module route');
+if (!secondary.includes('data-check-reorder')) failures.push('S3: missing interactive sentence rebuild check control');
+
 console.log(JSON.stringify({
   status: failures.length ? 'failed' : 'passed',
   checks: {
@@ -44,7 +64,8 @@ console.log(JSON.stringify({
     s2MicroMissionGames: (missions.games || []).length,
     s2MicroWritingChallenges: (missions.advancedWriting || []).length,
     sourceAwareGames: sourceAware,
-    wellbeingAwareGames: wellbeingAware
+    wellbeingAwareGames: wellbeingAware,
+    curriculumFramework: curriculumCounts
   },
   failures
 }, null, 2));
