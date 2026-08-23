@@ -95,6 +95,7 @@
         { id: 'listening-vocab', symbol: 'V', title: 'Listening vocabulary', titleZh: '聆聽詞彙卡', description: 'Reveal, hear and use key listening words', descriptionZh: '翻開、聆聽及運用聆聽重點詞彙', sessions: 10, minGrade: 4 },
         { id: 'listening-check', symbol: 'Q', title: 'Listening quick check', titleZh: '聽後小測', description: 'Short replayable clips with instant feedback', descriptionZh: '可重播短句配合即時中英回饋', sessions: 7, minGrade: 4 },
         { id: 'roleplay', symbol: 'R', title: 'Role-play practice', titleZh: '角色對話', description: 'Take both roles in useful school-life dialogues', descriptionZh: '在實用校園情境中練習 A、B 角色對話', sessions: 3, minGrade: 4 },
+        { id: 's1-interview', symbol: 'I', title: 'S1 Interview practice', titleZh: '升中面試聽說練習', description: 'Listen, plan and speak for common transition topics', descriptionZh: '聆聽、規劃及回應常見升中面試題目', sessions: 6, minGrade: 5 },
       ]
     },
     language: {
@@ -320,9 +321,12 @@
   }
 
   function createGrammar() {
-    return expanded('grammar', grammarSets[state.grade]).map(([prompt, options, explanation, promptZh, explanationZh], index) => {
+    const interviewGrammar = ((window.P5_P6_GRAMMAR_INTERVIEW || {}).grammar || {})[state.grade] || [];
+    const baseItems = expanded('grammar', grammarSets[state.grade]);
+    const interviewItems = interviewGrammar.map((item) => [item.prompt, [item.options[item.answer], ...item.options.filter((_, index) => index !== item.answer)], item.explanation, item.promptZh, item.explanationZh, item.id, item.hint]);
+    return [...baseItems, ...interviewItems].map(([prompt, options, explanation, promptZh, explanationZh, id, hint], index) => {
       const shuffled = randomize(options);
-      return question(`grammar-${state.grade}-${index}`, 'language', 'Grammar & patterns', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { promptZh, explanationZh, hint: scope().assessment });
+      return question(id || `grammar-${state.grade}-${index}`, 'language', 'Grammar & patterns', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { promptZh, explanationZh, hint: hint || scope().assessment, originalPractice: Boolean(id) });
     });
   }
 
@@ -828,6 +832,38 @@
     }));
   }
 
+  function createS1InterviewPractice() {
+    const library = window.P5_P6_GRAMMAR_INTERVIEW || {};
+    const listening = (library.listening || {})[state.grade] || [];
+    const speaking = (library.speaking || {})[state.grade] || [];
+    const listeningItems = listening.flatMap((script) => script.questions.map((item, index) => {
+      const shuffled = randomize(item.options);
+      return question(`s1-interview-listening-${script.id}-${index}`, 'listen', `S1 Interview · ${script.title}`, item.prompt, shuffled.indexOf(item.options[item.answer]), item.explanation, shuffled, {
+        promptZh: item.promptZh,
+        explanationZh: item.explanationZh,
+        audioText: script.script,
+        scriptTitle: script.title,
+        scriptTitleZh: script.titleZh,
+        interviewActivity: true,
+        originalPractice: true,
+        hint: 'Read the question first. Listen for a detail, reason, skill, challenge or practical action, then replay to check. 先讀題目；聆聽細節、原因、技能、挑戰或實際行動，再重播核對。'
+      });
+    }));
+    const speakingItems = speaking.map((item) => question(`s1-interview-speaking-${item.id}`, 'listen', `S1 Interview · ${item.title}`, item.prompt, 'spoken', 'Well done. Use the model only as a guide, then improve one detail, reason, example or pause before speaking again. This is a self-check activity and does not score accent, fluency or interview suitability.', null, {
+      promptZh: item.promptZh,
+      audioText: item.model,
+      scriptTitle: item.title,
+      scriptTitleZh: item.titleZh,
+      oralActivity: item,
+      interviewActivity: true,
+      selfCheck: item.selfCheck,
+      speaking: true,
+      originalPractice: true,
+      hint: 'State your idea, add one reason or example, then end politely. Speak from key words rather than memorising every line. 說出想法，加入一個理由或例子，再有禮地結尾；依重點詞說話，不必逐字背誦。'
+    }));
+    return [...listeningItems, ...speakingItems];
+  }
+
   function createSpeaking() {
     const seniorOral = (window.SENIOR_ORAL_LIBRARY || {})[state.grade];
     if (seniorOral) {
@@ -889,6 +925,7 @@
     if (state.module === 'listening-vocab') return createListeningFlashcards();
     if (state.module === 'listening-check') return createListeningChecks();
     if (state.module === 'roleplay') return createRoleplays();
+    if (state.module === 's1-interview') return createS1InterviewPractice();
     if (state.module === 'junior-game') return createJuniorGame();
     if (state.module === 'word-match') return createJuniorWordMatch();
     if (state.module === 'advanced-reading') return createAdvancedReading();
@@ -1232,14 +1269,14 @@
     $('#practice-title').innerHTML = `${escape(scope().level)} · ${escape(item.topic)}<span class="practice-title-zh">${escape(route.labelZh)}</span>`;
     $('#question-number').textContent = String(session.index + 1).padStart(2, '0');
     $('#question-route').innerHTML = `${escape(route.label.toUpperCase())} PRACTICE <small>· ${escape(route.labelZh)}</small>`;
-    $('#practice-side-copy').textContent = item.oralActivity ? '先聽示範，再按四步計劃準備自己的短講。' : item.route === 'listen' ? '可先播放兩次。核對後才會看到英文逐字稿。' : '逐題作答後，系統會提供一個可立即使用的重點提示。';
+    $('#practice-side-copy').textContent = item.oralActivity ? (item.interviewActivity ? '先聽示範，再按四步計劃準備升中面試回應。' : '先聽示範，再按四步計劃準備自己的短講。') : item.route === 'listen' ? '可先播放兩次。核對後才會看到英文逐字稿。' : '逐題作答後，系統會提供一個可立即使用的重點提示。';
     $('#skill-tip').textContent = route.tip;
 
     const pairedLabel = item.s2Action ? 'S2 ACTION · ORIGINAL PAIRED TEXTS · 原創配對閱讀' : item.s2Connect ? 'S2 CONNECT · ORIGINAL PAIRED TEXTS · 原創配對閱讀' : 'S2 DEVELOP · ORIGINAL PAIRED TEXTS · 原創配對閱讀';
     const pairedPassages = item.pairedPassages ? `<section class="paired-reading"><header><p class="eyebrow">${pairedLabel}</p><strong>${escape(item.pairedPassages.title)}<small>${escape(item.pairedPassages.titleZh)}</small></strong><span>Read both texts. Compare purpose, evidence and useful details. · 閱讀兩篇文本，比較寫作目的、證據及實用細節。</span></header><div class="paired-passages">${item.pairedPassages.texts.map((text) => `<article class="passage paired-passage"><small>${escape(text.label)}</small><strong>${escape(text.title)}</strong><p>${escape(text.text)}</p><footer><b>Purpose · 寫作目的</b>${escape(text.purpose)}<i>${escape(text.purposeZh)}</i></footer></article>`).join('')}</div></section>` : '';
     const passage = item.passage ? `<article class="passage ${item.advancedAnalysis ? 'advanced-passage' : ''}">${item.advancedAnalysis ? `<small class="genre-label">${escape(item.advancedAnalysis.genre)} · ${escape(item.advancedAnalysis.genreZh)}</small>` : ''}<strong>${escape(item.passage.title)}</strong>${escape(item.passage.text)}</article>` : '';
-    const audio = item.audioText ? `<section class="listen-player"><div><strong>${item.oralActivity ? 'Listen to the model, then build your own talk.' : item.speaking ? 'Listen, then say it aloud.' : 'Listen first. You may replay the audio.'}</strong><span>${item.oralActivity ? '按播放鍵聽示範，然後按照四步計劃準備個人短講。' : item.speaking ? '按播放鍵聽示範，然後用自己的資料完成句子。' : '核對答案後可查看英文逐字稿。'}</span></div><button class="play-audio" id="play-audio">Play audio · 播放錄音</button></section>${currentResult && !item.speaking ? `<p class="transcript"><strong>${escape(item.scriptTitle ? `${item.scriptTitle} · Transcript` : 'Transcript')}:</strong> ${escape(item.audioText)}</p>` : ''}` : '';
-    const oralPlan = item.oralActivity ? `<section class="oral-plan"><header><p class="eyebrow">P4–P6 ORAL PRACTICE · 高小聆聽與口語</p><div><strong>${escape(item.oralActivity.title)}<small>${escape(item.oralActivity.titleZh)}</small></strong><span>${escape(item.oralActivity.duration)}</span></div></header><div class="oral-frames">${item.oralActivity.frames.map(([label, labelZh, frame, frameZh], index) => `<article><i>${index + 1}</i><div><b>${escape(label)}<small>${escape(labelZh)}</small></b><p>${escape(frame)}</p><span>${escape(frameZh)}</span></div></article>`).join('')}</div><footer><strong>Key language · 實用語句</strong><p>${item.oralActivity.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>` : '';
+    const audio = item.audioText ? `<section class="listen-player"><div><strong>${item.oralActivity ? 'Listen to the model, then build your own talk.' : item.speaking ? 'Listen, then say it aloud.' : 'Listen first. You may replay the audio.'}</strong><span>${item.oralActivity ? (item.interviewActivity ? '按播放鍵聽示範，然後按照四步計劃準備升中面試回應。' : '按播放鍵聽示範，然後按照四步計劃準備個人短講。') : item.speaking ? '按播放鍵聽示範，然後用自己的資料完成句子。' : '核對答案後可查看英文逐字稿。'}</span></div><button class="play-audio" id="play-audio">Play audio · 播放錄音</button></section>${currentResult && !item.speaking ? `<p class="transcript"><strong>${escape(item.scriptTitle ? `${item.scriptTitle} · Transcript` : 'Transcript')}:</strong> ${escape(item.audioText)}</p>` : ''}` : '';
+    const oralPlan = item.oralActivity ? `<section class="oral-plan"><header><p class="eyebrow">${item.interviewActivity ? 'S1 INTERVIEW PRACTICE · 升中面試聽說準備' : 'P4–P6 ORAL PRACTICE · 高小聆聽與口語'}</p><div><strong>${escape(item.oralActivity.title)}<small>${escape(item.oralActivity.titleZh)}</small></strong><span>${escape(item.oralActivity.duration)}</span></div></header><div class="oral-frames">${item.oralActivity.frames.map(([label, labelZh, frame, frameZh], index) => `<article><i>${index + 1}</i><div><b>${escape(label)}<small>${escape(labelZh)}</small></b><p>${escape(frame)}</p><span>${escape(frameZh)}</span></div></article>`).join('')}</div><footer><strong>Key language · 實用語句</strong><p>${item.oralActivity.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>` : '';
     const flashcard = item.flashcard ? `<section class="flashcard ${session.revealed?.[session.index] ? 'revealed' : ''}"><div class="flashcard-front"><p class="eyebrow">${item.flashcardType === 'match' ? 'WORD MATCH · 單字配對' : 'LISTENING VOCABULARY · 聆聽詞彙卡'}</p><strong>${escape(item.flashcard.word)}</strong><span>Preview the word, then listen and use it. · 預習詞彙，然後聆聽及運用。</span></div><div class="flashcard-actions"><button class="secondary" id="flash-reveal">${session.revealed?.[session.index] ? 'Meaning revealed · 已顯示意思' : 'Reveal meaning · 顯示意思'}</button><button class="secondary" id="flash-audio">Play word · 播放字詞</button></div><div class="flashcard-back ${session.revealed?.[session.index] ? 'show' : ''}"><strong>${escape(item.flashcard.chinese)}</strong><p>${escape(item.flashcard.definition)}</p><blockquote>${escape(item.flashcard.example)}</blockquote></div></section>` : '';
     const roleplay = item.roleplay ? `<section class="roleplay-card"><header><p class="eyebrow">ROLE-PLAY PRACTICE · 角色對話</p><strong>${escape(item.roleplay.title)}<small>${escape(item.roleplay.titleZh)}</small></strong><span>${escape(item.roleplay.roles[0])}</span><span>${escape(item.roleplay.roles[1])}</span></header><div class="roleplay-actions"><button class="secondary" data-role-audio="A">Listen to A · 聽 A 角色</button><button class="secondary" data-role-audio="B">Listen to B · 聽 B 角色</button></div><div class="roleplay-lines">${item.roleplay.dialogue.map(([speaker, line]) => `<p class="role-${speaker.toLowerCase()}"><b>${speaker}</b><span>${escape(line)}</span></p>`).join('')}</div><footer><strong>Useful phrases · 實用語句</strong><p>${item.roleplay.language.map((phrase) => `<em>${escape(phrase)}</em>`).join('')}</p></footer></section>` : '';
     const writingGuide = item.writing ? `<section class="writing-guide"><strong>${item.selfCheck ? 'Writing reminder' : item.s2Action ? 'S2 ACTION WRITING · 原創練習' : item.s2Connect ? 'S2 CONNECT WRITING · 原創練習' : item.s2Develop ? 'S2 DEVELOP WRITING · 原創練習' : item.s1Core ? 'S1 CORE WRITING · 原創練習' : item.writingTask ? 'PRE-S1-STYLE WRITING · 原創銜接寫作' : 'Writing check'}</strong><p>${item.selfCheck ? '先完成你的想法，再讀一次，確保每句都有清楚的意思。' : item.writingTask ? '這是自我檢查寫作題；系統只會確認已達最低字數，並不會自動評核內容質素。' : '輸入完整英文句子。留意大寫字母、主語、動詞和句號。'}</p></section>` : '';

@@ -4,7 +4,7 @@ const vm = require('vm');
 const ctx = { window: {}, console };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
-for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 'primary-curriculum-coverage-extension.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js', 's1-core-path.js', 's2-experiences-and-choices.js', 's2-messages-and-media.js', 's2-community-and-environment.js']) {
+for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 'primary-curriculum-coverage-extension.js', 'p5-p6-s1-interview-extension.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js', 's1-core-path.js', 's2-experiences-and-choices.js', 's2-messages-and-media.js', 's2-community-and-environment.js']) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: file });
 }
 
@@ -51,6 +51,23 @@ for (const grade of grades) {
   expect((primaryStudios?.[grade] || []).every((task) => task.id && task.title && task.titleZh && task.prompt && task.promptZh && task.target && Number.isInteger(task.minWords) && Array.isArray(task.plan) && task.plan.length === 4 && task.selfCheck), `P${grade}: writing studio tasks require bilingual prompt, target, four-step plan and self-check`);
 }
 expect(new Set(Object.values(primaryStudios || {}).flat().map((task) => task.id)).size === 12, 'Primary writing studio task IDs must be unique');
+
+const p5P6Interview = ctx.window.P5_P6_GRAMMAR_INTERVIEW;
+expect(p5P6Interview?.grammar && p5P6Interview?.listening && p5P6Interview?.speaking, 'P5–P6 grammar and S1 Interview extension is missing');
+for (const grade of [5, 6]) {
+  const grammarItems = p5P6Interview?.grammar?.[grade] || [];
+  const listeningItems = p5P6Interview?.listening?.[grade] || [];
+  const speakingItems = p5P6Interview?.speaking?.[grade] || [];
+  expect(grammarItems.length >= 10, `P${grade}: needs at least 10 added present-perfect or complex-sentence grammar questions`);
+  expect(grammarItems.every((item) => item.id && item.prompt && item.promptZh && Array.isArray(item.options) && item.options.length === 4 && Number.isInteger(item.answer) && item.answer >= 0 && item.answer < 4 && item.explanation && item.explanationZh && item.hint), `P${grade}: added grammar items require bilingual prompts, four options and a valid answer`);
+  expect(new Set(grammarItems.map((item) => item.id)).size === grammarItems.length, `P${grade}: added grammar IDs must be unique`);
+  expect(listeningItems.length === 2 && listeningItems.every((item) => item.id && item.title && item.titleZh && item.script && item.questions?.length === 2), `P${grade}: S1 Interview listening needs two original scripts with two checks each`);
+  expect(listeningItems.flatMap((script) => script.questions).every((item) => item.prompt && item.promptZh && Array.isArray(item.options) && item.options.length === 4 && Number.isInteger(item.answer) && item.answer >= 0 && item.answer < 4 && item.explanation && item.explanationZh), `P${grade}: S1 Interview listening checks require bilingual prompts and valid options`);
+  expect(speakingItems.length === 2 && speakingItems.every((item) => item.id && item.title && item.titleZh && item.duration && item.prompt && item.promptZh && item.model && Array.isArray(item.frames) && item.frames.length === 4 && Array.isArray(item.language) && item.language.length >= 4 && item.selfCheck), `P${grade}: S1 Interview speaking needs two bilingual four-step self-check tasks`);
+}
+const p5P6GrammarIds = [5, 6].flatMap((grade) => (p5P6Interview?.grammar?.[grade] || []).map((item) => item.id));
+expect(new Set(p5P6GrammarIds).size === p5P6GrammarIds.length, 'P5–P6 added grammar IDs must be unique across both grades');
+expect(new Set([5, 6].flatMap((grade) => [...(p5P6Interview?.listening?.[grade] || []), ...(p5P6Interview?.speaking?.[grade] || [])].map((item) => item.id))).size === 8, 'S1 Interview task IDs must be unique across P5 and P6');
 
 const juniorRewards = ctx.window.JUNIOR_REWARDS;
 expect(juniorRewards?.points?.correct === 10 && juniorRewards?.points?.attempt === 3, 'Junior reward points should grant 10 stars for correct answers and 3 stars for attempts');
@@ -244,6 +261,8 @@ info.push(`Writing models checked: ${models.length}`);
 info.push(`Writing quiz items checked: ${models.reduce((sum, model) => sum + (ctx.window.WRITING_ERROR_QUIZZES?.[model.id]?.length || 0), 0)}`);
 info.push(`Pre-S1 mock items checked: ${preS1?.questions?.length || 0}`);
 info.push(`Pre-S1 revision items checked: ${(preS1Guide?.vocabulary || []).flatMap((group) => group.items || []).length + (preS1Guide?.grammar || []).length}`);
+info.push(`P5–P6 added grammar items checked: ${[5, 6].reduce((sum, grade) => sum + (p5P6Interview?.grammar?.[grade]?.length || 0), 0)}`);
+info.push(`S1 Interview listening and speaking tasks checked: ${[5, 6].reduce((sum, grade) => sum + (p5P6Interview?.listening?.[grade]?.length || 0) + (p5P6Interview?.speaking?.[grade]?.length || 0), 0)}`);
 info.push(`S1 Core items checked: ${s1CoreGrammar.length + s1CoreVocabulary.length + s1CoreReading.length + s1CoreListening.flatMap((script) => script.questions).length + s1CoreWriting.length + s1CoreSpeaking.length}`);
 info.push(`S2 Develop items checked: ${s2Grammar.length + s2Vocabulary.length + s2ReadingQuestions.length + s2Listening.flatMap((script) => script.questions).length + s2Writing.length + s2Speaking.length}`);
 info.push(`S2 Connect items checked: ${s2ConnectGrammar.length + s2ConnectVocabulary.length + s2ConnectReadingQuestions.length + s2ConnectListening.flatMap((script) => script.questions).length + s2ConnectWriting.length + s2ConnectSpeaking.length}`);
