@@ -4,7 +4,7 @@ const vm = require('vm');
 const ctx = { window: {}, console };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
-for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 'primary-curriculum-coverage-extension.js', 'p5-p6-s1-interview-extension.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js', 's1-core-path.js', 's2-experiences-and-choices.js', 's2-messages-and-media.js', 's2-community-and-environment.js']) {
+for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 'primary-curriculum-coverage-extension.js', 'p5-p6-s1-interview-extension.js', 'p1-p4-grammar-focus-extension.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js', 's1-core-path.js', 's2-experiences-and-choices.js', 's2-messages-and-media.js', 's2-community-and-environment.js']) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: file });
 }
 
@@ -67,6 +67,15 @@ for (const grade of [5, 6]) {
 }
 const p5P6GrammarIds = [5, 6].flatMap((grade) => (p5P6Interview?.grammar?.[grade] || []).map((item) => item.id));
 expect(new Set(p5P6GrammarIds).size === p5P6GrammarIds.length, 'P5–P6 added grammar IDs must be unique across both grades');
+
+const p1P4GrammarFocus = ctx.window.P1_P4_GRAMMAR_FOCUS;
+expect(p1P4GrammarFocus, 'P1–P4 grammar-focus extension is missing');
+for (const grade of [1, 2, 3, 4]) {
+  const items = p1P4GrammarFocus?.[grade] || [];
+  expect(items.length === 8, `P${grade}: grammar-focus extension needs eight added questions`);
+  expect(items.every((item) => Array.isArray(item) && item.length >= 5 && item[0] && Array.isArray(item[1]) && item[1].length === 4 && item[2] && item[3] && item[4]), `P${grade}: grammar-focus questions require bilingual prompts, four options and an explanation`);
+  expect((ctx.window.QUESTION_BANK_EXPANSION?.grammar?.[grade] || []).length >= 12, `P${grade}: combined grammar bank needs at least twelve coverage-extension checks`);
+}
 expect(new Set([5, 6].flatMap((grade) => [...(p5P6Interview?.listening?.[grade] || []), ...(p5P6Interview?.speaking?.[grade] || [])].map((item) => item.id))).size === 8, 'S1 Interview task IDs must be unique across P5 and P6');
 
 const juniorRewards = ctx.window.JUNIOR_REWARDS;
@@ -262,6 +271,7 @@ info.push(`Writing quiz items checked: ${models.reduce((sum, model) => sum + (ct
 info.push(`Pre-S1 mock items checked: ${preS1?.questions?.length || 0}`);
 info.push(`Pre-S1 revision items checked: ${(preS1Guide?.vocabulary || []).flatMap((group) => group.items || []).length + (preS1Guide?.grammar || []).length}`);
 info.push(`P5–P6 added grammar items checked: ${[5, 6].reduce((sum, grade) => sum + (p5P6Interview?.grammar?.[grade]?.length || 0), 0)}`);
+info.push(`P1–P4 grammar-focus items checked: ${[1, 2, 3, 4].reduce((sum, grade) => sum + (p1P4GrammarFocus?.[grade]?.length || 0), 0)}`);
 info.push(`S1 Interview listening and speaking tasks checked: ${[5, 6].reduce((sum, grade) => sum + (p5P6Interview?.listening?.[grade]?.length || 0) + (p5P6Interview?.speaking?.[grade]?.length || 0), 0)}`);
 info.push(`S1 Core items checked: ${s1CoreGrammar.length + s1CoreVocabulary.length + s1CoreReading.length + s1CoreListening.flatMap((script) => script.questions).length + s1CoreWriting.length + s1CoreSpeaking.length}`);
 info.push(`S2 Develop items checked: ${s2Grammar.length + s2Vocabulary.length + s2ReadingQuestions.length + s2Listening.flatMap((script) => script.questions).length + s2Writing.length + s2Speaking.length}`);

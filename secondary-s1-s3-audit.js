@@ -23,7 +23,7 @@ const checks = [
   { file:'s1-s2-grammar-writing-extension.js', key:'S2_GENRE_WRITING', min:{ advancedWriting:2 } },
   { file:'s3-integrated-listen-speak.js', key:'S3_DSE_INTEGRATED', min:{ integrated:8, advancedWriting:1, simulations:2 } },
   { file:'s1-s3-grammar-quest-bank.js', key:'S1_S3_GRAMMAR_EXPANSION', min:{ passiveGames:12, conditionalGames:12, s1Grammar:24, s2Grammar:18, s3Grammar:30, s3DseAnalysis:30 } },
-  { file:'s1-s3-curriculum-practice.js', key:'S1_S3_CURRICULUM_PRACTICE', min:{ s1CurrGrammar:24, s1CurrReading:20, s1CurrWriting:2, s2CurrGrammar:24, s2CurrReading:20, s2CurrWriting:2, s3LexicalLogic:28, s3SentenceRebuild:23, s3CurrReading:20, s3CurrWriting:2 } }
+  { file:'s1-s3-curriculum-practice.js', key:'S1_S3_CURRICULUM_PRACTICE', min:{ s1CurrGrammar:24, s1CurrReading:28, s1CurrWriting:3, s2CurrGrammar:24, s2CurrReading:28, s2CurrWriting:3, s3LexicalLogic:28, s3SentenceRebuild:23, s3CurrReading:28, s3CurrWriting:3 } }
 ];
 
 function load(file, key) {
@@ -33,6 +33,7 @@ function load(file, key) {
   if (key === 'S1_S3_CURRICULUM_PRACTICE') {
     vm.runInContext(fs.readFileSync('s1-s3-framework-extension-2.js', 'utf8'), context, { filename:'s1-s3-framework-extension-2.js' });
     vm.runInContext(fs.readFileSync('s1-s3-paper3-bridge-extension.js', 'utf8'), context, { filename:'s1-s3-paper3-bridge-extension.js' });
+    vm.runInContext(fs.readFileSync('s1-s3-advanced-reading-writing-extension.js', 'utf8'), context, { filename:'s1-s3-advanced-reading-writing-extension.js' });
   }
   return context.window[key];
 }
@@ -64,6 +65,14 @@ const report = checks.map(({ file, key, min }) => {
     s3CurrReading: count(data.s3Reading), s3CurrWriting: count(data.s3Writing)
   };
   Object.entries(min).forEach(([skill, target]) => { if (counts[skill] < target) failures.push(`${key}: ${skill} ${counts[skill]} < ${target}`); });
+  if (key === 'S1_S3_CURRICULUM_PRACTICE') {
+    for (const [stage, readingBank, writingBank] of [['S1', data.s1Reading, data.s1Writing], ['S2', data.s2Reading, data.s2Writing], ['S3', data.s3Reading, data.s3Writing]]) {
+      const readingQuestions = readingBank?.questions || [];
+      const writingTasks = writingBank || [];
+      if (!readingQuestions.every((item) => Array.isArray(item) && item.length >= 10 && item[0] && item[1] && item[2] && item[3] && item[4] && Array.isArray(item[5]) && item[5].length === 4 && Number.isInteger(item[6]) && item[6] >= 0 && item[6] < 4 && item[7] && item[8] && item[9])) failures.push(`${stage}: curriculum reading requires bilingual prompts, four options and explanations`);
+      if (!writingTasks.every((item) => item.id && item.level === 'advanced' && item.title && item.titleZh && Number.isInteger(item.minWords) && item.prompt && item.promptZh && Array.isArray(item.sourcePack) && item.sourcePack.length >= 2 && Array.isArray(item.paragraphMap) && item.paragraphMap.length === 4 && Array.isArray(item.languageBank) && item.languageBank.length >= 4 && item.model && item.selfCheck)) failures.push(`${stage}: curriculum advanced writing requires a bilingual scaffold, source pack, model and self-check`);
+    }
+  }
   return { key, counts };
 });
 console.log(JSON.stringify({ status:failures.length ? 'failed' : 'passed', report, failures }, null, 2));

@@ -10,6 +10,7 @@ vm.runInContext(fs.readFileSync('s2-micro-missions.js', 'utf8'), context, { file
 vm.runInContext(fs.readFileSync('s1-s3-curriculum-practice.js', 'utf8'), context, { filename:'s1-s3-curriculum-practice.js' });
 vm.runInContext(fs.readFileSync('s1-s3-framework-extension-2.js', 'utf8'), context, { filename:'s1-s3-framework-extension-2.js' });
 vm.runInContext(fs.readFileSync('s1-s3-paper3-bridge-extension.js', 'utf8'), context, { filename:'s1-s3-paper3-bridge-extension.js' });
+vm.runInContext(fs.readFileSync('s1-s3-advanced-reading-writing-extension.js', 'utf8'), context, { filename:'s1-s3-advanced-reading-writing-extension.js' });
 
 const stages = ['s1-bridge', 's1-core', 's1-extend', 's2-develop', 's2-connect', 's2-action', 's2-consolidate', 's3-ready'];
 const routes = ['read', 'write', 'listen', 'language'];
@@ -31,6 +32,7 @@ if (!index.includes('s2-micro-missions.js')) failures.push('S2 micro-mission dat
 if (!index.includes('s1-s3-curriculum-practice.js')) failures.push('curriculum framework data file is not loaded');
 if (!index.includes('s1-s3-framework-extension-2.js')) failures.push('second curriculum framework extension is not loaded');
 if (!index.includes('s1-s3-paper3-bridge-extension.js')) failures.push('Paper 3 bridge question-bank extension is not loaded');
+if (!index.includes('s1-s3-advanced-reading-writing-extension.js')) failures.push('advanced reading and writing extension is not loaded');
 if (!alignment.includes('HKEAA endorsement')) failures.push('alignment report missing scope boundary');
 if (!alignment.includes('## References')) failures.push('alignment report missing official source references');
 
@@ -55,10 +57,14 @@ const curriculumCounts = {
   s3Reading: curriculum.s3Reading?.questions?.length || 0,
   s3Writing: curriculum.s3Writing?.length || 0
 };
-const curriculumMinimums = { s1Grammar:24, s1Reading:20, s1Writing:2, s2Grammar:24, s2Reading:20, s2Writing:2, s3LexicalLogic:28, s3SentenceRebuild:23, s3Reading:20, s3Writing:2 };
+const curriculumMinimums = { s1Grammar:24, s1Reading:28, s1Writing:3, s2Grammar:24, s2Reading:28, s2Writing:3, s3LexicalLogic:28, s3SentenceRebuild:23, s3Reading:28, s3Writing:3 };
 Object.entries(curriculumMinimums).forEach(([key, minimum]) => { if (curriculumCounts[key] < minimum) failures.push(`curriculum framework: ${key} ${curriculumCounts[key]} < ${minimum}`); });
 if (!secondary.includes("id:'s3-sentence-rebuild'")) failures.push('S3: missing sentence rebuild module route');
 if (!secondary.includes('data-check-reorder')) failures.push('S3: missing interactive sentence rebuild check control');
+for (const [stage, reading, writing] of [['S1', curriculum.s1Reading?.questions || [], curriculum.s1Writing || []], ['S2', curriculum.s2Reading?.questions || [], curriculum.s2Writing || []], ['S3', curriculum.s3Reading?.questions || [], curriculum.s3Writing || []]]) {
+  if (!reading.every((item) => Array.isArray(item) && item.length >= 10 && Array.isArray(item[5]) && item[5].length === 4 && Number.isInteger(item[6]) && item[6] >= 0 && item[6] < 4 && item[3] && item[4] && item[7] && item[8])) failures.push(`${stage}: reading bank contains an incomplete bilingual objective item`);
+  if (!writing.every((item) => item.id && item.level === 'advanced' && item.title && item.titleZh && item.prompt && item.promptZh && Number.isInteger(item.minWords) && Array.isArray(item.sourcePack) && item.sourcePack.length >= 2 && Array.isArray(item.paragraphMap) && item.paragraphMap.length === 4 && Array.isArray(item.languageBank) && item.languageBank.length >= 4 && item.model && item.selfCheck)) failures.push(`${stage}: writing bank contains an incomplete advanced scaffold`);
+}
 
 console.log(JSON.stringify({
   status: failures.length ? 'failed' : 'passed',
