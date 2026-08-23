@@ -47,3 +47,23 @@ Students can use the three levels in sequence. S4 prioritises accurate control a
 | **S6 Respond** | Policy opinion article: transparent evidence, two argument dimensions, counterargument/rebuttal and bounded conclusion. | Youth Wellbeing Policy: reach a conditional first-stage decision under resource limits. | Transparent Data Dashboard: explain a single-number limit and respond to the complexity concern. |
 
 > **Paper 2 boundary.** The self-review records are planning and revision prompts only. They do not create an official Paper 2 mark, level, grade or best-fit judgement. This boundary reflects the HKEAA explanation that examination marking uses task-sensitive guidelines and professional best-fit judgement across domains.[4]
+
+## Fourth extension — Paper 3 listening and integrated skills
+
+| Stage | Original Paper 3 skills lab | Data handling and note-abbreviation focus | Integrated-response planning focus |
+|---|---|---|---|
+| S4 Build | Community Reading Pop-up | Event logistics, materials, action/deadline notes and source distinction. | Volunteer reminder using listening input plus three original sources; careful wording for a possible follow-up session. |
+| S5 Analyse | Shared Study Space Proposal | Schedule, attendance pattern, trial revision, deadline and staffing constraint. | Source-based recommendation balancing student need, feasibility and a fair feedback process. |
+| S6 Respond | Youth Services Information Campaign | Aim, evidence limitation, information fields, checking roles and update/review procedure. | Editorial proposal integrating cautious evidence, trustworthy service information and accountability procedures. |
+
+Every Paper 3 skills lab includes an original replayable listening input, three original written sources, six objective note-abbreviation checks, local-only source-selection/self-review records and a browser-local response-planning field. It does **not** reproduce official papers, recordings, data files, time conditions, marking schemes, grades or score predictions.
+
+## Cross-stage question-bank extension — data processing bridge
+
+| Stage | Added question-bank emphasis | Added items |
+|---|---|---:|
+| S1 | Scanning a school notice, identifying a key detail, compact time notes and basic instruction grammar. | 4 grammar + 4 reading |
+| S2 | Comparing short sources, separating evidence from conditions, practical trial recommendations and cautious language. | 4 grammar + 4 reading |
+| S3 | Evidence limitation, accountability, cross-source evaluation, formal source-based sentence rebuilding. | 4 logic/grammar + 4 reading + 3 sentence rebuilds |
+
+The additions are original lower-secondary bridge practice. They improve the data-selection and note-making pathway towards senior integrated skills without representing official DSE materials or outcomes.

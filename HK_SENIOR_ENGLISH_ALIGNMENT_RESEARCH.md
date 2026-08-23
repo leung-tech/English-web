@@ -32,3 +32,11 @@ The HKEAA English Language FAQ states that Paper 2 marking guidelines form the b
 Accordingly, the Senior English Studio Paper 2 tool provides **original self-review prompts** on task fulfilment, organisation, language control and revision. It does not generate an official mark, level, grade or claim to apply the HKEAA best-fit judgement. Its Group Interaction and Individual Response simulations are likewise original practice prompts with self-review rubrics, not official examination speaking tasks or assessment results.
 
 [4] [HKEAA — FAQs on English Language: Paper 2 (Writing)](https://www.hkeaa.edu.hk/en/hkdse/assessment/subject_information/category_a_subjects/eng_lang/faq_q/q4.html)
+
+## Paper 3 listening and integrated-skills boundary — 2026 update
+
+The HKEAA English Language FAQ identifies Paper 3 as **Listening and Integrated Skills** and states that the whole paper is approximately two hours, with one hour and fifteen minutes allowed to complete Part B after the listening input ends.[5] It describes the word guide as support for task requirements, organisation and time management rather than a stand-alone score.[5]
+
+The Senior English Studio therefore adds original listening replay, data-file comparison, note-abbreviation and response-planning practice. The website does **not** reproduce official data files, recordings, task papers or marking materials, and does not simulate official timing, marks, levels or grades.
+
+[5] [HKEAA — FAQs on English Language: Paper 3 (Listening and Integrated Skills)](https://www.hkeaa.edu.hk/en/hkdse/assessment/subject_information/category_a_subjects/eng_lang/faq_q/q5.html)

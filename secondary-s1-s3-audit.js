@@ -23,7 +23,7 @@ const checks = [
   { file:'s1-s2-grammar-writing-extension.js', key:'S2_GENRE_WRITING', min:{ advancedWriting:2 } },
   { file:'s3-integrated-listen-speak.js', key:'S3_DSE_INTEGRATED', min:{ integrated:8, advancedWriting:1, simulations:2 } },
   { file:'s1-s3-grammar-quest-bank.js', key:'S1_S3_GRAMMAR_EXPANSION', min:{ passiveGames:12, conditionalGames:12, s1Grammar:24, s2Grammar:18, s3Grammar:30, s3DseAnalysis:30 } },
-  { file:'s1-s3-curriculum-practice.js', key:'S1_S3_CURRICULUM_PRACTICE', min:{ s1CurrGrammar:20, s1CurrReading:16, s1CurrWriting:2, s2CurrGrammar:20, s2CurrReading:16, s2CurrWriting:2, s3LexicalLogic:24, s3SentenceRebuild:20, s3CurrReading:16, s3CurrWriting:2 } }
+  { file:'s1-s3-curriculum-practice.js', key:'S1_S3_CURRICULUM_PRACTICE', min:{ s1CurrGrammar:24, s1CurrReading:20, s1CurrWriting:2, s2CurrGrammar:24, s2CurrReading:20, s2CurrWriting:2, s3LexicalLogic:28, s3SentenceRebuild:23, s3CurrReading:20, s3CurrWriting:2 } }
 ];
 
 function load(file, key) {
@@ -32,6 +32,7 @@ function load(file, key) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), context, { filename:file });
   if (key === 'S1_S3_CURRICULUM_PRACTICE') {
     vm.runInContext(fs.readFileSync('s1-s3-framework-extension-2.js', 'utf8'), context, { filename:'s1-s3-framework-extension-2.js' });
+    vm.runInContext(fs.readFileSync('s1-s3-paper3-bridge-extension.js', 'utf8'), context, { filename:'s1-s3-paper3-bridge-extension.js' });
   }
   return context.window[key];
 }
