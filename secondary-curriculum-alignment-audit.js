@@ -8,6 +8,7 @@ const context = { window: {} };
 vm.createContext(context);
 vm.runInContext(fs.readFileSync('s2-micro-missions.js', 'utf8'), context, { filename:'s2-micro-missions.js' });
 vm.runInContext(fs.readFileSync('s1-s3-curriculum-practice.js', 'utf8'), context, { filename:'s1-s3-curriculum-practice.js' });
+vm.runInContext(fs.readFileSync('s1-s3-framework-extension-2.js', 'utf8'), context, { filename:'s1-s3-framework-extension-2.js' });
 
 const stages = ['s1-bridge', 's1-core', 's1-extend', 's2-develop', 's2-connect', 's2-action', 's2-consolidate', 's3-ready'];
 const routes = ['read', 'write', 'listen', 'language'];
@@ -27,6 +28,7 @@ if (!secondary.includes('Original preparation only—not an official HKDSE paper
 }
 if (!index.includes('s2-micro-missions.js')) failures.push('S2 micro-mission data file is not loaded');
 if (!index.includes('s1-s3-curriculum-practice.js')) failures.push('curriculum framework data file is not loaded');
+if (!index.includes('s1-s3-framework-extension-2.js')) failures.push('second curriculum framework extension is not loaded');
 if (!alignment.includes('HKEAA endorsement')) failures.push('alignment report missing scope boundary');
 if (!alignment.includes('## References')) failures.push('alignment report missing official source references');
 
@@ -51,7 +53,7 @@ const curriculumCounts = {
   s3Reading: curriculum.s3Reading?.questions?.length || 0,
   s3Writing: curriculum.s3Writing?.length || 0
 };
-const curriculumMinimums = { s1Grammar:12, s1Reading:8, s1Writing:1, s2Grammar:12, s2Reading:8, s2Writing:1, s3LexicalLogic:12, s3SentenceRebuild:15, s3Reading:8, s3Writing:1 };
+const curriculumMinimums = { s1Grammar:20, s1Reading:16, s1Writing:2, s2Grammar:20, s2Reading:16, s2Writing:2, s3LexicalLogic:24, s3SentenceRebuild:20, s3Reading:16, s3Writing:2 };
 Object.entries(curriculumMinimums).forEach(([key, minimum]) => { if (curriculumCounts[key] < minimum) failures.push(`curriculum framework: ${key} ${curriculumCounts[key]} < ${minimum}`); });
 if (!secondary.includes("id:'s3-sentence-rebuild'")) failures.push('S3: missing sentence rebuild module route');
 if (!secondary.includes('data-check-reorder')) failures.push('S3: missing interactive sentence rebuild check control');
