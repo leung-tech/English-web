@@ -297,6 +297,7 @@
         </div>
         <aside class="hero-notice"><strong>${escape(activeStage.code)}</strong><p>${escape(activeStage.title)}<br><span class="zh">${escape(activeStage.titleZh)}</span></p><span class="notice-tag">ORIGINAL PRACTICE · 原創練習</span></aside>
       </section>
+      <section class="start-guide" aria-label="首次使用指引"><header><strong>Start in 4 steps · 四步開始</strong><span>Follow the numbered controls below. · 跟著下方的編號選項練習。</span></header><div class="guide-steps"><div class="guide-step"><b>1</b><span><strong>Choose a stage</strong><small>選擇 S1、S2 或 S3 的學習階段。</small></span></div><div class="guide-step"><b>2</b><span><strong>Choose a skill</strong><small>選閱讀、寫作、聽說或語言運用。</small></span></div><div class="guide-step"><b>3</b><span><strong>Choose a module</strong><small>選一個主題，題目會在右方出現。</small></span></div><div class="guide-step"><b>4</b><span><strong>Answer, check, next</strong><small>完成客觀題後查看即時回饋，再做下一題。</small></span></div></div></section>
       <section class="workspace">
         <aside class="rail">
           <section><p class="eyebrow">YOUR PROGRESS · 學習進度</p><h2>${record.completed} tasks</h2><p>Local to this browser only.<br>只儲存在此瀏覽器。</p><div class="mini-progress"><i style="width:${Math.min(100, record.completed * 3)}%"></i></div><div class="skill-progress">${stageProgress.map((item) => `<span><b>${item.label}</b>${item.count} ${escape(item.zh)}</span>`).join('')}</div></section>
