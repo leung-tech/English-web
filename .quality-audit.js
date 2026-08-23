@@ -4,7 +4,7 @@ const vm = require('vm');
 const ctx = { window: {}, console };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
-for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js', 's1-core-path.js', 's2-experiences-and-choices.js', 's2-messages-and-media.js', 's2-community-and-environment.js']) {
+for (const file of ['english-scope.js', 'junior-rewards.js', 'writing-models.js', 'pre-s1-writing-model.js', 'senior-oral-listening.js', 'listening-speaking-extension.js', 'junior-senior-extension.js', 'question-bank-expansion.js', 'hong-kong-learning-cycles.js', 'junior-pre-s1-expansion.js', 'pre-s1-review-guide.js', 'primary-curriculum-coverage-extension.js', 's1-bridge-school-routines.js', 's1-bridge-reading-vocab-listening.js', 's1-core-path.js', 's2-experiences-and-choices.js', 's2-messages-and-media.js', 's2-community-and-environment.js']) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: file });
 }
 
@@ -35,6 +35,22 @@ for (const grade of grades) {
     expect((ctx.window.QUESTION_BANK_EXPANSION?.advancedReading?.[grade] || []).length >= 2, `P${grade}: fewer than 2 added advanced reading articles`);
   }
 }
+
+const primaryCoverage = ctx.window.PRIMARY_CURRICULUM_COVERAGE;
+const primaryStudios = ctx.window.PRIMARY_CURRICULUM_STUDIOS;
+expect(primaryCoverage && primaryStudios, 'Primary curriculum coverage extension is missing');
+for (const grade of grades) {
+  expect((primaryCoverage?.words?.[grade] || []).length >= 12, `P${grade}: curriculum coverage needs 12 targeted vocabulary items`);
+  expect((primaryCoverage?.grammar?.[grade] || []).length >= 4, `P${grade}: curriculum coverage needs 4 targeted grammar checks`);
+  expect((primaryCoverage?.reading?.[grade] || []).length >= 3, `P${grade}: curriculum coverage needs 3 targeted reading texts`);
+  expect((primaryCoverage?.reading?.[grade] || []).every((text) => text.title && text.text && Array.isArray(text.questions) && text.questions.length === 2 && text.questions.every((item) => Array.isArray(item) && item.length >= 5 && Array.isArray(item[1]) && item[1].length === 4)), `P${grade}: curriculum reading texts require two valid bilingual questions`);
+  expect((primaryCoverage?.sentences?.[grade] || []).length >= 3, `P${grade}: curriculum coverage needs 3 sentence-building prompts`);
+  expect((primaryCoverage?.proofreading?.[grade] || []).length >= 3, `P${grade}: curriculum coverage needs 3 proofreading pairs`);
+  expect((primaryCoverage?.writing?.[grade] || []).length >= 3, `P${grade}: curriculum coverage needs 3 writing prompts`);
+  expect((primaryStudios?.[grade] || []).length === 2, `P${grade}: writing skills studio needs 2 guided tasks`);
+  expect((primaryStudios?.[grade] || []).every((task) => task.id && task.title && task.titleZh && task.prompt && task.promptZh && task.target && Number.isInteger(task.minWords) && Array.isArray(task.plan) && task.plan.length === 4 && task.selfCheck), `P${grade}: writing studio tasks require bilingual prompt, target, four-step plan and self-check`);
+}
+expect(new Set(Object.values(primaryStudios || {}).flat().map((task) => task.id)).size === 12, 'Primary writing studio task IDs must be unique');
 
 const juniorRewards = ctx.window.JUNIOR_REWARDS;
 expect(juniorRewards?.points?.correct === 10 && juniorRewards?.points?.attempt === 3, 'Junior reward points should grant 10 stars for correct answers and 3 stars for attempts');

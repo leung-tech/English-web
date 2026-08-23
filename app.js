@@ -81,6 +81,7 @@
         { id: 'sentence-builder', symbol: 'S', title: 'Sentence builder', titleZh: '句子重組', description: 'Make a sentence', descriptionZh: '組成完整句子', sessions: 8 },
         { id: 'proofreading', symbol: 'E', title: 'Proofreading', titleZh: '改錯練習', description: 'Find the mistake', descriptionZh: '找出錯誤', sessions: 8 },
         { id: 'writing-plan', symbol: 'P', title: 'Writing planner', titleZh: '寫作構思', description: 'Plan your writing', descriptionZh: '規劃你的寫作', sessions: 6 },
+        { id: 'primary-writing-studio', symbol: '✎', title: 'Writing skills studio', titleZh: '分級寫作工作坊', description: 'Picture, paragraph and genre scaffolds', descriptionZh: '看圖、段落與文體寫作鷹架', sessions: 2 },
         { id: 'writing-models', symbol: '★', title: 'High-score models', titleZh: '呈分試高分範文', description: 'P4–P6 model writing and scoring points', descriptionZh: '小四至小六範文與評分要點', sessions: 0, minGrade: 4, assessment: true },
       ]
     },
@@ -757,6 +758,19 @@
     return expanded('writing', writingPrompts[state.grade]).map((prompt, index) => question(`writing-plan-${state.grade}-${index}`, 'write', 'Writing planner', prompt, 'self-check', 'Well done. A first draft is the beginning of good writing. Read your sentences aloud and check that each one has a subject, a verb and a full stop.', null, { writing: true, multiline: true, selfCheck: 'I have written my first draft and checked it once.', hint: 'Use the prompt as your first idea. Add a detail, a reason or a time word to make your writing clearer.' }));
   }
 
+  function createPrimaryWritingStudio() {
+    const tasks = (window.PRIMARY_CURRICULUM_STUDIOS || {})[state.grade] || [];
+    return tasks.map((item) => question(item.id, 'write', `Writing skills studio · ${item.title}`, item.prompt, 'draft', 'Your draft is stored only in this browser. Use the plan and self-check to improve one detail at a time; this activity does not provide an automated writing-quality score.', null, {
+      promptZh: item.promptZh,
+      writing: true,
+      multiline: true,
+      writingTask: { target: item.target, minWords: item.minWords, plan: [...item.plan, ['Self-check · 自我檢查', item.selfCheck]] },
+      studioSelfCheck: item.selfCheck,
+      originalPractice: true,
+      hint: 'Follow the steps in order. Before you finish, check purpose, sentence structure, punctuation and one useful linking or detail word. 依次完成步驟；完成前檢查目的、句子結構、標點及一個有用的連接詞或細節詞。'
+    }));
+  }
+
   function createListening() {
     const seniorScripts = (window.SENIOR_LISTENING_LIBRARY || {})[state.grade];
     if (seniorScripts) {
@@ -869,6 +883,7 @@
     if (state.module === 'sentence-builder') return createSentenceBuilder();
     if (state.module === 'proofreading') return createProofreading();
     if (state.module === 'writing-plan') return createWritingPlan();
+    if (state.module === 'primary-writing-studio') return createPrimaryWritingStudio();
     if (state.module === 'listening') return createListening();
     if (state.module === 'speaking') return createSpeaking();
     if (state.module === 'listening-vocab') return createListeningFlashcards();
