@@ -27,3 +27,13 @@ Students can use the three levels in sequence. S4 prioritises accurate control a
 [2] [Hong Kong Examinations and Assessment Authority — English Language Curriculum and Assessment Guide (Secondary 4–6)](https://www.hkeaa.edu.hk/en/hkdse/assessment/subject_information/category_a_subjects/hkdse_subj.html?A1&1&2_2)
 
 [3] [Hong Kong Examinations and Assessment Authority — Assessment Frameworks](https://www.hkeaa.edu.hk/en/hkdse/assessment/assessment_framework/)
+
+## Second extension — four-skills practice and writing resources
+
+| Senior stage | Listening and oral practice | Extended reading | Writing-resource expansion |
+|---|---|---|---|
+| **S4 Build** | Six replayable questions on a balanced study-break exchange, followed by a 75–90-second class-forum oral response. | Four original commentary questions on clarity, access and summary word form. | A second formal-email scaffold, two student samples, position/evidence/cohesion vocabulary clusters and revision challenges. |
+| **S5 Analyse** | Six replayable questions on a cautious later-opening library trial, followed by a 90–105-second committee recommendation. | Four original evaluation questions on inclusive consultation and word form. | A second feature-article scaffold, two student samples, objective-reporting/recommendation/academic-linkage vocabulary clusters and revision challenges. |
+| **S6 Respond** | Six replayable questions on a public hearing about a clean-air corridor, followed by a 105–120-second evidence-evaluation response. | Four original source-comparison questions on transparency, contextual interpretation and academic word form. | A second formal-proposal scaffold, two student samples, argument/rebuttal/sophisticated-control vocabulary clusters and revision challenges. |
+
+> **Interaction boundary.** Listening playback uses the browser’s speech function for the original scripts. Objective listening and reading items receive immediate feedback. Oral plans and writing drafts are stored in the current browser only; the site does not claim to automatically judge speaking or writing quality.
