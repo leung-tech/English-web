@@ -37,3 +37,13 @@ Students can use the three levels in sequence. S4 prioritises accurate control a
 | **S6 Respond** | Six replayable questions on a public hearing about a clean-air corridor, followed by a 105–120-second evidence-evaluation response. | Four original source-comparison questions on transparency, contextual interpretation and academic word form. | A second formal-proposal scaffold, two student samples, argument/rebuttal/sophisticated-control vocabulary clusters and revision challenges. |
 
 > **Interaction boundary.** Listening playback uses the browser’s speech function for the original scripts. Objective listening and reading items receive immediate feedback. Oral plans and writing drafts are stored in the current browser only; the site does not claim to automatically judge speaking or writing quality.
+
+## Third extension — Paper 2 guidance and expanded oral practice
+
+| Senior stage | Paper 2 self-review tool | Group Interaction additions | Individual Response additions |
+|---|---|---|---|
+| **S4 Build** | Formal reading-partnership email: planning, four-part structure map, annotated original model, six self-review prompts and targeted revision moves. | Sustainable School Festival: negotiate waste-reduction actions and a review method. | Volunteer Reading Day: explain purpose, an activity and one hesitation. |
+| **S5 Analyse** | Shared-space feature article: scene-setting, two perspectives, observation limits and reflective close. | Community Heritage Campaign: compare formats using audience, access and evidence criteria. | Later Library Opening: recommend a cautious trial with benefit, concern and review method. |
+| **S6 Respond** | Policy opinion article: transparent evidence, two argument dimensions, counterargument/rebuttal and bounded conclusion. | Youth Wellbeing Policy: reach a conditional first-stage decision under resource limits. | Transparent Data Dashboard: explain a single-number limit and respond to the complexity concern. |
+
+> **Paper 2 boundary.** The self-review records are planning and revision prompts only. They do not create an official Paper 2 mark, level, grade or best-fit judgement. This boundary reflects the HKEAA explanation that examination marking uses task-sensitive guidelines and professional best-fit judgement across domains.[4]

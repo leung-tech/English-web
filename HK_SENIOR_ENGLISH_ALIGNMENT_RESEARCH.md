@@ -24,3 +24,11 @@ The S4–S6 Senior English Studio therefore develops transferable language and l
 1. [Education Bureau — English Language Education: Curriculum Documents](https://www.edb.gov.hk/en/curriculum-development/kla/eng-edu/curriculum-documents.html)
 2. [Hong Kong Examinations and Assessment Authority — English Language Curriculum and Assessment Guide (Secondary 4–6)](https://www.hkeaa.edu.hk/en/hkdse/assessment/subject_information/category_a_subjects/hkdse_subj.html?A1&1&2_2)
 3. [Hong Kong Examinations and Assessment Authority — Assessment Frameworks](https://www.hkeaa.edu.hk/en/hkdse/assessment/assessment_framework/)
+
+## Paper 2 self-review and oral-practice boundary — 2026 update
+
+The HKEAA English Language FAQ states that Paper 2 marking guidelines form the basis for both writing tasks but can be adapted to task requirements; it also explains that examination markers make a **best-fit** judgement across domains and that marking is distinct from final grading.[4] The FAQ further describes word guidance as support for task fulfilment, organisation and time management rather than a standalone quality score.[4]
+
+Accordingly, the Senior English Studio Paper 2 tool provides **original self-review prompts** on task fulfilment, organisation, language control and revision. It does not generate an official mark, level, grade or claim to apply the HKEAA best-fit judgement. Its Group Interaction and Individual Response simulations are likewise original practice prompts with self-review rubrics, not official examination speaking tasks or assessment results.
+
+[4] [HKEAA — FAQs on English Language: Paper 2 (Writing)](https://www.hkeaa.edu.hk/en/hkdse/assessment/subject_information/category_a_subjects/eng_lang/faq_q/q4.html)

@@ -8,18 +8,20 @@ const context = { window: {} };
 vm.createContext(context);
 vm.runInContext(fs.readFileSync('senior/senior-data.js', 'utf8'), context, { filename: 'senior-data.js' });
 vm.runInContext(fs.readFileSync('senior/senior-extension-2.js', 'utf8'), context, { filename: 'senior-extension-2.js' });
+vm.runInContext(fs.readFileSync('senior/senior-extension-3.js', 'utf8'), context, { filename: 'senior-extension-3.js' });
 const data = context.window.SENIOR_ENGLISH_STUDIO || {};
 const failures = [];
 
 if (!index.includes('Original preparation only — not an official HKDSE paper, marking scheme or score prediction.')) failures.push('missing visible non-official HKDSE boundary');
-if (!index.includes('senior-data.js') || !index.includes('senior-extension-2.js') || !index.includes('senior.js')) failures.push('senior assets are not loaded');
+if (!index.includes('senior-data.js') || !index.includes('senior-extension-2.js') || !index.includes('senior-extension-3.js') || !index.includes('senior.js')) failures.push('senior assets are not loaded');
 if (!app.includes('No automated writing-quality score')) failures.push('writing quality boundary is missing');
 if (!app.includes('No automated speaking-quality score')) failures.push('speaking quality boundary is missing');
+if (!app.includes('Guided self-review only')) failures.push('Paper 2 self-review boundary is missing');
 if (!app.includes('speechSynthesis')) failures.push('listening replay support is missing');
 if (!research.includes('## References') || !research.includes('HKEAA')) failures.push('senior alignment research lacks official references');
 if ((data.stages || []).length !== 3) failures.push('expected three S4-S6 stages');
 
-const requirements = { s4:{ grammar:10, reading:12, writing:2, listening:6, oral:1 }, s5:{ grammar:10, reading:12, writing:2, listening:6, oral:1 }, s6:{ grammar:10, reading:12, writing:2, listening:6, oral:1 } };
+const requirements = { s4:{ grammar:10, reading:12, writing:2, paper2:1, listening:6, oral:3 }, s5:{ grammar:10, reading:12, writing:2, paper2:1, listening:6, oral:3 }, s6:{ grammar:10, reading:12, writing:2, paper2:1, listening:6, oral:3 } };
 const report = {};
 Object.entries(requirements).forEach(([stage, minimums]) => {
   report[stage] = {};
@@ -47,8 +49,11 @@ if (!allWriting.every((item) => Array.isArray(item.studentModels) && item.studen
 if (!allWriting.every((item) => (item.vocabularyBank || item.languageBankExtra || []).length >= 1)) failures.push('writing scaffolds are missing vocabulary-bank resources');
 const allListening = (data.modules || []).filter((item) => item.skill === 'listening').flatMap((item) => item.items || []);
 if (!allListening.every((item) => item.audioScript && item.audioScript.length > 80)) failures.push('listening items are missing original replayable scripts');
+const allPaper2 = (data.modules || []).filter((item) => item.skill === 'paper2').flatMap((item) => item.items || []);
+if (!allPaper2.every((item) => item.planningSteps?.length >= 3 && item.structureMap?.length >= 4 && item.annotatedModel?.length >= 4 && item.selfReview?.length >= 6)) failures.push('Paper 2 tools are missing planning, structure, model or self-review guidance');
 const allOral = (data.modules || []).filter((item) => item.skill === 'oral').flatMap((item) => item.items || []);
 if (!allOral.every((item) => item.roleCard && item.rubric && item.selfCheck)) failures.push('oral simulations are missing role card, rubric or self-check');
+['group','individual'].forEach((format) => { if (!allOral.some((item) => item.format === format)) failures.push(`missing oral format: ${format}`); });
 
 console.log(JSON.stringify({ status: failures.length ? 'failed' : 'passed', report, failures }, null, 2));
 process.exitCode = failures.length ? 1 : 0;
