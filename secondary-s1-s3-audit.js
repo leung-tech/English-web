@@ -23,7 +23,7 @@ const checks = [
   { file:'s1-s2-grammar-writing-extension.js', key:'S2_GENRE_WRITING', min:{ advancedWriting:2 } },
   { file:'s3-integrated-listen-speak.js', key:'S3_DSE_INTEGRATED', min:{ integrated:8, advancedWriting:1, simulations:2 } },
   { file:'s1-s3-grammar-quest-bank.js', key:'S1_S3_GRAMMAR_EXPANSION', min:{ passiveGames:12, conditionalGames:12, s1Grammar:24, s2Grammar:18, s3Grammar:30, s3DseAnalysis:30 } },
-  { file:'s1-s3-curriculum-practice.js', key:'S1_S3_CURRICULUM_PRACTICE', min:{ s1CurrGrammar:12, s1CurrReading:8, s1CurrWriting:1, s2CurrGrammar:12, s2CurrReading:8, s2CurrWriting:1, s3LexicalLogic:12, s3SentenceRebuild:10, s3CurrReading:8, s3CurrWriting:1 } }
+  { file:'s1-s3-curriculum-practice.js', key:'S1_S3_CURRICULUM_PRACTICE', min:{ s1CurrGrammar:12, s1CurrReading:8, s1CurrWriting:1, s2CurrGrammar:12, s2CurrReading:8, s2CurrWriting:1, s3LexicalLogic:12, s3SentenceRebuild:15, s3CurrReading:8, s3CurrWriting:1 } }
 ];
 
 function load(file, key) {

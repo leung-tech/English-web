@@ -51,7 +51,7 @@ const curriculumCounts = {
   s3Reading: curriculum.s3Reading?.questions?.length || 0,
   s3Writing: curriculum.s3Writing?.length || 0
 };
-const curriculumMinimums = { s1Grammar:12, s1Reading:8, s1Writing:1, s2Grammar:12, s2Reading:8, s2Writing:1, s3LexicalLogic:12, s3SentenceRebuild:10, s3Reading:8, s3Writing:1 };
+const curriculumMinimums = { s1Grammar:12, s1Reading:8, s1Writing:1, s2Grammar:12, s2Reading:8, s2Writing:1, s3LexicalLogic:12, s3SentenceRebuild:15, s3Reading:8, s3Writing:1 };
 Object.entries(curriculumMinimums).forEach(([key, minimum]) => { if (curriculumCounts[key] < minimum) failures.push(`curriculum framework: ${key} ${curriculumCounts[key]} < ${minimum}`); });
 if (!secondary.includes("id:'s3-sentence-rebuild'")) failures.push('S3: missing sentence rebuild module route');
 if (!secondary.includes('data-check-reorder')) failures.push('S3: missing interactive sentence rebuild check control');
