@@ -28,7 +28,7 @@
     const safeQuestionId = identifier(questionId, `${safeModuleId}-item`);
     if (!/^([PS][1-6])$/.test(normalizedStage) || !allowedSkills.has(normalizedSkill) || !safeModuleId || !safeQuestionId) return;
 
-    const syncToken = sessionStorage.getItem(tokenKey);
+    const syncToken = localStorage.getItem(tokenKey) || sessionStorage.getItem(tokenKey);
     if (!syncToken) return;
     const payload = { syncToken, stage: normalizedStage, skill: normalizedSkill, moduleId: safeModuleId, questionId: safeQuestionId, eventKey: eventKey(), isCorrect: Boolean(isCorrect) };
     fetch(`${portalOrigin}/api/trpc/progress.recordFromPublic?batch=1`, {
@@ -45,11 +45,26 @@
     const url = new URL(window.location.href);
     const token = url.searchParams.get('sync');
     if (!token || !/^[A-Za-z0-9_-]{40,128}$/.test(token)) return;
-    sessionStorage.setItem(tokenKey, token);
+    localStorage.setItem(tokenKey, token);
+    sessionStorage.removeItem(tokenKey);
     url.searchParams.delete('sync');
     history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+    if (window.opener) {
+      window.opener.postMessage({ type: 'english-tuition-browser-connected' }, portalOrigin);
+      window.setTimeout(() => window.close(), 250);
+    }
+  }
+
+  function updateConnectionNotice() {
+    const notice = document.querySelector('[data-account-sync-status]');
+    if (!notice) return;
+    const connected = Boolean(localStorage.getItem(tokenKey) || sessionStorage.getItem(tokenKey));
+    notice.innerHTML = connected
+      ? '<strong>Browser connected · 此瀏覽器已連接</strong><span>閱讀、語言運用及有標準答案的聆聽題會在按「核對答案」後同步；寫作、朗讀及口語內容仍只保留在此裝置。</span>'
+      : '<strong>Optional account sync · 可選帳戶同步</strong><span>請由頂部「我的帳戶」連接此瀏覽器；只有閱讀、語言運用及有標準答案的聆聽題會在按「核對答案」後同步。</span>';
   }
 
   connectFromUrl();
+  updateConnectionNotice();
   window.EnglishTuitionAccount = Object.freeze({ portalOrigin, recordObjective });
 })();
