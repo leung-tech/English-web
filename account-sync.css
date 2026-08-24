@@ -1,0 +1,6 @@
+.account-sync-note { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:11px 12px; border:1px solid #c9dce8; border-left:4px solid #4e8875; border-radius:7px; background:#f4fbf7; }
+.account-sync-note strong { display:block; color:#386953; font-size:11px; }
+.account-sync-note span { display:block; margin-top:3px; color:#5d7c70; font:600 10px/1.5 "Noto Sans TC",sans-serif; }
+.account-sync-note a { flex:0 0 auto; min-height:34px; padding:9px 10px; border-radius:5px; background:#4e8875; color:#fff; font-size:10px; font-weight:800; text-decoration:none; }
+.account-sync-note a:hover { background:#376b59; }
+@media (max-width:600px) { .account-sync-note { align-items:flex-start; flex-direction:column; } .account-sync-note a { width:100%; text-align:center; } }
