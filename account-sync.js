@@ -22,7 +22,7 @@
 
   function recordObjective({ stage, skill, moduleId, questionId, isCorrect }) {
     const normalizedSkill = skillMap[skill] || skill;
-    const normalizedStage = String(stage || '').toUpperCase();
+    const normalizedStage = String(stage || '').toUpperCase().match(/[PS][1-6]/)?.[0] || '';
     const safeModuleId = identifier(moduleId, 'practice-module');
     const safeQuestionId = identifier(questionId, `${safeModuleId}-item`);
     if (!/^([PS][1-6])$/.test(normalizedStage) || !allowedSkills.has(normalizedSkill) || !safeModuleId || !safeQuestionId) return;
