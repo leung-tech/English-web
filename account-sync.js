@@ -59,8 +59,8 @@
     if (!notices.length) return;
     const connected = Boolean(localStorage.getItem(tokenKey) || sessionStorage.getItem(tokenKey));
     const message = connected
-      ? '<strong>Browser connected · 此瀏覽器已連接</strong><span>閱讀、語言運用及有標準答案的聆聽題會在按「核對答案」後同步；寫作、朗讀及口語內容仍只保留在此裝置。</span>'
-      : '<strong>Optional account sync · 可選帳戶同步</strong><span>請由頂部「我的帳戶」連接此瀏覽器；只有閱讀、語言運用及有標準答案的聆聽題會在按「核對答案」後同步。</span>';
+      ? '<strong>Account sync is on · 帳戶同步已開啟</strong><span>每次按「核對答案」後，閱讀、語言運用及有固定正確答案的聆聽題會自動同步到帳戶；寫作、朗讀、口語、自由作答及草稿只留在此裝置，不會上載或自動評分。</span>'
+      : '<strong>Want this work in your account? · 想把作答記錄到帳戶？</strong><span>先按頂部「我的帳戶」登入／註冊；登入後按「Connect and return · 連接後返回練習」。整個流程都在同一分頁，未登入時仍可練習，但只會保留本機紀錄。</span>';
     notices.forEach((notice) => { notice.innerHTML = message; });
   }
 
