@@ -32,6 +32,16 @@
       update(record.stageRouteStats, `${module.stage || 'unknown'}:${module.route || 'unknown'}`);
     }
     safeSet(progressKey, record);
+    if (objective) {
+      const module = moduleRegistry.find((item) => item.id === moduleId) || {};
+      window.EnglishTuitionAccount?.recordObjective({
+        stage: String(module.stage || state.year || '').toUpperCase(),
+        skill: module.route,
+        moduleId,
+        questionId: `${moduleId}-${state.index + 1}`,
+        isCorrect: correct
+      });
+    }
   };
 
   const stageList = [

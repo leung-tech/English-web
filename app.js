@@ -1345,6 +1345,15 @@
     record.skills ||= { read: 0, write: 0, listen: 0, language: 0 };
     record.skills[item.route] = (record.skills[item.route] || 0) + 1;
     saveStats(record);
+    if (!item.selfCheck && !item.writingTask) {
+      window.EnglishTuitionAccount?.recordObjective({
+        stage: `P${state.grade}`,
+        skill: item.route,
+        moduleId: state.module || item.route,
+        questionId: item.id || `${state.module || item.route}-${session.index + 1}`,
+        isCorrect: correct
+      });
+    }
     const juniorReward = recordJuniorProgress(item, correct);
     let outcome = '';
     if (!item.selfCheck && !item.writingTask && !correct) { addReview(item, answer); outcome = '這題已加入溫習清單，稍後可以再挑戰。'; }

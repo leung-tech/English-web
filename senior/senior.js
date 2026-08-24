@@ -37,6 +37,14 @@
     data.modules[moduleId].completed += 1;
     if (correct) data.modules[moduleId].correct += 1;
     set(progressKey, data);
+    const currentModule = studio.modules.find((item) => item.id === moduleId) || {};
+    window.EnglishTuitionAccount?.recordObjective({
+      stage: String(currentModule.stage || state.stage || '').toUpperCase(),
+      skill: currentModule.skill,
+      moduleId,
+      questionId: task()?.id || `${moduleId}-${state.index + 1}`,
+      isCorrect: correct
+    });
   };
   const bilingual = (english, chinese) => `${escape(english)}${chinese ? `<span class="zh">${escape(chinese)}</span>` : ''}`;
   const speak = (text) => { if (!('speechSynthesis' in window)) return; window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); utterance.lang = 'en-GB'; utterance.rate = .92; window.speechSynthesis.speak(utterance); };
