@@ -8,6 +8,7 @@
   const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' })[char]);
   const letters = ['A', 'B', 'C', 'D'];
   const state = { year: 's1', stage: 's1-bridge', route: 'read', moduleId: null, index: 0, selected: null, reorder: [], checked: false };
+  const accountReturnKey = 'secondary-english-account-return-v1';
   const progressKey = 'secondary-english-studio-progress-v1';
   const draftKey = 'secondary-english-studio-drafts-v1';
   const progress = () => {
@@ -486,6 +487,21 @@
   }
 
   function render() { root.innerHTML = renderShell(); bind(); }
+  function saveAccountReturn() {
+    try { sessionStorage.setItem(accountReturnKey, JSON.stringify(state)); } catch { /* Account access must never interrupt practice. */ }
+  }
+  function restoreAccountReturn() {
+    if (sessionStorage.getItem('english-tuition-restore-practice-v1') !== '1') return false;
+    sessionStorage.removeItem('english-tuition-restore-practice-v1');
+    let saved;
+    try { saved = JSON.parse(sessionStorage.getItem(accountReturnKey) || 'null'); } catch { saved = null; }
+    if (!saved || typeof saved !== 'object') return false;
+    sessionStorage.removeItem(accountReturnKey);
+    Object.assign(state, saved);
+    render();
+    return true;
+  }
   state.moduleId = modulesForRoute()[0]?.id || null;
+  window.EnglishTuitionPractice = Object.freeze({ saveAccountReturn, restoreAccountReturn });
   render();
 })();

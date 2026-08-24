@@ -11,6 +11,7 @@
   const get = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
   const set = (key, value) => localStorage.setItem(key, JSON.stringify(value));
   const state = { stage:'s4', skill:'grammar', moduleId:null, index:0, selected:null, checked:false, showTranscript:false, paper3Answers:{}, paper3Checked:false };
+  const accountReturnKey = 'senior-english-account-return-v1';
   const skills = [
     {id:'grammar',label:'G Advanced grammar',zh:'進階文法'},
     {id:'reading',label:'R Critical reading',zh:'批判閱讀'},
@@ -136,6 +137,20 @@
     bindTaskEvents();
   }
   function render() { renderStageNav(); renderSkillNav(); renderProgress(); renderPathway(); renderModuleNav(); renderTask(); bindNavEvents(); }
+  function saveAccountReturn() {
+    try { sessionStorage.setItem(accountReturnKey, JSON.stringify(state)); } catch { /* Account access must never interrupt practice. */ }
+  }
+  function restoreAccountReturn() {
+    if (sessionStorage.getItem('english-tuition-restore-practice-v1') !== '1') return false;
+    sessionStorage.removeItem('english-tuition-restore-practice-v1');
+    let saved;
+    try { saved = JSON.parse(sessionStorage.getItem(accountReturnKey) || 'null'); } catch { saved = null; }
+    if (!saved || typeof saved !== 'object') return false;
+    sessionStorage.removeItem(accountReturnKey);
+    Object.assign(state, saved);
+    render();
+    return true;
+  }
   function bindNavEvents() {
     document.querySelectorAll('[data-stage]').forEach((button) => button.onclick = () => { state.stage = button.dataset.stage; state.skill = 'grammar'; state.moduleId = null; resetTask(); render(); });
     document.querySelectorAll('[data-skill]').forEach((button) => button.onclick = () => { state.skill = button.dataset.skill; state.moduleId = null; resetTask(); render(); });
@@ -170,5 +185,6 @@
     const oralPlan = $('#oral-plan');
     if (oralPlan) { const count = () => { const words = oralPlan.value.trim() ? oralPlan.value.trim().split(/\s+/).length : 0; $('#oral-count').textContent = `${words} words`; }; oralPlan.addEventListener('input', () => { const data = drafts(); data[`${task().id}-oral`] = oralPlan.value; set(draftKey,data); count(); }); count(); }
   }
+  window.EnglishTuitionPractice = Object.freeze({ saveAccountReturn, restoreAccountReturn });
   render();
 })();

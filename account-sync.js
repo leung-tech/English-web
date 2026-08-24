@@ -3,6 +3,7 @@
 
   const portalOrigin = 'https://engtuition-32ipu7x3.manus.space';
   const tokenKey = 'english-tuition-progress-sync-token-v1';
+  const restoreFlagKey = 'english-tuition-restore-practice-v1';
   const allowedSkills = new Set(['reading', 'language', 'listening']);
 
   const skillMap = {
@@ -47,24 +48,30 @@
     if (!token || !/^[A-Za-z0-9_-]{40,128}$/.test(token)) return;
     localStorage.setItem(tokenKey, token);
     sessionStorage.removeItem(tokenKey);
+    sessionStorage.setItem(restoreFlagKey, '1');
     url.searchParams.delete('sync');
     history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-    if (window.opener) {
-      window.opener.postMessage({ type: 'english-tuition-browser-connected' }, portalOrigin);
-      window.setTimeout(() => window.close(), 250);
-    }
+    window.EnglishTuitionPractice?.restoreAccountReturn?.();
   }
 
   function updateConnectionNotice() {
-    const notice = document.querySelector('[data-account-sync-status]');
-    if (!notice) return;
+    const notices = document.querySelectorAll('[data-account-sync-status]');
+    if (!notices.length) return;
     const connected = Boolean(localStorage.getItem(tokenKey) || sessionStorage.getItem(tokenKey));
-    notice.innerHTML = connected
+    const message = connected
       ? '<strong>Browser connected · 此瀏覽器已連接</strong><span>閱讀、語言運用及有標準答案的聆聽題會在按「核對答案」後同步；寫作、朗讀及口語內容仍只保留在此裝置。</span>'
       : '<strong>Optional account sync · 可選帳戶同步</strong><span>請由頂部「我的帳戶」連接此瀏覽器；只有閱讀、語言運用及有標準答案的聆聽題會在按「核對答案」後同步。</span>';
+    notices.forEach((notice) => { notice.innerHTML = message; });
   }
 
   connectFromUrl();
   updateConnectionNotice();
+  document.querySelectorAll('[data-account-link]').forEach((link) => link.addEventListener('click', (event) => {
+    event.preventDefault();
+    window.EnglishTuitionPractice?.saveAccountReturn?.();
+    const returnTo = new URL(window.location.href);
+    returnTo.searchParams.delete('sync');
+    window.location.assign(`${portalOrigin}/dashboard?returnTo=${encodeURIComponent(returnTo.toString())}`);
+  }));
   window.EnglishTuitionAccount = Object.freeze({ portalOrigin, recordObjective });
 })();

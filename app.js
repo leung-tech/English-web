@@ -12,6 +12,7 @@
   };
 
   const state = { grade: 3, route: 'read', module: 'reading', session: null, modelGrade: 4, modelId: null, studyTab: 'mistakes', quiz: { modelId: null, index: 0, selected: null, results: [] } };
+  const ACCOUNT_RETURN_KEY = 'primary-english-account-return-v1';
   const safeGet = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
   const safeSet = (key, value) => localStorage.setItem(key, JSON.stringify(value));
   const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
@@ -1017,11 +1018,35 @@
     toast.timer = window.setTimeout(() => element.classList.remove('show'), 2600);
   }
 
-  function showView(name) {
+function showView(name) {
     window.speechSynthesis?.cancel();
     $$('.view').forEach((view) => view.classList.toggle('visible', view.id === `${name}-view`));
     $$('[data-nav]').forEach((button) => button.classList.toggle('active', button.dataset.nav === name));
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function saveAccountReturn() {
+    const activeView = $$('.view').find((view) => view.classList.contains('visible'))?.id?.replace('-view', '') || 'home';
+    try {
+      sessionStorage.setItem(ACCOUNT_RETURN_KEY, JSON.stringify({ activeView, state }));
+    } catch { /* Account access must never interrupt practice. */ }
+  }
+
+  function restoreAccountReturn() {
+    if (sessionStorage.getItem('english-tuition-restore-practice-v1') !== '1') return false;
+    sessionStorage.removeItem('english-tuition-restore-practice-v1');
+    let saved;
+    try { saved = JSON.parse(sessionStorage.getItem(ACCOUNT_RETURN_KEY) || 'null'); } catch { saved = null; }
+    if (!saved?.state || !saved.activeView) return false;
+    sessionStorage.removeItem(ACCOUNT_RETURN_KEY);
+    Object.assign(state, saved.state);
+    renderSidebar();
+    if (saved.activeView === 'session' && state.session?.questions?.length) { showView('session'); renderQuestion(); return true; }
+    if (saved.activeView === 'result' && state.session?.questions?.length) { renderResult(); return true; }
+    if (saved.activeView === 'review') { renderReview(); showView('review'); return true; }
+    if (saved.activeView === 'scope') { renderScopePage(); showView('scope'); return true; }
+    showView('home'); renderHome();
+    return true;
   }
 
   function renderSidebar() {
@@ -1465,6 +1490,7 @@
     $('#result-review').addEventListener('click', () => { renderReview(); showView('review'); });
   }
 
+  window.EnglishTuitionPractice = Object.freeze({ saveAccountReturn, restoreAccountReturn });
   bindEvents();
   renderHome();
   renderScopePage();
