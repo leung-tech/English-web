@@ -13,8 +13,9 @@
 
   const state = { grade: 3, route: 'read', module: 'reading', session: null, modelGrade: 4, modelId: null, studyTab: 'mistakes', quiz: { modelId: null, index: 0, selected: null, results: [] } };
   const ACCOUNT_RETURN_KEY = 'primary-english-account-return-v1';
-  const safeGet = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
-  const safeSet = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+  const transientStore = new Map();
+  const safeGet = (key, fallback) => transientStore.has(key) ? JSON.parse(JSON.stringify(transientStore.get(key))) : JSON.parse(JSON.stringify(fallback));
+  const safeSet = (key, value) => transientStore.set(key, JSON.parse(JSON.stringify(value)));
   const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
   const normalize = (value) => String(value ?? '').trim().toLowerCase().replace(/[.,!?]/g, '').replace(/\s+/g, ' ');
   const wordCount = (value) => String(value ?? '').trim().split(/\s+/).filter(Boolean).length;
@@ -1055,10 +1056,8 @@ function showView(name) {
     $('#rail-grade').innerHTML = bilingual(`${current.level} English`, `小${state.grade}英文`);
     $('#rail-note').innerHTML = bilingual(current.overview, currentZh.overview);
     $$('.grade-btn').forEach((button) => button.classList.toggle('selected', Number(button.dataset.grade) === state.grade));
-    const record = stats();
-    $('#completed-total').textContent = record.completed;
-    $('#rail-progress').style.width = `${Math.min(100, (record.completed % 12) / 12 * 100)}%`;
-    $('#review-count').textContent = reviewItems().length ? `(${reviewItems().length})` : '';
+    const reviewCount = $('#review-count');
+    if (reviewCount) reviewCount.textContent = '';
   }
 
   function renderSkills() {

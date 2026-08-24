@@ -8,8 +8,9 @@
   const draftKey = 'senior-english-studio-drafts-v1';
   const reviewKey = 'senior-english-studio-paper2-selfreview-v1';
   const paper3Key = 'senior-english-studio-paper3-notes-v1';
-  const get = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
-  const set = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+  const transientStore = new Map();
+  const get = (key, fallback) => transientStore.has(key) ? JSON.parse(JSON.stringify(transientStore.get(key))) : JSON.parse(JSON.stringify(fallback));
+  const set = (key, value) => transientStore.set(key, JSON.parse(JSON.stringify(value)));
   const state = { stage:'s4', skill:'grammar', moduleId:null, index:0, selected:null, checked:false, showTranscript:false, paper3Answers:{}, paper3Checked:false };
   const accountReturnKey = 'senior-english-account-return-v1';
   const skills = [
@@ -57,11 +58,7 @@
   function renderSkillNav() {
     $('#skill-nav').innerHTML = skills.map((item) => `<button class="skill-button ${item.id === state.skill ? 'active' : ''}" data-skill="${item.id}">${escape(item.label)}<span>${escape(item.zh)}</span></button>`).join('');
   }
-  function renderProgress() {
-    const data = progress();
-    const accuracy = data.completed ? Math.round((data.correct / data.completed) * 100) : 0;
-    $('#progress-summary').textContent = data.completed ? `${data.completed} checked · ${accuracy}% accurate` : '0 tasks';
-  }
+  function renderProgress() { $('#progress-summary').textContent = 'Account-only'; }
   function renderPathway() {
     const item = stage();
     const note = $('#pathway-note');
@@ -155,7 +152,7 @@
     document.querySelectorAll('[data-stage]').forEach((button) => button.onclick = () => { state.stage = button.dataset.stage; state.skill = 'grammar'; state.moduleId = null; resetTask(); render(); });
     document.querySelectorAll('[data-skill]').forEach((button) => button.onclick = () => { state.skill = button.dataset.skill; state.moduleId = null; resetTask(); render(); });
     document.querySelectorAll('[data-module]').forEach((button) => button.onclick = () => { state.moduleId = button.dataset.module; resetTask(); render(); });
-    $('#clear-progress').onclick = () => { localStorage.removeItem(progressKey); localStorage.removeItem(draftKey); localStorage.removeItem(reviewKey); localStorage.removeItem(paper3Key); resetTask(); render(); };
+    $('#clear-progress').onclick = () => { transientStore.clear(); resetTask(); render(); };
   }
   function bindTaskEvents() {
     document.querySelectorAll('[data-choice]').forEach((button) => button.onclick = () => { if (!state.checked) { state.selected = Number(button.dataset.choice); renderTask(); } });

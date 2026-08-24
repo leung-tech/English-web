@@ -104,7 +104,7 @@
     <div class="app">
       <header class="topbar">
         <button class="brand" id="home-brand" aria-label="返回主頁"><span class="brand-mark">PE</span><span><strong>Primary English Studio</strong><small>READ · WRITE · LISTEN · LANGUAGE　|　讀 · 寫 · 聽 · 語言運用</small></span></button>
-        <nav class="top-actions" aria-label="主要導覽"><button class="nav-btn active" data-nav="home">Practice · 練習</button><button class="nav-btn" data-nav="scope">Year Scope · 英文範疇</button><button class="nav-btn" data-nav="review">Review · 本機溫習 <span id="review-count"></span></button><button class="nav-btn" data-nav="tracker">Parent / Teacher · 家長／老師</button><a class="nav-btn" href="secondary/">S1–S3 · 中學版</a><a class="nav-btn" href="senior/">S4–S6 · 高中版</a><a class="nav-btn" data-account-link href="https://engtuition-32ipu7x3.manus.space/dashboard">My account · 我的帳戶</a></nav>
+        <nav class="top-actions" aria-label="主要導覽"><button class="nav-btn active" data-nav="home">Practice · 練習</button><button class="nav-btn" data-nav="scope">Year Scope · 英文範疇</button><button class="nav-btn" data-nav="tracker">Parent / Teacher · 家長／老師</button><a class="nav-btn" href="secondary/">S1–S3 · 中學版</a><a class="nav-btn" href="senior/">S4–S6 · 高中版</a><a class="nav-btn" data-account-link href="https://engtuition-32ipu7x3.manus.space/dashboard">My account · 我的帳戶</a></nav>
       </header>
 
       <div class="shell">
@@ -121,10 +121,9 @@
               <div class="skill-key"><div class="key-row"><i class="key-letter key-read">R</i> Read <small>閱讀理解</small></div><div class="key-row"><i class="key-letter key-write">W</i> Write <small>寫作與編輯</small></div><div class="key-row"><i class="key-letter key-listen">L</i> Listen <small>聆聽與口語</small></div><div class="key-row"><i class="key-letter key-language">A</i> Apply <small>語言運用</small></div></div>
             </div>
             <div class="rail-section progress-card">
-              <p class="rail-label">This browser · 本機練習</p>
-              <strong id="completed-total">0</strong>
-              <p><b>completed on this browser</b> · 此瀏覽器已完成題目。這不是帳戶歷史；已同步紀錄請到「My account · 我的帳戶」查看。</p>
-              <div class="mini-track"><i id="rail-progress"></i></div>
+              <p class="rail-label">Private account · 私人帳戶</p>
+              <strong>Account-only</strong>
+              <p><b>正式練習紀錄只會保存到已登入帳戶。</b>本頁不保留本機完成題數、溫習清單或歷史資料；請到「My account · 我的帳戶」查看私人進度。</p>
             </div>
           </section>
         </aside>
@@ -187,7 +186,7 @@
 
           <section class="view" id="result-view"><div class="result"><div class="result-mark" id="result-score">0%</div><h1 id="result-title">Practice complete</h1><p id="result-copy"></p><div class="result-actions"><button class="secondary" id="result-home">Choose another skill · 選擇另一技能</button><button class="primary" id="result-review">Review missed items · 溫習未掌握題目 →</button></div></div></section>
 
-          <section class="view" id="review-view"><header class="review-header"><p class="eyebrow">LOCAL REVIEW · 本機溫習</p><h1>My local review list <small>本機溫習清單</small></h1><p><b>Incorrect answers are saved on this browser only, not in account history.</b><br>答錯題目只儲存在目前瀏覽器；重新作答並答對後，題目會從清單移除。完整已同步客觀題歷史請到「My account」。</p></header><div class="review-grid" id="review-list"></div></section>
+          <section class="view" id="review-view"><header class="review-header"><p class="eyebrow">ACCOUNT HISTORY · 帳戶歷史</p><h1>Review in My account <small>請於我的帳戶查看</small></h1><p><b>正式客觀題紀錄會保存至私人帳戶。</b><br>本頁不保存本機溫習清單；請使用頂部「My account · 我的帳戶」查看已登入帳戶的正式學習歷史。</p></header><div class="review-grid" id="review-list"></div></section>
         </main>
       </div>
     </div>

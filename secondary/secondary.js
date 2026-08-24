@@ -3,8 +3,9 @@
 
   const root = document.querySelector('#secondary-app');
   const $ = (selector) => document.querySelector(selector);
-  const safeGet = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
-  const safeSet = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+  const transientStore = new Map();
+  const safeGet = (key, fallback) => transientStore.has(key) ? JSON.parse(JSON.stringify(transientStore.get(key))) : JSON.parse(JSON.stringify(fallback));
+  const safeSet = (key, value) => transientStore.set(key, JSON.parse(JSON.stringify(value)));
   const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' })[char]);
   const letters = ['A', 'B', 'C', 'D'];
   const state = { year: 's1', stage: 's1-bridge', route: 'read', moduleId: null, index: 0, selected: null, reorder: [], checked: false };
@@ -311,8 +312,7 @@
       <section class="start-guide" aria-label="首次使用指引"><header><strong>Start in 4 steps · 四步開始</strong><span>Follow the numbered controls below. · 跟著下方的編號選項練習。</span></header><div class="guide-steps"><div class="guide-step"><b>1</b><span><strong>Choose a stage</strong><small>選擇 S1、S2 或 S3 的學習階段。</small></span></div><div class="guide-step"><b>2</b><span><strong>Choose a skill</strong><small>選閱讀、寫作、聽說或語言運用。</small></span></div><div class="guide-step"><b>3</b><span><strong>Choose a module</strong><small>選一個主題，題目會在右方出現。</small></span></div><div class="guide-step"><b>4</b><span><strong>Answer, check, next</strong><small>完成客觀題後查看即時回饋，再做下一題。</small></span></div></div></section>
       <section class="workspace">
         <aside class="rail">
-          <section><p class="eyebrow">THIS BROWSER · 本機練習</p><h2>${record.completed} tasks</h2><p>Local to this browser only — not your account history.<br>只儲存在此瀏覽器，並非帳戶同步歷史。</p><div class="mini-progress"><i style="width:${Math.min(100, record.completed * 3)}%"></i></div><div class="skill-progress">${stageProgress.map((item) => `<span><b>${item.label}</b>${item.count} ${escape(item.zh)}</span>`).join('')}</div></section>
-          ${learningDashboard(activeStage.id)}
+          <section><p class="eyebrow">PRIVATE ACCOUNT · 私人帳戶</p><h2>Account-only</h2><p>Formal progress is stored only in the signed-in account.<br>正式練習紀錄只會保存到已登入的私人帳戶；本頁不保留本機進度、草稿或歷史資料。</p></section>
           <section><p class="eyebrow">CHOOSE A STAGE · 選擇階段</p><div class="stage-list">${stageList.map((item) => `<button class="stage-btn ${item.id === state.stage ? 'active' : ''}" data-stage="${item.id}"><b>${escape(item.code)} · ${escape(item.title)}</b><span>${escape(item.titleZh)}</span></button>`).join('')}</div></section>
           <section><p class="eyebrow">CHOOSE A SKILL · 選擇技能</p><div class="route-list">${Object.entries(routeMeta).map(([id, meta]) => `<button class="route-btn ${id === state.route ? 'active' : ''}" data-route="${id}"><i class="route-token">${meta.token}</i><b>${meta.title}<span>${meta.zh}</span></b></button>`).join('')}</div></section>
         </aside>
@@ -482,7 +482,7 @@
     const draft = $('#draft');
     if (draft) draft.addEventListener('input', () => { const count = draft.value.trim().split(/\s+/).filter(Boolean).length; $('#word-count').textContent = `${count} words · ${count} 字`; saveDraft(currentModule().id, draft.value); });
     root.querySelectorAll('[data-clear-draft]').forEach((button) => button.addEventListener('click', () => { clearDraft(currentModule().id); render(); }));
-    root.querySelectorAll('[data-clear-progress]').forEach((button) => button.addEventListener('click', () => { localStorage.removeItem(progressKey); localStorage.removeItem(draftKey); render(); }));
+    root.querySelectorAll('[data-clear-progress]').forEach((button) => button.addEventListener('click', () => { transientStore.clear(); render(); }));
     root.querySelectorAll('[data-record-writing]').forEach((button) => button.addEventListener('click', () => { const count = ($('#draft')?.value || '').trim().split(/\s+/).filter(Boolean).length; const target = Number(button.dataset.recordWriting); const box = document.createElement('div'); box.className = `feedback ${count >= target ? 'good' : 'bad'}`; box.innerHTML = count >= target ? '<strong>✓ Completion recorded locally.</strong><br>Keep checking your evidence, organisation and accuracy.' : `<strong>Keep writing.</strong><br>You have ${count} words. Aim for at least ${target}.`; button.closest('.task-board').appendChild(box); if (count >= target) mark(currentModule().id, true, false); }));
   }
 
