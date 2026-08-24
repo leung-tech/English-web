@@ -6,6 +6,7 @@
   const restoreFlagKey = 'english-tuition-restore-practice-v1';
   const allowedSkills = new Set(['reading', 'language', 'listening']);
   const legacyPracticeKey = /^(primary-english-studio-(stats|review|used)|primary-english-studio-junior-progress-v1|secondary-english-studio-|senior-english-studio-)/;
+  const isGuestMode = () => new URL(window.location.href).searchParams.get('guest') === '1';
 
   const skillMap = { read: 'reading', reading: 'reading', language: 'language', grammar: 'language', listen: 'listening', listening: 'listening', paper3: 'listening' };
   const identifier = (value, fallback) => {
@@ -21,11 +22,13 @@
   }
 
   function requireAccountSession() {
+    if (isGuestMode()) return;
     if (sessionStorage.getItem(tokenKey)) return;
     window.location.replace(`${portalOrigin}/dashboard?returnTo=${encodeURIComponent(returnToCurrentPractice())}`);
   }
 
   function recordObjective({ stage, skill, moduleId, questionId, isCorrect }) {
+    if (isGuestMode()) return;
     const normalizedSkill = skillMap[skill] || skill;
     const normalizedStage = String(stage || '').toUpperCase().match(/[PS][1-6]/)?.[0] || '';
     const safeModuleId = identifier(moduleId, 'practice-module');
@@ -57,7 +60,9 @@
     const notices = document.querySelectorAll('[data-account-sync-status]');
     if (!notices.length) return;
     const connected = Boolean(sessionStorage.getItem(tokenKey));
-    const message = connected
+    const message = isGuestMode()
+      ? '<strong>Guest practice · 訪客練習</strong><span>你可以直接完成題目，但結果不會儲存於帳戶或此瀏覽器。按「My account」登入／註冊後，才可建立私人學習紀錄。</span>'
+      : connected
       ? `<strong>Account learning session active · 帳戶學習已啟用</strong><span>已核對的閱讀、語言運用及固定答案聆聽題會直接記錄到你的私人帳戶。公開頁不會保存本機進度或歷史。</span><a href="${portalOrigin}/dashboard">View account history · 查看帳戶歷史</a>`
       : '<strong>Account sign-in required · 必須登入帳戶</strong><span>正式練習與學習紀錄只屬於已註冊及已登入的私人帳戶。</span>';
     notices.forEach((notice) => { notice.innerHTML = message; });
