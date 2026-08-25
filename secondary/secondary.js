@@ -416,8 +416,9 @@
       ${item.model ? `<article class="model-exemplar"><strong>Original model for analysis · 原創範本供分析</strong><p>${escape(item.model)}</p><span>This is original practice support, not an official HKDSE script or marking exemplar.<br>此為原創練習支援，並非官方 HKDSE 範本或評分示例。</span></article>` : ''}
       <textarea class="draft" id="draft" placeholder="Write in English here… · 在此以英文寫作…">${escape(getDraft(currentModule().id))}</textarea>
       <div class="word-row"><span id="word-count">${getDraft(currentModule().id).trim().split(/\s+/).filter(Boolean).length} words · ${getDraft(currentModule().id).trim().split(/\s+/).filter(Boolean).length} 字</span><span>Target: ${target}+ words · 最少 ${target} 字</span></div>
-      <div class="controls"><button class="primary" data-record-writing="${target}">Record completion · 記錄完成</button><button class="secondary" data-say="${escape(item.model || item.prompt || '')}">▶ Replay task · 重播題目</button><button class="secondary" data-clear-draft>Clear saved draft · 清除已儲存草稿</button></div>
-      <div class="feedback">This is a completion self-check. It does not score language quality automatically.<span class="zh">此為完成自我檢查，不會自動評核語言質素。</span></div>`;
+      <div class="controls"><button class="primary" data-record-writing="${target}">Record completion · 記錄完成</button><button class="secondary" data-say="${escape(item.model || item.prompt || '')}">▶ Replay task · 重播題目</button><button class="secondary" data-clear-draft>Clear draft · 清除草稿</button></div>
+      <section class="feedback writing-ai-panel"><strong>AI feedback for this writing · 此寫作題目的 AI 評語</strong><p>When you choose Submit, this completed article is stored in your private account for grade-level formative feedback. It is not an official score. <span class="zh">按提交後，文章才會儲存到你的私人帳戶並取得按年級的形成性評語；這並非官方分數。</span></p><button class="secondary" type="button" data-ai-writing-submit>Submit this writing for AI feedback · 提交此文章取得 AI 評語</button><div data-ai-writing-feedback aria-live="polite"></div></section>
+      <div class="feedback">This is a completion self-check. It does not score language quality automatically unless you choose the AI feedback submission above.<span class="zh">此為完成自我檢查；除非你按上方提交 AI 評語，否則不會自動評核語言質素。</span></div>`;
   }
 
   function renderSpeaking(item) {
@@ -484,6 +485,21 @@
     root.querySelectorAll('[data-clear-draft]').forEach((button) => button.addEventListener('click', () => { clearDraft(currentModule().id); render(); }));
     root.querySelectorAll('[data-clear-progress]').forEach((button) => button.addEventListener('click', () => { transientStore.clear(); render(); }));
     root.querySelectorAll('[data-record-writing]').forEach((button) => button.addEventListener('click', () => { const count = ($('#draft')?.value || '').trim().split(/\s+/).filter(Boolean).length; const target = Number(button.dataset.recordWriting); const box = document.createElement('div'); box.className = `feedback ${count >= target ? 'good' : 'bad'}`; box.innerHTML = count >= target ? '<strong>✓ Completion recorded locally.</strong><br>Keep checking your evidence, organisation and accuracy.' : `<strong>Keep writing.</strong><br>You have ${count} words. Aim for at least ${target}.`; button.closest('.task-board').appendChild(box); if (count >= target) mark(currentModule().id, true, false); }));
+    root.querySelectorAll('[data-ai-writing-submit]').forEach((button) => button.addEventListener('click', async () => {
+      const draftText = String($('#draft')?.value || '').trim();
+      const output = root.querySelector('[data-ai-writing-feedback]');
+      if (draftText.length < 20) { output.innerHTML = '<p>Please write a little more before submitting. · 請先多寫一些英文內容才提交。</p>'; return; }
+      const item = itemsFor(currentModule())[state.index] || {};
+      button.disabled = true;
+      output.innerHTML = '<p>Generating grade-level feedback… · 正在產生按年級評語…</p>';
+      try {
+        const result = await window.EnglishTuitionAccount?.submitWriting?.({ grade: state.year.toUpperCase(), taskId: item.id, writingText: draftText });
+        const feedback = result?.evaluation;
+        if (!feedback) throw new Error('AI feedback is unavailable right now.');
+        output.innerHTML = `<article><strong>AI formative feedback · AI 形成性評語 (${escape(feedback.overallScore)}/5)</strong><p>Content ${escape(feedback.contentScore)}/5 · Organization ${escape(feedback.organizationScore)}/5 · Language ${escape(feedback.languageScore)}/5 · Vocabulary ${escape(feedback.vocabularyScore)}/5</p><p>${escape(feedback.feedbackSummary)}</p><b>Strengths · 做得好</b><ul>${(feedback.strengths || []).map((point) => `<li>${escape(point)}</li>`).join('')}</ul><b>Next steps · 下一步</b><ul>${(feedback.nextSteps || []).map((point) => `<li>${escape(point)}</li>`).join('')}</ul><p><b>Model revision · 參考改寫</b><br>${escape(feedback.modelRevision)}</p></article>`;
+      } catch (error) { output.innerHTML = `<p>${escape(error.message || 'AI feedback is unavailable right now.')}</p>`; }
+      finally { button.disabled = false; }
+    }));
   }
 
   function render() { root.innerHTML = renderShell(); bind(); }

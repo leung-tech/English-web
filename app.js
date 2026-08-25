@@ -1319,14 +1319,15 @@ function showView(name) {
     const writingGuide = item.writing ? `<section class="writing-guide"><strong>${item.selfCheck ? 'Writing reminder' : item.s2Action ? 'S2 ACTION WRITING · 原創練習' : item.s2Connect ? 'S2 CONNECT WRITING · 原創練習' : item.s2Develop ? 'S2 DEVELOP WRITING · 原創練習' : item.s1Core ? 'S1 CORE WRITING · 原創練習' : item.writingTask ? 'PRE-S1-STYLE WRITING · 原創銜接寫作' : 'Writing check'}</strong><p>${item.selfCheck ? '先完成你的想法，再讀一次，確保每句都有清楚的意思。' : item.writingTask ? '這是自我檢查寫作題；系統只會確認已達最低字數，並不會自動評核內容質素。' : '輸入完整英文句子。留意大寫字母、主語、動詞和句號。'}</p></section>` : '';
     const mockWritingPlan = item.writingTask ? `<section class="writing-guide"><strong>Plan before you write · 先規劃再寫</strong><p>${item.writingTask.plan.map(([label, detail]) => `<b>${escape(label)}</b><br>${escape(detail)}`).join('<br><br>')}</p></section>` : '';
     let response = '';
+    const aiWritingAction = (item.writingTask || item.multiline) ? `<section class="writing-ai-panel"><strong>AI feedback for this writing · 此寫作題目的 AI 評語</strong><p>完成原有題目後，可把這篇文章提交至你的私人帳戶，按年級取得形成性評語。訪客不會提交或儲存文章。</p><button class="secondary" id="ai-writing-submit" type="button">Submit this writing for AI feedback · 提交此文章取得 AI 評語</button><div id="ai-writing-feedback" aria-live="polite"></div></section>` : '';
     if (item.writingTask) {
-      response = `${mockWritingPlan}<textarea class="answer-field" id="answer-field" rows="10" placeholder="Write your English response here... · 在此寫下你的英文答案" style="padding:12px;resize:vertical">${escape(session.drafts[session.index] || '')}</textarea><p class="question-zh">Target: ${escape(item.writingTask.target)} · 目標篇幅；at least ${item.writingTask.minWords} words are needed to complete this self-check. · 最少 ${item.writingTask.minWords} 字才可完成自我檢查。</p>`;
+      response = `${mockWritingPlan}<textarea class="answer-field" id="answer-field" rows="10" placeholder="Write your English response here... · 在此寫下你的英文答案" style="padding:12px;resize:vertical">${escape(session.drafts[session.index] || '')}</textarea><p class="question-zh">Target: ${escape(item.writingTask.target)} · 目標篇幅；at least ${item.writingTask.minWords} words are needed to complete this self-check. · 最少 ${item.writingTask.minWords} 字才可完成自我檢查。</p>${aiWritingAction}`;
     } else if (item.selfCheck) {
       response = `<label class="choice ${session.drafts[session.index] === 'confirmed' ? 'selected' : ''}" for="self-check"><input id="self-check" type="checkbox" ${session.drafts[session.index] === 'confirmed' ? 'checked' : ''} style="accent-color:#214d7a;width:17px;height:17px"><span>${escape(item.selfCheck)}</span></label>`;
     } else if (item.options) {
       response = `<div class="choices">${item.options.map((choice, index) => `<button class="choice ${session.drafts[session.index] === String(index) ? 'selected' : ''}" data-choice="${index}"><i class="choice-token">${String.fromCharCode(65 + index)}</i><span>${escape(choice)}</span></button>`).join('')}</div>`;
     } else if (item.multiline) {
-      response = `<textarea class="answer-field" id="answer-field" rows="5" placeholder="Write your English sentences here..." style="padding:12px;resize:vertical">${escape(session.drafts[session.index] || '')}</textarea>`;
+      response = `<textarea class="answer-field" id="answer-field" rows="5" placeholder="Write your English sentences here..." style="padding:12px;resize:vertical">${escape(session.drafts[session.index] || '')}</textarea>${aiWritingAction}`;
     } else {
       response = `<input class="answer-field" id="answer-field" autocomplete="off" inputmode="text" placeholder="Write your answer in English" value="${escape(session.drafts[session.index] || '')}">`;
     }
@@ -1351,6 +1352,21 @@ function showView(name) {
     }));
     $('#self-check')?.addEventListener('change', (event) => { if (item.flashcard && event.target.checked && !session.revealed?.[session.index]) { event.target.checked = false; toast('Reveal the meaning first · 請先顯示字詞意思。'); return; } session.drafts[session.index] = event.target.checked ? 'confirmed' : ''; });
     $('#answer-field')?.addEventListener('input', (event) => { session.drafts[session.index] = event.target.value; });
+    $('#ai-writing-submit')?.addEventListener('click', async () => {
+      const writingText = String($('#answer-field')?.value || '').trim();
+      if (writingText.length < 20) { toast('請先完成至少一小段英文寫作，再提交 AI 評語。'); return; }
+      const button = $('#ai-writing-submit');
+      const panel = $('#ai-writing-feedback');
+      button.disabled = true;
+      panel.innerHTML = '<p class="question-zh">Generating grade-level feedback… · 正在產生按年級評語…</p>';
+      try {
+        const result = await window.EnglishTuitionAccount?.submitWriting?.({ grade: `P${state.grade}`, taskId: item.id, writingText });
+        const feedback = result?.evaluation;
+        if (!feedback) throw new Error('AI feedback is unavailable right now.');
+        panel.innerHTML = `<article class="ai-feedback-result"><strong>AI formative feedback · AI 形成性評語 (${escape(feedback.overallScore)}/5)</strong><p>Content ${escape(feedback.contentScore)}/5 · Organization ${escape(feedback.organizationScore)}/5 · Language ${escape(feedback.languageScore)}/5 · Vocabulary ${escape(feedback.vocabularyScore)}/5</p><p>${escape(feedback.feedbackSummary)}</p><div><b>Strengths · 做得好</b><ul>${feedback.strengths.map((point) => `<li>${escape(point)}</li>`).join('')}</ul></div><div><b>Next steps · 下一步</b><ul>${feedback.nextSteps.map((point) => `<li>${escape(point)}</li>`).join('')}</ul></div><p><b>Model revision · 參考改寫</b><br>${escape(feedback.modelRevision)}</p></article>`;
+      } catch (error) { panel.innerHTML = `<p class="question-zh">${escape(error.message || 'AI feedback is unavailable right now.')}</p>`; }
+      finally { button.disabled = false; }
+    });
     updateSessionProgress();
   }
 
