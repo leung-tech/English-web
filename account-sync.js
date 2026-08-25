@@ -14,6 +14,7 @@
     return /^[a-zA-Z0-9_.-]{2,128}$/.test(result) ? result : null;
   };
   const eventKey = () => window.crypto?.randomUUID ? window.crypto.randomUUID().replace(/-/g, '_') : `event_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
+  const accountDashboardUrl = () => `${portalOrigin}/?entry=dashboard`;
 
   function returnToCurrentPractice() {
     const returnTo = new URL(window.location.href);
@@ -44,16 +45,42 @@
     }).catch(() => { /* Immediate feedback remains available during a transient network failure. */ });
   }
 
+  async function primaryGradeFromAccount(stage) {
+    if (isGuestMode()) return null;
+    const syncToken = sessionStorage.getItem(tokenKey);
+    if (!syncToken) return null;
+    const payload = { syncToken, ...(stage ? { stage } : {}) };
+    try {
+      const response = await fetch(`${portalOrigin}/api/trpc/practicePreference.primaryGradeFromPublic?batch=1`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ 0: { json: payload } })
+      });
+      if (response.status === 401) { sessionStorage.removeItem(tokenKey); return null; }
+      const result = await response.json();
+      const savedStage = result?.[0]?.result?.data?.json?.stage;
+      return /^P[1-6]$/.test(savedStage) ? savedStage : null;
+    } catch { return null; }
+  }
+
+  function rememberPrimaryGrade(grade) {
+    const stage = `P${Number(grade)}`;
+    if (/^P[1-6]$/.test(stage)) void primaryGradeFromAccount(stage);
+  }
+
+  async function restoreAccountPrimaryGrade() {
+    const stage = await primaryGradeFromAccount();
+    if (stage) window.EnglishTuitionPractice?.restoreAccountPrimaryGrade?.(stage);
+  }
+
   function connectFromUrl() {
     const url = new URL(window.location.href);
     const token = url.searchParams.get('sync');
-    if (!token || !/^[A-Za-z0-9_-]{40,128}$/.test(token)) return;
+    if (!token || !/^[A-Za-z0-9_-]{40,128}$/.test(token)) return false;
     sessionStorage.setItem(tokenKey, token);
     Object.keys(localStorage).filter((key) => legacyPracticeKey.test(key)).forEach((key) => localStorage.removeItem(key));
     sessionStorage.setItem(restoreFlagKey, '1');
     url.searchParams.delete('sync');
     history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-    window.EnglishTuitionPractice?.restoreAccountReturn?.();
+    return window.EnglishTuitionPractice?.restoreAccountReturn?.() === true;
   }
 
   function updateConnectionNotice() {
@@ -63,18 +90,18 @@
     const message = isGuestMode()
       ? '<strong>Guest practice · 訪客練習</strong><span>你可以直接完成題目，但結果不會儲存於帳戶或此瀏覽器。按「My account」登入／註冊後，才可建立私人學習紀錄。</span>'
       : connected
-      ? `<strong>Account learning session active · 帳戶學習已啟用</strong><span>已核對的閱讀、語言運用及固定答案聆聽題會直接記錄到你的私人帳戶。公開頁不會保存本機進度或歷史。</span><a href="${portalOrigin}/?entry=login">View account history · 查看帳戶歷史</a>`
+      ? `<strong>Account learning session active · 帳戶學習已啟用</strong><span>已核對的閱讀、語言運用及固定答案聆聽題會直接記錄到你的私人帳戶。公開頁不會保存本機進度或歷史。</span><a href="${accountDashboardUrl()}">View account history · 查看帳戶歷史</a>`
       : '<strong>Account sign-in required · 必須登入帳戶</strong><span>正式練習與學習紀錄只屬於已註冊及已登入的私人帳戶。</span>';
     notices.forEach((notice) => { notice.innerHTML = message; });
   }
 
-  connectFromUrl();
+  const resumedPractice = connectFromUrl();
   requireAccountSession();
   updateConnectionNotice();
+  if (!resumedPractice) void restoreAccountPrimaryGrade();
   document.querySelectorAll('[data-account-link]').forEach((link) => link.addEventListener('click', (event) => {
     event.preventDefault();
-    window.EnglishTuitionPractice?.saveAccountReturn?.();
-    window.location.assign(`${portalOrigin}/?entry=login&returnTo=${encodeURIComponent(returnToCurrentPractice())}`);
+    window.location.assign(accountDashboardUrl());
   }));
-  window.EnglishTuitionAccount = Object.freeze({ portalOrigin, recordObjective });
+  window.EnglishTuitionAccount = Object.freeze({ portalOrigin, recordObjective, rememberPrimaryGrade });
 })();

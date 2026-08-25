@@ -11,7 +11,7 @@
     juniorProgress: 'primary-english-studio-junior-progress-v1'
   };
 
-  const state = { grade: 3, route: 'read', module: 'reading', session: null, modelGrade: 4, modelId: null, studyTab: 'mistakes', quiz: { modelId: null, index: 0, selected: null, results: [] } };
+  const state = { grade: 1, route: 'read', module: 'reading', session: null, modelGrade: 4, modelId: null, studyTab: 'mistakes', quiz: { modelId: null, index: 0, selected: null, results: [] } };
   const ACCOUNT_RETURN_KEY = 'primary-english-account-return-v1';
   const transientStore = new Map();
   const safeGet = (key, fallback) => transientStore.has(key) ? JSON.parse(JSON.stringify(transientStore.get(key))) : JSON.parse(JSON.stringify(fallback));
@@ -1050,6 +1050,19 @@ function showView(name) {
     return true;
   }
 
+  function restoreAccountPrimaryGrade(stage) {
+    const grade = Number(String(stage || '').replace('P', ''));
+    if (!Number.isInteger(grade) || grade < 1 || grade > 6) return false;
+    state.grade = grade;
+    state.route = 'read';
+    state.module = routes.read.modules[0].id;
+    state.session = null;
+    renderSidebar();
+    renderHome();
+    renderScopePage();
+    return true;
+  }
+
   function renderSidebar() {
     const current = scope();
     const currentZh = scopeZh[state.grade];
@@ -1469,6 +1482,7 @@ function showView(name) {
       state.grade = Number(button.dataset.grade);
       renderHome();
       renderScopePage();
+      window.EnglishTuitionAccount?.rememberPrimaryGrade?.(state.grade);
     }));
     $('#home-brand').addEventListener('click', () => { showView('home'); renderHome(); });
     $('#open-scope').addEventListener('click', () => { renderScopePage(); showView('scope'); });
@@ -1489,7 +1503,7 @@ function showView(name) {
     $('#result-review').addEventListener('click', () => { renderReview(); showView('review'); });
   }
 
-  window.EnglishTuitionPractice = Object.freeze({ saveAccountReturn, restoreAccountReturn });
+  window.EnglishTuitionPractice = Object.freeze({ saveAccountReturn, restoreAccountReturn, restoreAccountPrimaryGrade });
   bindEvents();
   renderHome();
   renderScopePage();
