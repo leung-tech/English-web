@@ -8,7 +8,7 @@
   const safeSet = (key, value) => transientStore.set(key, JSON.parse(JSON.stringify(value)));
   const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' })[char]);
   const letters = ['A', 'B', 'C', 'D'];
-  const state = { year: 's1', stage: 's1-bridge', route: 'read', moduleId: null, index: 0, selected: null, reorder: [], checked: false };
+  const state = { year: 's1', stage: 's1-bridge', route: 'read', moduleId: null, index: 0, selected: null, reorder: [], checked: false, finderYear: 'all', finderType: 'all', sessionResults: {} };
   const accountReturnKey = 'secondary-english-account-return-v1';
   const progressKey = 'secondary-english-studio-progress-v1';
   const draftKey = 'secondary-english-studio-drafts-v1';
@@ -99,6 +99,9 @@
     { id:'s1-varied-reading', stage:'s1-extend', route:'read', symbol:'R+', title:'Practical-text reading', zh:'實用文本閱讀', kind:'reading', source:'S1_VARIED_PRACTICE' },
     { id:'s1-varied-listening', stage:'s1-extend', route:'listen', symbol:'L+', title:'Key-detail listening', zh:'重點聆聽', kind:'listening', source:'S1_VARIED_PRACTICE' },
     { id:'s1-varied-writing', stage:'s1-extend', route:'write', symbol:'W+', title:'Notice writing planner', zh:'通告寫作規劃', kind:'writing', source:'S1_VARIED_PRACTICE' },
+    { id:'s1-grammar-specialty', stage:'s1-extend', route:'language', symbol:'G★', title:'Grammar specialty practice', zh:'文法專項練習', kind:'grammar', source:'S1_S3_GRAMMAR_SPECIALTY_2026', bank:'s1Grammar', filterType:'grammar' },
+    { id:'s1-reading-focus', stage:'s1-extend', route:'read', symbol:'R★', title:'Reading focus practice', zh:'閱讀理解專項', kind:'reading', source:'S1_S3_READING_CLOZE_2026', bank:'s1Reading', filterType:'reading', progressSession:true },
+    { id:'s1-cloze-focus', stage:'s1-extend', route:'read', symbol:'C★', title:'Cloze focus practice', zh:'克漏字專項', kind:'reading', source:'S1_S3_READING_CLOZE_2026', bank:'s1Cloze', filterType:'cloze', progressSession:true },
     { id:'s1-interaction-dialogue', stage:'s1-extend', route:'listen', symbol:'D+', title:'Interaction dialogue lab', zh:'互動對話室', kind:'dialogues', source:'S1_INTERACTION_PLUS' },
     { id:'s1-interaction-speaking', stage:'s1-extend', route:'listen', symbol:'S+', title:'Speaking response studio', zh:'口語回應工作坊', kind:'speaking', source:'S1_INTERACTION_PLUS' },
 
@@ -146,6 +149,9 @@
     { id:'s2-varied-reading', stage:'s2-consolidate', route:'read', symbol:'R+', title:'Paired message reading', zh:'配對訊息閱讀', kind:'reading', source:'S2_VARIED_PRACTICE' },
     { id:'s2-varied-listening', stage:'s2-consolidate', route:'listen', symbol:'L+', title:'Meeting-note listening', zh:'會議筆記聆聽', kind:'listening', source:'S2_VARIED_PRACTICE' },
     { id:'s2-varied-writing', stage:'s2-consolidate', route:'write', symbol:'W+', title:'Proposal writing planner', zh:'建議書寫作規劃', kind:'writing', source:'S2_VARIED_PRACTICE' },
+    { id:'s2-grammar-specialty', stage:'s2-consolidate', route:'language', symbol:'G★', title:'Grammar specialty practice', zh:'文法專項練習', kind:'grammar', source:'S1_S3_GRAMMAR_SPECIALTY_2026', bank:'s2Grammar', filterType:'grammar' },
+    { id:'s2-reading-focus', stage:'s2-consolidate', route:'read', symbol:'R★', title:'Reading focus practice', zh:'閱讀理解專項', kind:'reading', source:'S1_S3_READING_CLOZE_2026', bank:'s2Reading', filterType:'reading', progressSession:true },
+    { id:'s2-cloze-focus', stage:'s2-consolidate', route:'read', symbol:'C★', title:'Cloze focus practice', zh:'克漏字專項', kind:'reading', source:'S1_S3_READING_CLOZE_2026', bank:'s2Cloze', filterType:'cloze', progressSession:true },
     { id:'s2-interaction-dialogue', stage:'s2-consolidate', route:'listen', symbol:'D+', title:'Interaction dialogue lab', zh:'互動對話室', kind:'dialogues', source:'S2_INTERACTION_PLUS' },
     { id:'s2-interaction-speaking', stage:'s2-consolidate', route:'listen', symbol:'S+', title:'Speaking response studio', zh:'口語回應工作坊', kind:'speaking', source:'S2_INTERACTION_PLUS' },
 
@@ -170,6 +176,9 @@
     { id:'s3-critical-grammar', stage:'s3-ready', route:'language', symbol:'G+', title:'Critical grammar clinic', zh:'批判性思考文法診所', kind:'grammar', source:'S3_CRITICAL_PLUS' },
     { id:'s3-vocab-game', stage:'s3-ready', route:'language', symbol:'P', title:'Precision challenge game', zh:'精準片語挑戰', kind:'game', source:'S3_VOCAB_GAMES' },
     { id:'s3-varied-grammar', stage:'s3-ready', route:'language', symbol:'E', title:'Precision editing clinic', zh:'精準修訂診所', kind:'grammar', source:'S3_VARIED_PRACTICE' },    { id:'s3-varied-reading', stage:'s3-ready', route:'read', symbol:'R+', title:'Applied source review', zh:'應用來源檢視', kind:'reading', source:'S3_VARIED_PRACTICE' },    { id:'s3-varied-listening', stage:'s3-ready', route:'listen', symbol:'L+', title:'Panel listening and notes', zh:'小組討論聆聽與筆記', kind:'listening', source:'S3_VARIED_PRACTICE' },    { id:'s3-varied-writing', stage:'s3-ready', route:'write', symbol:'W+', title:'Applied writing planners', zh:'應用寫作規劃', kind:'writing', source:'S3_VARIED_PRACTICE' },
+    { id:'s3-grammar-specialty', stage:'s3-ready', route:'language', symbol:'G★', title:'Grammar specialty practice', zh:'文法專項練習', kind:'grammar', source:'S1_S3_GRAMMAR_SPECIALTY_2026', bank:'s3Grammar', filterType:'grammar' },
+    { id:'s3-reading-focus', stage:'s3-ready', route:'read', symbol:'R★', title:'Reading focus practice', zh:'閱讀理解專項', kind:'reading', source:'S1_S3_READING_CLOZE_2026', bank:'s3Reading', filterType:'reading', progressSession:true },
+    { id:'s3-cloze-focus', stage:'s3-ready', route:'read', symbol:'C★', title:'Cloze focus practice', zh:'克漏字專項', kind:'reading', source:'S1_S3_READING_CLOZE_2026', bank:'s3Cloze', filterType:'cloze', progressSession:true },
     { id:'s3-critical-dialogue', stage:'s3-ready', route:'listen', symbol:'D+', title:'Critical dialogue lab', zh:'批判性對話室', kind:'dialogues', source:'S3_CRITICAL_PLUS' },
     { id:'s3-critical-speaking', stage:'s3-ready', route:'listen', symbol:'S+', title:'Critical response studio', zh:'批判性回應工作坊', kind:'speaking', source:'S3_CRITICAL_PLUS' },
     { id:'s3-speaking-simulation', stage:'s3-ready', route:'listen', symbol:'SIM', title:'Speaking simulation toolkit', zh:'口語模擬與量規', kind:'simulation', source:'S3_SPEAKING_SIMULATIONS' },
@@ -323,9 +332,22 @@
   function renderModules() {
     const route = routeMeta[state.route];
     const modules = modulesForRoute();
+    const finderModules = moduleRegistry.filter((module) => module.filterType && (state.finderYear === 'all' || stageList.find((item) => item.id === module.stage)?.year === state.finderYear) && (state.finderType === 'all' || module.filterType === state.finderType));
+    const finder = `<section class="practice-finder"><div><p class="eyebrow">QUICK QUESTION FINDER · 題庫快速篩選</p><h3>Find a focused practice set <span class="zh">按年級及題型尋找專項練習</span></h3></div><div class="finder-controls"><label>Grade · 年級<select data-finder-year><option value="all" ${state.finderYear === 'all' ? 'selected' : ''}>All S1–S3 · 全部</option><option value="s1" ${state.finderYear === 's1' ? 'selected' : ''}>S1 · 中一</option><option value="s2" ${state.finderYear === 's2' ? 'selected' : ''}>S2 · 中二</option><option value="s3" ${state.finderYear === 's3' ? 'selected' : ''}>S3 · 中三</option></select></label><label>Type · 題型<select data-finder-type><option value="all" ${state.finderType === 'all' ? 'selected' : ''}>All · 全部</option><option value="grammar" ${state.finderType === 'grammar' ? 'selected' : ''}>Grammar · 文法</option><option value="reading" ${state.finderType === 'reading' ? 'selected' : ''}>Reading · 閱讀</option><option value="cloze" ${state.finderType === 'cloze' ? 'selected' : ''}>Cloze · 克漏字</option></select></label></div><div class="finder-results">${finderModules.length ? finderModules.map((module) => `<button class="finder-card" data-finder-module="${module.id}"><b>${escape(stageList.find((item) => item.id === module.stage)?.year.toUpperCase() || '')} · ${escape(module.filterType)}</b><strong>${escape(module.title)}</strong><span>${escape(module.zh)}</span></button>`).join('') : '<p>No matching focused set yet. · 暫未有相符專項題組。</p>'}</div><p class="finder-note">Filtering changes this finder only; your current stage and the full existing module list remain available below. <span class="zh">篩選只影響此快速尋找區；目前階段及下方完整既有模組不會被隱藏。</span></p></section>`;
     return `<header class="section-head"><div><p class="eyebrow">${escape(stage().code)} · ${escape(route.title.toUpperCase())}</p><h2>${escape(route.title)} <span class="zh">${escape(route.zh)}</span></h2></div><p>${escape(route.note)}<br><span class="zh">${escape(route.noteZh)}</span></p></header>
       <aside class="pathway-note"><strong>Capability pathway · 能力範圍</strong><span>${escape(stage().pathway || '')}<em>${escape(stage().pathwayZh || '')}</em></span></aside>
-      <div class="module-grid">${modules.length ? modules.map((module) => `<button class="module-card ${module.id === currentModule()?.id ? 'active' : ''}" data-module="${module.id}"><i class="module-symbol">${escape(module.symbol)}</i><h3>${escape(module.title)}</h3><p>${escape(module.zh)}</p><small>${escape(stage().code)} · ORIGINAL</small></button>`).join('') : '<div class="empty">Choose another skill. · 請選擇其他技能。</div>'}</div>`;
+      ${finder}<div class="module-grid">${modules.length ? modules.map((module) => `<button class="module-card ${module.id === currentModule()?.id ? 'active' : ''}" data-module="${module.id}"><i class="module-symbol">${escape(module.symbol)}</i><h3>${escape(module.title)}</h3><p>${escape(module.zh)}</p><small>${escape(stage().code)} · ORIGINAL</small></button>`).join('') : '<div class="empty">Choose another skill. · 請選擇其他技能。</div>'}</div>`;
+  }
+
+  function sessionProgress(module, items) {
+    if (!module.progressSession) return '';
+    const results = state.sessionResults[module.id] || {};
+    const answered = items.filter((item) => Object.prototype.hasOwnProperty.call(results, item.id));
+    const correct = answered.filter((item) => results[item.id]).length;
+    const percent = items.length ? Math.round((answered.length / items.length) * 100) : 0;
+    const complete = answered.length === items.length;
+    if (complete) return `<section class="session-result"><p class="eyebrow">PRACTICE COMPLETE · 練習完成</p><h3>${correct}/${items.length} correct · 答對 ${correct}/${items.length} 題</h3><p>${correct === items.length ? 'Excellent accuracy. Read each explanation once more to secure the pattern.' : correct >= Math.ceil(items.length * .6) ? 'Good progress. Revisit the explanations for the questions you missed.' : 'Keep going. Use each hint and explanation, then try the set again.'}<span class="zh">${correct === items.length ? '表現出色；再閱讀每題解析以鞏固重點。' : correct >= Math.ceil(items.length * .6) ? '進度良好；重溫答錯題目的解析。' : '繼續努力；使用每題提示和解析後再試一次。'}</span></p><button class="secondary" data-session-retry>Try this set again · 再試此題組</button><small>Session-only result · 本次頁面結果；不會保存草稿或訪客資料。</small></section>`;
+    return `<section class="session-progress" aria-label="Practice progress"><div><strong>Practice progress · 作答進度</strong><span>${answered.length}/${items.length} answered · 已作答</span></div><div class="progress-track"><i style="width:${percent}%"></i></div><p>${correct} correct so far · 暫時答對 ${correct} 題 <span>Session-only · 僅限本次頁面</span></p></section>`;
   }
 
   function renderTask() {
@@ -335,7 +357,7 @@
     if (!items.length) return `<section class="task-board"><div class="empty">This original module is being prepared. · 此原創單元正在準備中。</div></section>`;
     if (state.index >= items.length) state.index = 0;
     const item = items[state.index];
-    const header = `<section class="task-board"><header class="task-top"><div><p class="eyebrow">${escape(stage().code)} · ${escape(module.title.toUpperCase())}</p><h2>${escape(module.title)} <span class="zh">${escape(module.zh)}</span></h2><small>Original practice · 原創練習</small></div><span class="step">${state.index + 1} / ${items.length}</span></header>`;
+    const header = `<section class="task-board"><header class="task-top"><div><p class="eyebrow">${escape(stage().code)} · ${escape(module.title.toUpperCase())}</p><h2>${escape(module.title)} <span class="zh">${escape(module.zh)}</span></h2><small>Original practice · 原創練習</small></div><span class="step">${state.index + 1} / ${items.length}</span></header>${sessionProgress(module, items)}`;
     const body = renderItem(item, module, items.length);
     return `${header}${body}</section>`;
   }
@@ -460,8 +482,10 @@
     }
     if (state.selected === null) return;
     const answer = item.type === 'dialogue' ? item.checkpoints?.[0]?.answer : item.answer;
+    const correct = Number(answer || 0) === state.selected;
     state.checked = true;
-    mark(currentModule().id, Number(answer || 0) === state.selected);
+    mark(currentModule().id, correct);
+    if (currentModule().progressSession) state.sessionResults[currentModule().id] = { ...(state.sessionResults[currentModule().id] || {}), [item.id]: correct };
     render();
   }
 
@@ -471,6 +495,11 @@
     root.querySelectorAll('[data-try-s3-formal]').forEach((button) => button.addEventListener('click', () => { state.stage = 's3-ready'; state.year = 's3'; state.route = 'language'; state.moduleId = 's3-varied-grammar-bank'; state.index = 0; state.selected = null; state.reorder = []; state.checked = false; render(); }));
     root.querySelectorAll('[data-route]').forEach((button) => button.addEventListener('click', () => chooseRoute(button.dataset.route)));
     root.querySelectorAll('[data-module]').forEach((button) => button.addEventListener('click', () => chooseModule(button.dataset.module)));
+    const finderYear = root.querySelector('[data-finder-year]');
+    if (finderYear) finderYear.addEventListener('change', () => { state.finderYear = finderYear.value; render(); });
+    const finderType = root.querySelector('[data-finder-type]');
+    if (finderType) finderType.addEventListener('change', () => { state.finderType = finderType.value; render(); });
+    root.querySelectorAll('[data-finder-module]').forEach((button) => button.addEventListener('click', () => { const module = moduleRegistry.find((item) => item.id === button.dataset.finderModule); if (!module) return; state.stage = module.stage; state.year = stageList.find((item) => item.id === module.stage)?.year || 's1'; state.route = module.route; chooseModule(module.id); }));
     root.querySelectorAll('[data-option]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.selected = Number(button.dataset.option); render(); } }));
     root.querySelectorAll('[data-check]').forEach((button) => { button.onclick = checkCurrentAnswer; });
     root.querySelectorAll('[data-check-reorder]').forEach((button) => { button.onclick = checkCurrentAnswer; });
@@ -478,6 +507,7 @@
     root.querySelectorAll('[data-reorder-remove]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.reorder = state.reorder.filter((index) => index !== Number(button.dataset.reorderRemove)); render(); } }));
     root.querySelectorAll('[data-reorder-reset]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.reorder = []; render(); } }));
     root.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => { const items = itemsFor(currentModule()); state.index = (state.index + 1) % items.length; state.selected = null; state.reorder = []; state.checked = false; render(); }));
+    root.querySelectorAll('[data-session-retry]').forEach((button) => button.addEventListener('click', () => { delete state.sessionResults[currentModule().id]; state.index = 0; state.selected = null; state.checked = false; render(); }));
     root.querySelectorAll('[data-hint]').forEach((button) => button.addEventListener('click', () => { const message = document.createElement('div'); message.className = 'feedback'; message.innerHTML = `<strong>Hint · 提示</strong><br>${escape(button.dataset.hint)}`; button.closest('.task-board').appendChild(message); button.remove(); }));
     root.querySelectorAll('[data-say]').forEach((button) => button.addEventListener('click', () => speak(button.dataset.say)));
     const draft = $('#draft');

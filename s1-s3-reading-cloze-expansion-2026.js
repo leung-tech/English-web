@@ -51,4 +51,12 @@
     question('s3-rce-c04', 'Choose the best phrase for blank (4).', '選擇最適合填入空格（4）的片語。', ['with', 'despite', 'instead of', 'without'], 0, 'With introduces the features included in the recommended trial.', 'with 引出建議試行包括的安排。', 'The trial includes instructions and a review.'),
     question('s3-rce-c05', 'Choose the best word for blank (5).', '選擇最適合填入空格（5）的字。', ['reduce', 'reducing', 'reduced', 'reduction'], 0, 'May is followed by the base verb reduce.', 'may 後接動詞原形 reduce。', 'A modal needs a base verb.'),
   ]));
+  window.S1_S3_READING_CLOZE_2026 = {
+    s1Reading: { questions: window.S1_CORE_PATH.reading.questions.filter((item) => String(item.id || '').startsWith('s1-rce-r')) },
+    s1Cloze: { questions: window.S1_CORE_PATH.reading.questions.filter((item) => String(item.id || '').startsWith('s1-rce-c')) },
+    s2Reading: { sets: window.S2_CONSOLIDATE_EVIDENCE.reading.sets.map((item) => ({ ...item, questions: (item.questions || []).filter((question) => String(question[0] || '').startsWith('s2-rce-r')) })).filter((item) => item.questions.length) },
+    s2Cloze: { sets: window.S2_CONSOLIDATE_EVIDENCE.reading.sets.map((item) => ({ ...item, questions: (item.questions || []).filter((question) => String(question[0] || '').startsWith('s2-rce-c')) })).filter((item) => item.questions.length) },
+    s3Reading: { sets: window.S3_READY_PATHWAY.reading.sets.map((item) => ({ ...item, questions: (item.questions || []).filter((question) => String(question[0] || '').startsWith('s3-rce-r')) })).filter((item) => item.questions.length) },
+    s3Cloze: { sets: window.S3_READY_PATHWAY.reading.sets.map((item) => ({ ...item, questions: (item.questions || []).filter((question) => String(question[0] || '').startsWith('s3-rce-c')) })).filter((item) => item.questions.length) },
+  };
 })();
