@@ -24,7 +24,7 @@
   function requireAccountSession() {
     if (isGuestMode()) return;
     if (sessionStorage.getItem(tokenKey)) return;
-    window.location.replace(`${portalOrigin}/dashboard?returnTo=${encodeURIComponent(returnToCurrentPractice())}`);
+    window.location.replace(`${portalOrigin}/?returnTo=${encodeURIComponent(returnToCurrentPractice())}`);
   }
 
   function recordObjective({ stage, skill, moduleId, questionId, isCorrect }) {
@@ -74,7 +74,7 @@
   document.querySelectorAll('[data-account-link]').forEach((link) => link.addEventListener('click', (event) => {
     event.preventDefault();
     window.EnglishTuitionPractice?.saveAccountReturn?.();
-    window.location.assign(`${portalOrigin}/dashboard?returnTo=${encodeURIComponent(returnToCurrentPractice())}`);
+    window.location.assign(`${portalOrigin}/?returnTo=${encodeURIComponent(returnToCurrentPractice())}`);
   }));
   window.EnglishTuitionAccount = Object.freeze({ portalOrigin, recordObjective });
 })();
