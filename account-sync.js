@@ -24,7 +24,7 @@
   function requireAccountSession() {
     if (isGuestMode()) return;
     if (sessionStorage.getItem(tokenKey)) return;
-    window.location.replace(`${portalOrigin}/?returnTo=${encodeURIComponent(returnToCurrentPractice())}`);
+    window.location.replace(`${portalOrigin}/?entry=login&returnTo=${encodeURIComponent(returnToCurrentPractice())}`);
   }
 
   function recordObjective({ stage, skill, moduleId, questionId, isCorrect }) {
@@ -63,7 +63,7 @@
     const message = isGuestMode()
       ? '<strong>Guest practice · 訪客練習</strong><span>你可以直接完成題目，但結果不會儲存於帳戶或此瀏覽器。按「My account」登入／註冊後，才可建立私人學習紀錄。</span>'
       : connected
-      ? `<strong>Account learning session active · 帳戶學習已啟用</strong><span>已核對的閱讀、語言運用及固定答案聆聽題會直接記錄到你的私人帳戶。公開頁不會保存本機進度或歷史。</span><a href="${portalOrigin}/dashboard">View account history · 查看帳戶歷史</a>`
+      ? `<strong>Account learning session active · 帳戶學習已啟用</strong><span>已核對的閱讀、語言運用及固定答案聆聽題會直接記錄到你的私人帳戶。公開頁不會保存本機進度或歷史。</span><a href="${portalOrigin}/?entry=login">View account history · 查看帳戶歷史</a>`
       : '<strong>Account sign-in required · 必須登入帳戶</strong><span>正式練習與學習紀錄只屬於已註冊及已登入的私人帳戶。</span>';
     notices.forEach((notice) => { notice.innerHTML = message; });
   }
@@ -74,7 +74,7 @@
   document.querySelectorAll('[data-account-link]').forEach((link) => link.addEventListener('click', (event) => {
     event.preventDefault();
     window.EnglishTuitionPractice?.saveAccountReturn?.();
-    window.location.assign(`${portalOrigin}/?returnTo=${encodeURIComponent(returnToCurrentPractice())}`);
+    window.location.assign(`${portalOrigin}/?entry=login&returnTo=${encodeURIComponent(returnToCurrentPractice())}`);
   }));
   window.EnglishTuitionAccount = Object.freeze({ portalOrigin, recordObjective });
 })();
