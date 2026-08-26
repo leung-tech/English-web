@@ -1,0 +1,15 @@
+.timed-practice-strip { display:grid; grid-template-columns:minmax(0,1.2fr) repeat(2,minmax(90px,.55fr)) auto; gap:10px; align-items:stretch; margin:14px 0; padding:12px; border:1px solid #bfd4e2; border-radius:8px; background:linear-gradient(105deg,#edf7fc,#fffdf6); color:#173754; }
+.timed-practice-strip .exam-metric { min-width:0; padding:5px 9px; border-left:1px solid #cbdce7; }
+.timed-practice-strip .exam-metric:first-child { border-left:0; }
+.timed-practice-strip strong { display:block; font-size:13px; }
+.timed-practice-strip span { display:block; margin-top:3px; color:#5b7182; font-size:11px; line-height:1.35; }
+.timed-practice-strip .exam-time { font-variant-numeric:tabular-nums; font-size:20px; font-weight:800; letter-spacing:.03em; }
+.timed-practice-strip .exam-time.warning { color:#a45228; }
+.timed-practice-strip .exam-time.expired { color:#9c443d; }
+.timed-practice-strip .exam-status { display:flex; align-items:center; max-width:265px; color:#52697b; font-size:11px; font-weight:700; line-height:1.45; }
+.timed-practice-strip .exam-action { align-self:center; min-height:36px; padding:0 12px; border:1px solid #214d7a; border-radius:5px; background:#214d7a; color:#fff; font-size:11px; font-weight:800; }
+.timed-practice-strip .exam-action.secondary { background:#fff; color:#214d7a; }
+.timed-practice-strip .exam-action:active { transform:scale(.97); }
+.timed-practice-result { margin:14px 0; padding:15px; border:1px solid #d7c290; border-radius:8px; background:#fff9e9; color:#503d1d; }
+.timed-practice-result h3 { margin:0; font-size:16px; }.timed-practice-result p { margin:5px 0 0; font-size:12px; line-height:1.55; }
+@media (max-width:760px) { .timed-practice-strip { grid-template-columns:1fr 1fr; }.timed-practice-strip .exam-metric:nth-child(3) { border-left:0; }.timed-practice-strip .exam-status { grid-column:1 / -1; max-width:none; }.timed-practice-strip .exam-action { grid-column:1 / -1; width:100%; } }

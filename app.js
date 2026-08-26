@@ -1307,6 +1307,74 @@ function showView(name) {
 
   function currentQuestion() { return state.session.questions[state.session.index]; }
 
+  let timedPracticeInterval = null;
+
+  function stopTimedPracticeClock() {
+    if (timedPracticeInterval) window.clearInterval(timedPracticeInterval);
+    timedPracticeInterval = null;
+  }
+
+  function timedPracticeSummary(session) {
+    return window.EnglishTimedPractice?.summary(session?.exam) || { total: session?.questions?.length || 0, attempted: 0, correct: 0, unanswered: session?.questions?.length || 0, percent: 0 };
+  }
+
+  function finishTimedPractice(expired = false) {
+    const session = state.session;
+    if (!session?.exam || session.exam.finished) return;
+    if (expired) window.EnglishTimedPractice.expire(session.exam);
+    else window.EnglishTimedPractice.finish(session.exam);
+    stopTimedPracticeClock();
+    renderResult();
+  }
+
+  function updateTimedPracticeClock() {
+    const exam = state.session?.exam;
+    if (!exam?.active) return;
+    const remaining = window.EnglishTimedPractice.remaining(exam);
+    if (remaining <= 0) { finishTimedPractice(true); return; }
+    const clock = $('[data-exam-time]');
+    if (clock) {
+      clock.textContent = window.EnglishTimedPractice.format(remaining);
+      clock.classList.toggle('warning', remaining <= 60);
+    }
+  }
+
+  function startTimedPracticeClock() {
+    stopTimedPracticeClock();
+    if (state.session?.exam?.active) timedPracticeInterval = window.setInterval(updateTimedPracticeClock, 1000);
+  }
+
+  function renderTimedPractice() {
+    const panel = $('#timed-practice-panel');
+    const session = state.session;
+    if (!panel || !session?.exam || !window.EnglishTimedPractice) return;
+    if (!session.exam.total) { panel.innerHTML = ''; stopTimedPracticeClock(); return; }
+    const exam = session.exam;
+    const summary = timedPracticeSummary(session);
+    const remaining = window.EnglishTimedPractice.remaining(exam);
+    const timeClass = exam.active && remaining <= 60 ? 'warning' : '';
+    const action = !exam.active && !exam.expired && !exam.finished
+      ? `<button class="exam-action" data-exam-start>Start 10-minute test · 開始 10 分鐘測驗</button>`
+      : exam.active
+        ? `<button class="exam-action secondary" data-exam-finish>Finish and see result · 交卷並查看成績</button>`
+        : '';
+    const status = !exam.active && !exam.expired && !exam.finished
+      ? 'Practice mode is open. Start the timer when you are ready; timing does not run while you read the module. · 可先熟習題目；準備好才開始倒數。'
+      : exam.active
+        ? 'Timed test is running. Each checked objective answer is counted once; the timer will submit this session at 00:00. · 限時測驗進行中；每題核對後只計一次，到 00:00 自動結算。'
+        : exam.expired ? 'Time is up. This timed session has been submitted. · 時間到，本次限時測驗已結算。' : 'This timed session has been submitted. · 本次限時測驗已交卷。';
+    panel.innerHTML = `<section class="timed-practice-strip" aria-live="polite"><div class="exam-metric"><strong>Exam mode · 考試模式</strong><span>Objective score only · 只計客觀題</span></div><div class="exam-metric"><strong class="exam-time ${timeClass}" data-exam-time>${window.EnglishTimedPractice.format(remaining)}</strong><span>Time remaining · 剩餘時間</span></div><div class="exam-metric"><strong>${summary.correct} / ${summary.total}</strong><span>Score · 分數</span></div><div class="exam-status">${status}</div>${action}</section>`;
+    $('[data-exam-start]')?.addEventListener('click', () => {
+      session.drafts = Array(session.questions.length).fill('');
+      session.results = Array(session.questions.length).fill(null);
+      session.index = 0;
+      session.exam = window.EnglishTimedPractice.restart(session.exam);
+      renderQuestion();
+    });
+    $('[data-exam-finish]')?.addEventListener('click', () => finishTimedPractice(false));
+    startTimedPracticeClock();
+  }
+
   function updateSessionProgress() {
     const session = state.session;
     const done = session.results.filter(Boolean).length;
@@ -1358,6 +1426,13 @@ function showView(name) {
     $('#check-question').classList.toggle('hidden', Boolean(currentResult));
     $('#next-question').classList.toggle('hidden', !currentResult);
     $('#previous-question').disabled = session.index === 0;
+    if (session.exam?.finished) {
+      $$('[data-choice]').forEach((button) => { button.disabled = true; });
+      if ($('#self-check')) $('#self-check').disabled = true;
+      if ($('#answer-field')) $('#answer-field').disabled = true;
+      $('#check-question').disabled = true;
+      $('#next-question').disabled = true;
+    }
 
     $('#play-audio')?.addEventListener('click', () => speak(item.audioText));
     $('#flash-audio')?.addEventListener('click', () => speak(item.flashcard.word));
@@ -1386,6 +1461,7 @@ function showView(name) {
       finally { button.disabled = false; }
     });
     updateSessionProgress();
+    renderTimedPractice();
   }
 
   function addReview(item, answer) {
@@ -1400,6 +1476,7 @@ function showView(name) {
 
   function checkCurrent() {
     const session = state.session;
+    if (session?.exam?.finished) return;
     const item = currentQuestion();
     const answer = session.drafts[session.index];
     if (!answer || String(answer).trim() === '') { toast(item.selfCheck ? '完成朗讀後，請勾選確認。' : '請先選擇或輸入答案。'); return; }
@@ -1410,6 +1487,7 @@ function showView(name) {
     else if (item.options) correct = String(answer) === item.answer;
     else correct = normalize(answer) === normalize(item.answer);
     session.results[session.index] = { correct, answer };
+    if (session.exam && item.options && !item.selfCheck && !item.writingTask) window.EnglishTimedPractice?.record(session.exam, item.id || `question-${session.index + 1}`, correct);
     const record = stats();
     record.completed += 1;
     record.correct += Number(correct);
@@ -1454,22 +1532,29 @@ function showView(name) {
     }
     const bank = getBank();
     const questions = module.assessmentMock ? bank : selectSessionQuestions(bank, module.sessions);
-    state.session = { questions, index: 0, drafts: Array(questions.length).fill(''), results: Array(questions.length).fill(null), review: false, mock: Boolean(module.assessmentMock) };
+    stopTimedPracticeClock();
+    const objectiveTotal = questions.filter((item) => Array.isArray(item.options) && !item.selfCheck && !item.writingTask).length;
+    state.session = { questions, index: 0, drafts: Array(questions.length).fill(''), results: Array(questions.length).fill(null), review: false, mock: Boolean(module.assessmentMock), exam: window.EnglishTimedPractice?.create(objectiveTotal, 600) };
     showView('session');
     renderQuestion();
   }
 
   function nextQuestion() {
+    if (state.session?.exam?.finished) return;
     if (state.session.index + 1 < state.session.questions.length) { state.session.index += 1; renderQuestion(); }
     else renderResult();
   }
 
   function renderResult() {
+    stopTimedPracticeClock();
     const results = state.session.results;
     const correct = results.filter((result) => result?.correct).length;
     const total = results.length;
     const score = Math.round(correct / total * 100);
     const incorrect = total - correct;
+    const examSummary = state.session.exam ? timedPracticeSummary(state.session) : null;
+    const isTimedResult = Boolean(examSummary && state.session.exam?.startedAt);
+    const examPrefix = isTimedResult ? `限時測驗客觀題結果：答對 ${examSummary.correct}/${examSummary.total} 題（${examSummary.percent}%）；${examSummary.unanswered ? `未作答 ${examSummary.unanswered} 題。` : '已完成所有客觀題。'} ` : '';
     if (state.session.mock) {
       const objectiveIndexes = state.session.questions.map((item, index) => item.writingTask ? null : index).filter((index) => index !== null);
       const objectiveCorrect = objectiveIndexes.filter((index) => results[index]?.correct).length;
@@ -1477,13 +1562,13 @@ function showView(name) {
       const writingItem = state.session.questions.find((item) => item.writingTask);
       const writingIndex = state.session.questions.findIndex((item) => item.writingTask);
       const writingComplete = writingIndex >= 0 && Boolean(results[writingIndex]?.correct);
-      $('#result-score').textContent = `${objectiveCorrect}/${objectiveTotal}`;
-      $('#result-title').textContent = objectiveCorrect >= Math.ceil(objectiveTotal * 0.8) ? 'Pre-S1-style readiness complete.' : 'Pre-S1-style practice complete.';
-      $('#result-copy').textContent = `你已完成原創中一分班試英語銜接模擬：客觀題答對 ${objectiveCorrect}／${objectiveTotal} 題；寫作自我檢查${writingComplete ? '已完成' : '尚未完成'}。本單元並非教育局官方試卷，客觀題分數不包含寫作內容評核。${writingItem ? ` 寫作目標為 ${writingItem.writingTask.target}。` : ''}`;
+      $('#result-score').textContent = isTimedResult ? `${examSummary.correct}/${examSummary.total}` : `${objectiveCorrect}/${objectiveTotal}`;
+      $('#result-title').textContent = isTimedResult ? 'Timed objective practice complete.' : (objectiveCorrect >= Math.ceil(objectiveTotal * 0.8) ? 'Pre-S1-style readiness complete.' : 'Pre-S1-style practice complete.');
+      $('#result-copy').textContent = `${examPrefix}你已完成原創中一分班試英語銜接模擬：客觀題答對 ${objectiveCorrect}／${objectiveTotal} 題；寫作自我檢查${writingComplete ? '已完成' : '尚未完成'}。本單元並非教育局官方試卷，客觀題分數不包含寫作內容評核。${writingItem ? ` 寫作目標為 ${writingItem.writingTask.target}。` : ''}`;
     } else {
-      $('#result-score').textContent = `${score}%`;
-      $('#result-title').textContent = score >= 80 ? 'A strong practice session.' : 'Practice complete. Keep building.';
-      $('#result-copy').textContent = incorrect ? `你完成了 ${total} 題，答對 ${correct} 題。未掌握的題目已保留在溫習清單；回顧提示後再試一次會更有把握。` : `你答對全部 ${total} 題。下一次可試試另一個技能路線，讓讀、寫、聽、說一起進步。`;
+      $('#result-score').textContent = isTimedResult ? `${examSummary.percent}%` : `${score}%`;
+      $('#result-title').textContent = isTimedResult ? 'Timed objective practice complete.' : (score >= 80 ? 'A strong practice session.' : 'Practice complete. Keep building.');
+      $('#result-copy').textContent = isTimedResult ? `${examPrefix}寫作、口語及自我檢查不計入此客觀題分數；此為原創練習，並非官方考試成績。` : `${incorrect ? `你完成了 ${total} 題，答對 ${correct} 題。未掌握的題目已保留在溫習清單；回顧提示後再試一次會更有把握。` : `你答對全部 ${total} 題。下一次可試試另一個技能路線，讓讀、寫、聽、說一起進步。`}`;
     }
     $('#result-review').classList.toggle('hidden', reviewItems().length === 0);
     showView('result');
@@ -1527,7 +1612,7 @@ function showView(name) {
       else if (target === 'tracker') { renderTracker(); showView('tracker'); }
       else { showView('home'); renderHome(); }
     }));
-    $('#back-home').addEventListener('click', () => { showView('home'); renderHome(); });
+    $('#back-home').addEventListener('click', () => { if (state.session?.exam) state.session.exam.active = false; stopTimedPracticeClock(); showView('home'); renderHome(); });
     $('#start-practice').addEventListener('click', startPractice);
     $('#hint-button').addEventListener('click', () => toast(currentQuestion().hint || routes[currentQuestion().route].tip));
     $('#check-question').addEventListener('click', checkCurrent);

@@ -8,7 +8,8 @@
   const safeSet = (key, value) => transientStore.set(key, JSON.parse(JSON.stringify(value)));
   const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' })[char]);
   const letters = ['A', 'B', 'C', 'D'];
-  const state = { year: 's1', stage: 's1-bridge', route: 'read', moduleId: null, index: 0, selected: null, reorder: [], checked: false, finderYear: 'all', finderType: 'all', sessionResults: {} };
+  const state = { year: 's1', stage: 's1-bridge', route: 'read', moduleId: null, index: 0, selected: null, reorder: [], checked: false, finderYear: 'all', finderType: 'all', sessionResults: {}, exam: null };
+  let examTimer = null;
   const accountReturnKey = 'secondary-english-account-return-v1';
   const progressKey = 'secondary-english-studio-progress-v1';
   const draftKey = 'secondary-english-studio-drafts-v1';
@@ -252,6 +253,7 @@
   };
 
   function chooseStage(stageId) {
+    stopExamTimer(); state.exam = null;
     const next = stageList.find((item) => item.id === stageId);
     state.stage = stageId;
     state.year = next?.year || 's1';
@@ -262,6 +264,7 @@
   }
 
   function chooseRoute(route) {
+    stopExamTimer(); state.exam = null;
     state.route = route;
     state.moduleId = modulesForRoute()[0]?.id || null;
     state.index = 0; state.selected = null; state.checked = false;
@@ -269,6 +272,7 @@
   }
 
   function chooseModule(moduleId) {
+    stopExamTimer(); state.exam = null;
     state.moduleId = moduleId;
     state.index = 0; state.selected = null; state.checked = false;
     render();
@@ -350,6 +354,60 @@
     return `<section class="session-progress" aria-label="Practice progress"><div><strong>Practice progress · 作答進度</strong><span>${answered.length}/${items.length} answered · 已作答</span></div><div class="progress-track"><i style="width:${percent}%"></i></div><p>${correct} correct so far · 暫時答對 ${correct} 題 <span>Session-only · 僅限本次頁面</span></p></section>`;
   }
 
+  function objectiveItems(items) {
+    return items.filter((item) => Array.isArray(item.options) || item.type === 'reorder' || (item.type === 'dialogue' && Array.isArray(item.checkpoints?.[0]?.options)));
+  }
+
+  function stopExamTimer() {
+    if (examTimer) window.clearInterval(examTimer);
+    examTimer = null;
+  }
+
+  function refreshExamClock() {
+    const exam = state.exam?.test;
+    if (!exam?.active) return;
+    const remaining = window.EnglishTimedPractice?.remaining(exam) ?? 0;
+    if (remaining <= 0) {
+      window.EnglishTimedPractice?.expire(exam);
+      stopExamTimer();
+      render();
+      return;
+    }
+    const clock = root.querySelector('[data-exam-time]');
+    if (clock) {
+      clock.textContent = window.EnglishTimedPractice.format(remaining);
+      clock.classList.toggle('warning', remaining <= 60);
+    }
+  }
+
+  function scheduleExamClock() {
+    stopExamTimer();
+    if (state.exam?.test?.active) examTimer = window.setInterval(refreshExamClock, 1000);
+  }
+
+  function recordExam(item, correct) {
+    const exam = state.exam?.test;
+    if (exam?.active) window.EnglishTimedPractice?.record(exam, item.id || `item-${state.index + 1}`, correct);
+  }
+
+  function examStrip(module, items) {
+    const objective = objectiveItems(items);
+    if (!objective.length || !window.EnglishTimedPractice) return '';
+    const exam = state.exam?.moduleId === module.id ? state.exam.test : window.EnglishTimedPractice.create(objective.length, 600);
+    const summary = window.EnglishTimedPractice.summary(exam);
+    const remaining = window.EnglishTimedPractice.remaining(exam);
+    const action = !exam.active && !exam.expired && !exam.finished
+      ? '<button class="exam-action" data-exam-start>Start 10-minute test · 開始 10 分鐘測驗</button>'
+      : exam.active
+        ? '<button class="exam-action secondary" data-exam-finish>Finish and see result · 交卷並查看成績</button>'
+        : '<button class="exam-action" data-exam-retry>Retry timed test · 再試限時測驗</button>';
+    const status = exam.expired || exam.finished
+      ? `<section class="timed-practice-result"><h3>${exam.expired ? 'Time is up · 時間到' : 'Timed practice completed · 限時練習已交卷'}</h3><p>${summary.correct}/${summary.total} correct · 答對 ${summary.correct}/${summary.total} 題；${summary.unanswered} unanswered · ${summary.unanswered} 題未作答。這只屬本頁限時練習結果，並非正式測驗紀錄。</p></section>`
+      : `<div class="exam-status">${exam.active ? 'Timed test is running. Each checked objective answer counts once. · 限時測驗進行中；每題核對後只計一次。' : 'Practise first if you wish, then start the timer when ready. · 可先練習；準備好才開始倒數。'}</div>`;
+    scheduleExamClock();
+    return `<section class="timed-practice-strip"><div class="exam-metric"><strong>Exam mode · 考試模式</strong><span>Current module · 本單元</span></div><div class="exam-metric"><strong class="exam-time ${exam.active && remaining <= 60 ? 'warning' : ''}" data-exam-time>${window.EnglishTimedPractice.format(remaining)}</strong><span>Time remaining · 剩餘時間</span></div><div class="exam-metric"><strong>${summary.correct} / ${summary.total}</strong><span>Score · 分數</span></div>${status}${action}</section>`;
+  }
+
   function renderTask() {
     const module = currentModule();
     if (!module) return '<section class="task-board"><div class="empty">This stage is being prepared. · 此階段正在準備中。</div></section>';
@@ -357,7 +415,7 @@
     if (!items.length) return `<section class="task-board"><div class="empty">This original module is being prepared. · 此原創單元正在準備中。</div></section>`;
     if (state.index >= items.length) state.index = 0;
     const item = items[state.index];
-    const header = `<section class="task-board"><header class="task-top"><div><p class="eyebrow">${escape(stage().code)} · ${escape(module.title.toUpperCase())}</p><h2>${escape(module.title)} <span class="zh">${escape(module.zh)}</span></h2><small>Original practice · 原創練習</small></div><span class="step">${state.index + 1} / ${items.length}</span></header>${sessionProgress(module, items)}`;
+    const header = `<section class="task-board"><header class="task-top"><div><p class="eyebrow">${escape(stage().code)} · ${escape(module.title.toUpperCase())}</p><h2>${escape(module.title)} <span class="zh">${escape(module.zh)}</span></h2><small>Original practice · 原創練習</small></div><span class="step">${state.index + 1} / ${items.length}</span></header>${examStrip(module, items)}${sessionProgress(module, items)}`;
     const body = renderItem(item, module, items.length);
     return `${header}${body}</section>`;
   }
@@ -471,12 +529,14 @@
   function checkCurrentAnswer() {
     const items = itemsFor(currentModule());
     const item = items[state.index];
-    if (!item) return;
+    if (!item || state.exam?.test?.finished) return;
     if (item.type === 'reorder') {
       const answer = item.answer || [];
       if ((state.reorder || []).length !== answer.length) return;
       state.checked = true;
-      mark(currentModule().id, state.reorder.every((part, index) => part === answer[index]));
+      const correct = state.reorder.every((part, index) => part === answer[index]);
+      mark(currentModule().id, correct);
+      recordExam(item, correct);
       render();
       return;
     }
@@ -485,14 +545,15 @@
     const correct = Number(answer || 0) === state.selected;
     state.checked = true;
     mark(currentModule().id, correct);
+    recordExam(item, correct);
     if (currentModule().progressSession) state.sessionResults[currentModule().id] = { ...(state.sessionResults[currentModule().id] || {}), [item.id]: correct };
     render();
   }
 
   function bind() {
     root.querySelectorAll('[data-stage]').forEach((button) => button.addEventListener('click', () => chooseStage(button.dataset.stage)));
-    root.querySelectorAll('[data-try-s1-quest]').forEach((button) => button.addEventListener('click', () => { state.stage = 's1-extend'; state.year = 's1'; state.route = 'language'; state.moduleId = 's1-grammar-quest'; state.index = 0; state.selected = null; state.reorder = []; state.checked = false; render(); }));
-    root.querySelectorAll('[data-try-s3-formal]').forEach((button) => button.addEventListener('click', () => { state.stage = 's3-ready'; state.year = 's3'; state.route = 'language'; state.moduleId = 's3-varied-grammar-bank'; state.index = 0; state.selected = null; state.reorder = []; state.checked = false; render(); }));
+    root.querySelectorAll('[data-try-s1-quest]').forEach((button) => button.addEventListener('click', () => { stopExamTimer(); state.exam = null; state.stage = 's1-extend'; state.year = 's1'; state.route = 'language'; state.moduleId = 's1-grammar-quest'; state.index = 0; state.selected = null; state.reorder = []; state.checked = false; render(); }));
+    root.querySelectorAll('[data-try-s3-formal]').forEach((button) => button.addEventListener('click', () => { stopExamTimer(); state.exam = null; state.stage = 's3-ready'; state.year = 's3'; state.route = 'language'; state.moduleId = 's3-varied-grammar-bank'; state.index = 0; state.selected = null; state.reorder = []; state.checked = false; render(); }));
     root.querySelectorAll('[data-route]').forEach((button) => button.addEventListener('click', () => chooseRoute(button.dataset.route)));
     root.querySelectorAll('[data-module]').forEach((button) => button.addEventListener('click', () => chooseModule(button.dataset.module)));
     const finderYear = root.querySelector('[data-finder-year]');
@@ -500,13 +561,23 @@
     const finderType = root.querySelector('[data-finder-type]');
     if (finderType) finderType.addEventListener('change', () => { state.finderType = finderType.value; render(); });
     root.querySelectorAll('[data-finder-module]').forEach((button) => button.addEventListener('click', () => { const module = moduleRegistry.find((item) => item.id === button.dataset.finderModule); if (!module) return; state.stage = module.stage; state.year = stageList.find((item) => item.id === module.stage)?.year || 's1'; state.route = module.route; chooseModule(module.id); }));
-    root.querySelectorAll('[data-option]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.selected = Number(button.dataset.option); render(); } }));
+    root.querySelectorAll('[data-option]').forEach((button) => button.addEventListener('click', () => { if (!state.checked && !state.exam?.test?.finished) { state.selected = Number(button.dataset.option); render(); } }));
     root.querySelectorAll('[data-check]').forEach((button) => { button.onclick = checkCurrentAnswer; });
     root.querySelectorAll('[data-check-reorder]').forEach((button) => { button.onclick = checkCurrentAnswer; });
-    root.querySelectorAll('[data-reorder-add]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.reorder.push(Number(button.dataset.reorderAdd)); render(); } }));
-    root.querySelectorAll('[data-reorder-remove]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.reorder = state.reorder.filter((index) => index !== Number(button.dataset.reorderRemove)); render(); } }));
-    root.querySelectorAll('[data-reorder-reset]').forEach((button) => button.addEventListener('click', () => { if (!state.checked) { state.reorder = []; render(); } }));
-    root.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => { const items = itemsFor(currentModule()); state.index = (state.index + 1) % items.length; state.selected = null; state.reorder = []; state.checked = false; render(); }));
+    root.querySelectorAll('[data-reorder-add]').forEach((button) => button.addEventListener('click', () => { if (!state.checked && !state.exam?.test?.finished) { state.reorder.push(Number(button.dataset.reorderAdd)); render(); } }));
+    root.querySelectorAll('[data-reorder-remove]').forEach((button) => button.addEventListener('click', () => { if (!state.checked && !state.exam?.test?.finished) { state.reorder = state.reorder.filter((index) => index !== Number(button.dataset.reorderRemove)); render(); } }));
+    root.querySelectorAll('[data-reorder-reset]').forEach((button) => button.addEventListener('click', () => { if (!state.checked && !state.exam?.test?.finished) { state.reorder = []; render(); } }));
+    root.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => { if (state.exam?.test?.finished) return; const items = itemsFor(currentModule()); state.index = (state.index + 1) % items.length; state.selected = null; state.reorder = []; state.checked = false; render(); }));
+    root.querySelectorAll('[data-exam-start], [data-exam-retry]').forEach((button) => button.addEventListener('click', () => {
+      const module = currentModule();
+      const items = itemsFor(module);
+      state.exam = { moduleId: module.id, test: window.EnglishTimedPractice.restart(window.EnglishTimedPractice.create(objectiveItems(items).length, 600)) };
+      state.index = 0; state.selected = null; state.reorder = []; state.checked = false;
+      delete state.sessionResults[module.id];
+      render();
+    }));
+    root.querySelectorAll('[data-exam-finish]').forEach((button) => button.addEventListener('click', () => { if (state.exam?.test) { window.EnglishTimedPractice.finish(state.exam.test); stopExamTimer(); render(); } }));
+    if (state.exam?.test?.finished) root.querySelectorAll('[data-option], [data-check], [data-check-reorder], [data-next], [data-reorder-add], [data-reorder-remove], [data-reorder-reset]').forEach((button) => { button.disabled = true; });
     root.querySelectorAll('[data-session-retry]').forEach((button) => button.addEventListener('click', () => { delete state.sessionResults[currentModule().id]; state.index = 0; state.selected = null; state.checked = false; render(); }));
     root.querySelectorAll('[data-hint]').forEach((button) => button.addEventListener('click', () => { const message = document.createElement('div'); message.className = 'feedback'; message.innerHTML = `<strong>Hint · 提示</strong><br>${escape(button.dataset.hint)}`; button.closest('.task-board').appendChild(message); button.remove(); }));
     root.querySelectorAll('[data-say]').forEach((button) => button.addEventListener('click', () => speak(button.dataset.say)));
