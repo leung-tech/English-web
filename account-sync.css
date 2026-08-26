@@ -3,4 +3,7 @@
 .account-sync-note span { display:block; margin-top:3px; color:#5d7c70; font:600 10px/1.5 "Noto Sans TC",sans-serif; }
 .account-sync-note a { flex:0 0 auto; min-height:34px; padding:9px 10px; border-radius:5px; background:#4e8875; color:#fff; font-size:10px; font-weight:800; text-decoration:none; }
 .account-sync-note a:hover { background:#376b59; }
+.guest-login-return { display:inline-flex; flex:0 0 auto; align-items:center; min-height:38px; padding:0 10px; border:1px solid #bdd1dc; border-radius:7px; background:#fff; color:#214d7a; font:800 11px/1.2 "DM Sans","Noto Sans TC",sans-serif; text-decoration:none; white-space:nowrap; }
+.guest-login-return:hover { border-color:#214d7a; background:#eff6fa; }
 @media (max-width:600px) { .account-sync-note { align-items:flex-start; flex-direction:column; } .account-sync-note a { width:100%; text-align:center; } }
+@media (max-width:600px) { .guest-login-return { min-height:35px; font-size:10px; } }

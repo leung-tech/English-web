@@ -110,8 +110,22 @@
     notices.forEach((notice) => { notice.innerHTML = message; });
   }
 
+  function addGuestLoginReturn() {
+    if (!isGuestMode() || document.querySelector('[data-guest-login-return]')) return;
+    const topbar = document.querySelector('.topbar');
+    if (!topbar) return;
+    const link = document.createElement('a');
+    link.href = `${portalOrigin}/?entry=login`;
+    link.className = 'guest-login-return';
+    link.dataset.guestLoginReturn = 'true';
+    link.setAttribute('aria-label', 'Return to sign in · 返回登入頁面');
+    link.textContent = '← Return to sign in · 返回登入頁面';
+    topbar.prepend(link);
+  }
+
   const resumedPractice = connectFromUrl();
   requireAccountSession();
+  addGuestLoginReturn();
   updateConnectionNotice();
   if (!resumedPractice) void restoreAccountPrimaryGrade();
   document.querySelectorAll('[data-account-link]').forEach((link) => link.addEventListener('click', (event) => {
