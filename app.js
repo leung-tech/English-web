@@ -161,7 +161,7 @@
       ['Choose the correct question.', ['Where is my book?', 'Where my book is?', 'Where are my book?', 'Where book my is?'], 'Questions with is begin with Where is.']
     ],
     2: [
-      ['Choose the correct sentence.', ['Tom plays football on Sunday.', 'Tom play football on Sunday.', 'Tom playing football on Sunday.', 'Tom played football now.'], 'In the simple present, one person such as Tom usually takes plays.'],
+      ['Choose the correct sentence.', ['Tom plays football on Sunday.', 'Tom play football on Sunday.', 'Tom playing football on Sunday.', 'Tom played football now.'], 'In the simple present, use plays with one person such as Tom.'],
       ['Choose the correct sentence.', ['There are three apples.', 'There is three apples.', 'There are three apple.', 'There be three apples.'], 'Use are and plural apples for more than one.'],
       ['Choose the correct sentence.', ['She has two sisters.', 'She have two sisters.', 'She is two sisters.', 'She having two sisters.'], 'Use has with she.'],
       ['Choose the correct sentence.', ['The baby is sleeping now.', 'The baby sleeping now.', 'The baby are sleeping now.', 'The baby sleep now.'], 'Use is + verb-ing for an action happening now.'],
@@ -311,15 +311,27 @@
 
   function createVocabulary() {
     const words = expanded('words', scope().wordBank);
-    const allWords = Object.values(scopeMap).flatMap((item) => item.wordBank);
-    const frames = ['Choose the correctly spelt word:', 'Which word belongs to this year’s word bank?', 'Choose the spelling you should keep in your notebook:'];
+    const frames = ['Choose the correct spelling of', 'Choose the correct spelling of', 'Choose the spelling you should keep in your notebook:'];
     return Array.from({ length: 36 }, (_, index) => {
       const word = words[index % words.length];
-      const typo = word.length > 4 ? `${word.slice(0, -2)}${word.at(-1)}${word.at(-2)}` : `${word}e`;
-      const other = randomize(allWords.filter((item) => item !== word && item !== typo)).slice(0, 2);
-      const options = randomize([word, typo, ...other]);
-      return question(`vocabulary-${state.grade}-${index}`, 'language', 'Vocabulary & spelling', `${frames[index % frames.length]} ${index % 3 === 1 ? '' : `(${word})`}`, options.indexOf(word), `“${word}” is a useful P${state.grade} word. Read it, spell it and try to use it in a sentence.`, options, { hint: `Look carefully at each letter in “${word}”.` });
+      const transposed = word.length > 4 ? `${word.slice(0, -2)}${word.at(-1)}${word.at(-2)}` : `${word}e`;
+      const typo = transposed === word ? word.slice(0, -1) : transposed;
+      const variants = [typo, `${word.slice(0, 1)}${word.slice(2)}`, `${word}${word.at(-1)}`]
+        .map((candidate) => candidate || `${word}e`)
+        .filter((candidate, candidateIndex, list) => candidate !== word && list.indexOf(candidate) === candidateIndex);
+      while (variants.length < 3) variants.push(`${word}${'e'.repeat(variants.length)}`);
+      const options = randomize([word, ...variants.slice(0, 3)]);
+      return question(`vocabulary-${state.grade}-${index}`, 'language', 'Vocabulary & spelling', `${frames[index % 3]} “${word}”.`, options.indexOf(word), `“${word}” is a useful P${state.grade} word. Read it, spell it and try to use it in a sentence.`, options, { hint: `Look carefully at each letter in “${word}”.` });
     });
+  }
+
+  function grammarHint(prompt, correct, suppliedHint) {
+    if (suppliedHint) return suppliedHint;
+    const clue = `${prompt} ${correct}`.toLowerCase();
+    if (/^(on|at|in)$/i.test(String(correct).trim())) return 'Use on with a day, at with an exact time and in with a month, year or part of the day. 日子前用 on；確實時間前用 at；月份、年份或一天時段前用 in。';
+    if (/^where |^what |^does |^are there |^can /.test(String(correct).toLowerCase())) return 'For a question, check the question word, the helping verb and the subject order. 問句要檢查疑問詞、助動詞和主語的次序。';
+    if (/\b(because|although|but|so)\b/.test(String(correct).toLowerCase())) return 'Read both halves of the sentence. Decide whether the link shows a reason, result or contrast. 先讀前後兩部分，判斷連接詞表示原因、結果還是轉折。';
+    return 'Read the whole sentence. Look for a clue such as the subject, a time word or the word before the blank. 先讀完整句子，找出主語、時間詞或空格前的詞語等提示。';
   }
 
   function createGrammar() {
@@ -328,7 +340,7 @@
     const interviewItems = interviewGrammar.map((item) => [item.prompt, [item.options[item.answer], ...item.options.filter((_, index) => index !== item.answer)], item.explanation, item.promptZh, item.explanationZh, item.id, item.hint]);
     return [...baseItems, ...interviewItems].map(([prompt, options, explanation, promptZh, explanationZh, id, hint], index) => {
       const shuffled = randomize(options);
-      return question(id || `grammar-${state.grade}-${index}`, 'language', 'Grammar & patterns', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { promptZh, explanationZh, hint: hint || scope().assessment, originalPractice: Boolean(id) });
+      return question(id || `grammar-${state.grade}-${index}`, 'language', 'Grammar & patterns', prompt, shuffled.indexOf(options[0]), explanation, shuffled, { promptZh, explanationZh, hint: grammarHint(prompt, options[0], hint), originalPractice: Boolean(id) });
     });
   }
 
@@ -974,7 +986,13 @@
       id: `reading-details-${state.grade}-${index}`,
       topic: 'Key detail hunter',
       prompt: index % 2 === 0 ? `Find the key detail. ${item.prompt}` : item.prompt,
-      hint: 'Look for a name, a place, a time, a number or an action. The answer should be stated clearly in the passage.'
+      hint: (() => {
+        const prompt = item.prompt.toLowerCase();
+        if (/infer|best describes|what can we infer/.test(prompt)) return 'Use the actions and details as evidence. What do they show, even if the answer is not said in one sentence? 用行動和細節作證據；即使答案不是一句直接說出，它們顯示甚麼？';
+        if (/refer|what does .* mean/.test(prompt)) return 'Read the sentence before and after the key word. Look for the noun, idea or clue that explains it. 閱讀重點詞前後的句子，找出解釋它的名詞、意思或線索。';
+        if (/purpose|why does .* use|why will .* tested|main message/.test(prompt)) return 'Read the whole passage or paragraph. Think about the writer’s main purpose, message or contrast. 閱讀整段內容，思考作者的主要目的、訊息或轉折。';
+        return 'Circle a key word in the question. Find it or a matching idea in the passage, then read the whole sentence around it. 圈出題目的重點字，在文章找相同或相配的意思，再讀前後整句。';
+      })()
     }));
   }
 

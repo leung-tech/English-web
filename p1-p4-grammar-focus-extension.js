@@ -12,7 +12,7 @@
       item('Choose the correct sentence.', ['I can swim.', 'I can swims.', 'I can swimming.', 'I am can swim.'], 'Use can + base verb: can swim.', '選出正確句子。', 'can 後接動詞原形：can swim。'),
       item('Choose the correct sentence.', ['The toy is under the chair.', 'The toy is under chair the.', 'The toy are under the chair.', 'The toy under is the chair.'], 'Use is for one toy. Under tells the place.', '選出正確句子。', '一件玩具用 is；under 說明位置。'),
       item('Choose the correct question.', ['What is your name?', 'What your name is?', 'What are your name?', 'What is name your?'], 'A singular what-question can begin with What is.', '選出正確問句。', '單數 what 問句可用 What is 開始。'),
-      item('Choose the correct sentence.', ['Where is the bus?', 'where is the bus?', 'Where is the bus', 'Where the bus is?'], 'A question begins with a capital letter and ends with a question mark.', '選出正確句子。', '問句以大寫字母開始，並以問號結束。')
+      item('Choose the correct sentence.', ['Where is the bus?', 'Where the bus is?', 'Where is bus?', 'Where is the bus'], 'A question begins with a capital letter and ends with a question mark.', '選出正確句子。', '問句以大寫字母開始，並以問號結束。')
     ],
     2: [
       item('Choose the correct question.', ['Does Leo play football on Friday?', 'Do Leo plays football on Friday?', 'Does Leo plays football on Friday?', 'Leo does play football on Friday?'], 'Use Does + base verb for one person: Does Leo play…?', '選出正確問句。', '一個人用 Does + 動詞原形：Does Leo play…?'),

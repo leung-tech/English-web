@@ -14,7 +14,7 @@
     ['cake', 'Which word rhymes with cake?', '哪個字和 cake 押韻？', ['lake', 'cat', 'sun', 'bed'], 0, 'Cake and lake end with the same /ake/ sound.', 'cake 和 lake 都以 /ake/ 聲音結尾。'],
     ['map', 'Which sound is in the middle of map?', 'map 的中間聲音是甚麼？', ['a', 'e', 'i', 'o'], 0, 'The middle sound in map is /a/.', 'map 的中間聲音是 /a/。'],
     ['The green frog is on the log.', 'Where is the frog?', '青蛙在哪裡？', ['On the log', 'In the bag', 'Under the bed', 'At school'], 0, 'The frog is on the log.', '青蛙在木頭上。'],
-    ['I can see six kites in the sky.', 'How many kites can you hear about?', '你聽到多少個風箏？', ['Six', 'Four', 'Five', 'Seven'], 0, 'The speaker can see six kites.', '說話者看見六個風箏。'],
+    ['I can see six kites in the sky.', 'How many kites can you see?', '你看見多少個風箏？', ['Six', 'Four', 'Five', 'Seven'], 0, 'The speaker can see six kites.', '說話者看見六個風箏。'],
     ['Touch your nose, then clap two times.', 'What should you do after touching your nose?', '摸鼻子後應做甚麼？', ['Clap two times', 'Open a book', 'Sit down', 'Draw a kite'], 0, 'The instruction says to clap two times after touching your nose.', '指令說摸鼻子後拍掌兩次。'],
     ['A pig is big. A hen is red.', 'Which word rhymes with pig?', '哪個字和 pig 押韻？', ['big', 'hen', 'red', 'hat'], 0, 'Pig and big end with the same /ig/ sound.', 'pig 和 big 都以 /ig/ 聲音結尾。']
   ]);
@@ -54,7 +54,7 @@
     ['play', 'Which word rhymes with play?', '哪個字和 play 押韻？', ['day', 'dog', 'bed', 'sun'], 0, 'Play and day end with the same /ay/ sound.', 'play 和 day 都以 /ay/ 音結尾。'],
     ['Last night, I watched a film with my family.', 'When did the speaker watch a film?', '說話者甚麼時候看電影？', ['Last night', 'Tomorrow morning', 'Every lunchtime', 'Next week'], 0, 'The time clue is last night.', '時間提示是 last night。'],
     ['First, Jay drew the poster. Next, he added the title. Finally, he showed it to the class.', 'What did Jay do after drawing the poster?', 'Jay 畫完海報後做了甚麼？', ['He added the title.', 'He showed it to the class.', 'He went home.', 'He bought a new poster.'], 0, 'Next, Jay added the title.', '接著 Jay 加上了標題。'],
-    ['The brave crab crossed the bridge.', 'Which word begins with the /br/ sound?', '哪個字以 /br/ 音開首？', ['brave', 'crab', 'crossed', 'bridge'], 0, 'Brave begins with /br/.', 'brave 以 /br/ 音開首。'],
+    ['The brave crab crossed the bridge.', 'Which word begins with the /br/ sound?', '哪個字以 /br/ 音開首？', ['brave', 'crab', 'crossed', 'tree'], 0, 'Brave begins with /br/.', 'brave 以 /br/ 音開首。'],
     ['We heard thunder, so we went indoors quickly.', 'Why did the group go indoors?', '大家為甚麼進入室內？', ['They heard thunder.', 'They wanted to swim.', 'They were late for lunch.', 'They lost a book.'], 0, 'They went indoors because they heard thunder.', '因為聽到雷聲，所以他們進入室內。'],
     ['The coach said, “Bring a bottle of water and meet at the gate at eight.”', 'What should pupils bring?', '學生應帶甚麼？', ['A bottle of water', 'A football', 'A lunch tray', 'A computer'], 0, 'The coach asks pupils to bring a bottle of water.', '教練請學生帶一瓶水。']
   ]);
@@ -182,7 +182,7 @@
       {
         id: 'cloze-to-finish', section: 'Section E · Integrated cloze', sectionZh: '戊部 · 綜合填空', route: 'language',
         passage: { title: 'Integrated cloze · First month at secondary school', text: 'When Alia began secondary school, she wanted to (1) ______ her time well. Every Sunday, she (2) ______ the week ahead. On the planner, she writes homework (3) ______ the day it is given, then adds a small star next to tasks that need (4) ______ before Friday. She also puts her PE kit by the door (5) ______ she will not forget it. After two weeks, Alia has already (6) ______ that short planning time makes busy mornings calmer.' },
-        prompt: 'Choose the best words for blank (4).', promptZh: '選出填空 (4) 的最佳答案。', options: ['to be finished', 'to finish', 'finished', 'finishing'], answer: 0,
+        prompt: 'Choose the best words for blank (4).', promptZh: '選出填空 (4) 的最佳答案。', options: ['to be finished', 'to finish', 'finished', 'to be finishing'], answer: 0,
         explanation: 'Tasks receive the action, so use need + to be + past participle: need to be finished.', explanationZh: 'tasks 是接受動作的對象，因此用 need 加 to be 加過去分詞：need to be finished。', hint: 'Ask whether the tasks do the action or receive it. 想想 tasks 是做動作還是接受動作。'
       },
       {
