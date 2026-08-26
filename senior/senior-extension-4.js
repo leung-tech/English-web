@@ -99,7 +99,35 @@
     }
   };
 
+  const paper3NoteHints = {
+    s4: {
+      date:'Keep the weekday and exact date; do not add unrelated event details. 保留星期及確實日期；不要加入無關活動資料。',
+      arrival:'Find both the required action and the exact time. 找出所需行動及確實時間。',
+      grouping:'Record who works with whom and for how long. 記下誰與誰合作及所需時間。',
+      materials:'Separate what volunteers bring from what the venue provides. 分開義工自備與場地提供的物品。',
+      absence:'Keep the action and the deadline together. 同時保留行動與期限。',
+      review:'Select every evidence source named for the later decision. 選出日後決定所列出的每項證據來源。'
+    },
+    s5: {
+      schedule:'Keep both abbreviated days and the exact time range. 保留日子縮寫及確實時間範圍。',
+      users:'Distinguish different users over a period from a daily total. 分辨一段期間的不同使用者與每日總數。',
+      pattern:'Compare the two days without inventing a number. 比較兩天，但不要虛構數字。',
+      revision:'Check what stays and what is added in the next trial. 核對下一輪試行保留甚麼及新增甚麼。',
+      deadline:'Keep the task, weekday and exact date. 保留任務、星期及確實日期。',
+      constraint:'Choose the option that states what staff can and cannot support. 選出同時說明職員能及不能提供甚麼支援的選項。'
+    },
+    s6: {
+      aim:'Focus on the intended help, not simply on posting more messages. 聚焦預期的支援，而不只是發放更多訊息。',
+      evidence:'Keep both the response number and the sample limitation. 同時保留回應人數及樣本限制。',
+      formats:'Find the two formats named for the first version. 找出首輪列明的兩種形式。',
+      entry:'Choose details that help users contact a service and check whether information is current. 選擇讓使用者聯絡服務並核對資料是否最新的詳情。',
+      checking:'Separate clarity testing from factual checking. 分開清晰度測試與事實核實。',
+      review:'Keep both the review timing and the update deadline. 同時保留檢討時間及更新期限。'
+    }
+  };
+
   Object.entries(paper3Items).forEach(([stage, item]) => {
+    item.noteItems.forEach((note) => { note.hint = paper3NoteHints[stage][note.label]; });
     add({ id:`${stage}-paper3`, stage, skill:'paper3', symbol:'P3', title:'Paper 3 skills lab', zh:'卷三聆聽及綜合能力', type:'paper3', items:[item] });
   });
 })();
