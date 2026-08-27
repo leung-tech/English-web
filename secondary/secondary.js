@@ -595,21 +595,13 @@
     root.querySelectorAll('[data-clear-draft]').forEach((button) => button.addEventListener('click', () => { clearDraft(currentModule().id); render(); }));
     root.querySelectorAll('[data-clear-progress]').forEach((button) => button.addEventListener('click', () => { transientStore.clear(); render(); }));
     root.querySelectorAll('[data-record-writing]').forEach((button) => button.addEventListener('click', () => { const count = ($('#draft')?.value || '').trim().split(/\s+/).filter(Boolean).length; const target = Number(button.dataset.recordWriting); const box = document.createElement('div'); box.className = `feedback ${count >= target ? 'good' : 'bad'}`; box.innerHTML = count >= target ? '<strong>✓ Completion recorded locally.</strong><br>Keep checking your evidence, organisation and accuracy.' : `<strong>Keep writing.</strong><br>You have ${count} words. Aim for at least ${target}.`; button.closest('.task-board').appendChild(box); if (count >= target) mark(currentModule().id, true, false); }));
-    root.querySelectorAll('[data-ai-writing-submit]').forEach((button) => button.addEventListener('click', async () => {
-      const draftText = String($('#draft')?.value || '').trim();
-      const output = root.querySelector('[data-ai-writing-feedback]');
-      if (draftText.length < 20) { output.innerHTML = '<p>Please write a little more before submitting. · 請先多寫一些英文內容才提交。</p>'; return; }
-      const item = itemsFor(currentModule())[state.index] || {};
+    root.querySelectorAll('[data-ai-writing-submit]').forEach((button) => {
       button.disabled = true;
-      output.innerHTML = '<p>Generating grade-level feedback… · 正在產生按年級評語…</p>';
-      try {
-        const result = await window.EnglishTuitionAccount?.submitWriting?.({ grade: state.year.toUpperCase(), taskId: item.id, writingText: draftText });
-        const feedback = result?.evaluation;
-        if (!feedback) throw new Error('AI feedback is unavailable right now.');
-        output.innerHTML = `<article><strong>AI formative feedback · AI 形成性評語 (${escape(feedback.overallScore)}/5)</strong><p>Content ${escape(feedback.contentScore)}/5 · Organization ${escape(feedback.organizationScore)}/5 · Language ${escape(feedback.languageScore)}/5 · Vocabulary ${escape(feedback.vocabularyScore)}/5</p><p>${escape(feedback.feedbackSummary)}</p><b>Strengths · 做得好</b><ul>${(feedback.strengths || []).map((point) => `<li>${escape(point)}</li>`).join('')}</ul><b>Next steps · 下一步</b><ul>${(feedback.nextSteps || []).map((point) => `<li>${escape(point)}</li>`).join('')}</ul><p><b>Model revision · 參考改寫</b><br>${escape(feedback.modelRevision)}</p></article>`;
-      } catch (error) { output.innerHTML = `<p>${escape(error.message || 'AI feedback is unavailable right now.')}</p>`; }
-      finally { button.disabled = false; }
-    }));
+      button.textContent = 'Automated feedback paused · 自動評語已暫停';
+      button.closest('.writing-ai-panel')?.querySelector('strong')?.replaceChildren('Self-review only · 只供自我檢查');
+      const output = root.querySelector('[data-ai-writing-feedback]');
+      if (output) output.innerHTML = '<p>Your writing stays in this browser. Use the plan, language bank and model to revise; nothing is submitted, stored or automatically marked. <span class="zh">文章只留在此瀏覽器。請用規劃、語言庫及範本修訂；系統不會提交、儲存或自動評分。</span></p>';
+    });
   }
 
   function render() { root.innerHTML = renderShell(); bind(); }

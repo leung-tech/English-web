@@ -1445,21 +1445,13 @@ function showView(name) {
     }));
     $('#self-check')?.addEventListener('change', (event) => { if (item.flashcard && event.target.checked && !session.revealed?.[session.index]) { event.target.checked = false; toast('Reveal the meaning first · 請先顯示字詞意思。'); return; } session.drafts[session.index] = event.target.checked ? 'confirmed' : ''; });
     $('#answer-field')?.addEventListener('input', (event) => { session.drafts[session.index] = event.target.value; });
-    $('#ai-writing-submit')?.addEventListener('click', async () => {
-      const writingText = String($('#answer-field')?.value || '').trim();
-      if (writingText.length < 20) { toast('請先完成至少一小段英文寫作，再提交 AI 評語。'); return; }
-      const button = $('#ai-writing-submit');
-      const panel = $('#ai-writing-feedback');
-      button.disabled = true;
-      panel.innerHTML = '<p class="question-zh">Generating grade-level feedback… · 正在產生按年級評語…</p>';
-      try {
-        const result = await window.EnglishTuitionAccount?.submitWriting?.({ grade: `P${state.grade}`, taskId: item.id, writingText });
-        const feedback = result?.evaluation;
-        if (!feedback) throw new Error('AI feedback is unavailable right now.');
-        panel.innerHTML = `<article class="ai-feedback-result"><strong>AI formative feedback · AI 形成性評語 (${escape(feedback.overallScore)}/5)</strong><p>Content ${escape(feedback.contentScore)}/5 · Organization ${escape(feedback.organizationScore)}/5 · Language ${escape(feedback.languageScore)}/5 · Vocabulary ${escape(feedback.vocabularyScore)}/5</p><p>${escape(feedback.feedbackSummary)}</p><div><b>Strengths · 做得好</b><ul>${feedback.strengths.map((point) => `<li>${escape(point)}</li>`).join('')}</ul></div><div><b>Next steps · 下一步</b><ul>${feedback.nextSteps.map((point) => `<li>${escape(point)}</li>`).join('')}</ul></div><p><b>Model revision · 參考改寫</b><br>${escape(feedback.modelRevision)}</p></article>`;
-      } catch (error) { panel.innerHTML = `<p class="question-zh">${escape(error.message || 'AI feedback is unavailable right now.')}</p>`; }
-      finally { button.disabled = false; }
-    });
+    const legacyWritingAction = $('#ai-writing-submit');
+    if (legacyWritingAction) {
+      legacyWritingAction.disabled = true;
+      legacyWritingAction.textContent = 'Automated feedback paused · 自動評語已暫停';
+      legacyWritingAction.closest('.writing-ai-panel')?.querySelector('strong')?.replaceChildren('Self-review only · 只供自我檢查');
+      $('#ai-writing-feedback').innerHTML = '<p class="question-zh">Your writing stays in this browser. Use the plan, model and checklist to revise; nothing is submitted, stored or automatically marked. · 文章只留在此瀏覽器。請用規劃、範本及檢查表修訂；系統不會提交、儲存或自動評分。</p>';
+    }
     updateSessionProgress();
     renderTimedPractice();
   }

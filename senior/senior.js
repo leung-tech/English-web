@@ -205,21 +205,13 @@
     const draft = $('#senior-draft');
     if (draft) { const count = () => { const words = draft.value.trim() ? draft.value.trim().split(/\s+/).length : 0; $('#draft-count').textContent = `${words} words`; }; draft.addEventListener('input', () => { const data = drafts(); data[task().id] = draft.value; set(draftKey,data); count(); }); count(); }
     const aiWriting = $('[data-ai-writing-submit]');
-    if (aiWriting) aiWriting.onclick = async () => {
-      const writingText = String($('#senior-draft')?.value || '').trim();
-      const output = $('[data-ai-writing-feedback]');
-      if (writingText.length < 20) { output.innerHTML = '<p class="zh">Please write a little more before submitting. · 請先多寫一些英文內容才提交。</p>'; return; }
+    if (aiWriting) {
       aiWriting.disabled = true;
-      output.innerHTML = '<p class="zh">Generating grade-level feedback… · 正在產生按年級評語…</p>';
-      try {
-        const item = task() || {};
-        const result = await window.EnglishTuitionAccount?.submitWriting?.({ grade: state.stage.toUpperCase(), taskId: item.id, writingText });
-        const feedback = result?.evaluation;
-        if (!feedback) throw new Error('AI feedback is unavailable right now.');
-        output.innerHTML = `<article class="feedback"><strong>AI formative feedback · AI 形成性評語 (${escape(feedback.overallScore)}/5)</strong><p>Content ${escape(feedback.contentScore)}/5 · Organization ${escape(feedback.organizationScore)}/5 · Language ${escape(feedback.languageScore)}/5 · Vocabulary ${escape(feedback.vocabularyScore)}/5</p><p>${escape(feedback.feedbackSummary)}</p><b>Strengths · 做得好</b><ul>${(feedback.strengths || []).map((point) => `<li>${escape(point)}</li>`).join('')}</ul><b>Next steps · 下一步</b><ul>${(feedback.nextSteps || []).map((point) => `<li>${escape(point)}</li>`).join('')}</ul><p><b>Model revision · 參考改寫</b><br>${escape(feedback.modelRevision)}</p></article>`;
-      } catch (error) { output.innerHTML = `<p class="zh">${escape(error.message || 'AI feedback is unavailable right now.')}</p>`; }
-      finally { aiWriting.disabled = false; }
-    };
+      aiWriting.textContent = 'Automated feedback paused · 自動評語已暫停';
+      aiWriting.closest('.writing-ai-panel')?.querySelector('h3')?.replaceChildren('Self-review only · 只供自我檢查');
+      const output = $('[data-ai-writing-feedback]');
+      if (output) output.innerHTML = '<p class="zh">Your draft stays in this browser. Use the source pack, structure, language bank and revision checks to improve it; nothing is submitted, stored or automatically marked. · 草稿只留在此瀏覽器。請用資料包、結構、語言庫及修訂檢查改善內容；系統不會提交、儲存或自動評分。</p>';
+    }
     document.querySelectorAll('[data-paper2-check]').forEach((box) => box.onchange = () => { const data = reviews(); const id = task().id; const existing = new Set(data[id] || []); const index = Number(box.dataset.paper2Check); if (box.checked) existing.add(index); else existing.delete(index); data[id] = [...existing].sort((a,b) => a - b); set(reviewKey, data); });
     document.querySelectorAll('[data-paper3-choice]').forEach((input) => input.onchange = () => { if (!state.paper3Checked && !state.exam?.test?.finished) { state.paper3Answers[Number(input.dataset.paper3Choice)] = Number(input.value); renderTask(); } });
     const paper3Check = $('[data-paper3-check]');

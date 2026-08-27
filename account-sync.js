@@ -45,21 +45,6 @@
     }).catch(() => { /* Immediate feedback remains available during a transient network failure. */ });
   }
 
-  async function submitWriting({ grade, taskId, writingText }) {
-    if (isGuestMode()) throw new Error('Guest practice does not save writing or create AI feedback. Sign in to use this feature.');
-    const syncToken = sessionStorage.getItem(tokenKey);
-    if (!syncToken) { requireAccountSession(); throw new Error('Sign in to submit writing for feedback.'); }
-    const payload = { syncToken, grade: String(grade || '').toUpperCase(), taskId: String(taskId || '').trim(), writingText: String(writingText || '').trim() };
-    const response = await fetch(`${portalOrigin}/api/trpc/writing.submitFromPublic?batch=1`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ 0: { json: payload } })
-    });
-    if (response.status === 401) { sessionStorage.removeItem(tokenKey); requireAccountSession(); throw new Error('Your account connection has expired. Please sign in again.'); }
-    const result = await response.json();
-    const error = result?.[0]?.error?.json?.message;
-    if (!response.ok || error) throw new Error(error || 'AI feedback is unavailable right now. Please try again.');
-    return result?.[0]?.result?.data?.json;
-  }
-
   async function primaryGradeFromAccount(stage) {
     if (isGuestMode()) return null;
     const syncToken = sessionStorage.getItem(tokenKey);
@@ -132,5 +117,5 @@
     event.preventDefault();
     window.location.assign(accountDashboardUrl());
   }));
-  window.EnglishTuitionAccount = Object.freeze({ portalOrigin, recordObjective, rememberPrimaryGrade, submitWriting });
+  window.EnglishTuitionAccount = Object.freeze({ portalOrigin, recordObjective, rememberPrimaryGrade });
 })();
