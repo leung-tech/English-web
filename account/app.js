@@ -8,6 +8,7 @@ const consentVersion = '2026-08-27';
 const stages = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6'];
 let auth;
 let db;
+let registrationInProgress = false;
 
 const escape = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[char]);
 const message = (text, type = '') => `<p class="notice ${type}">${text}</p>`;
@@ -50,14 +51,16 @@ function renderAuth(mode = 'signIn', notice = '') {
     try {
       if (signIn) await signInWithEmailAndPassword(auth, email, password);
       else {
+        registrationInProgress = true;
         const result = await createUserWithEmailAndPassword(auth, email, password);
         const displayName = String(form.get('displayName') || '').trim();
         await updateProfile(result.user, { displayName });
         await setDoc(doc(db, 'users', result.user.uid), { displayName, email: result.user.email, accountType: form.get('accountType'), consentVersion, consentAt: serverTimestamp(), createdAt: serverTimestamp(), accountStatus: 'active' });
         await setDoc(doc(db, 'preferences', result.user.uid), { primaryStage: 'P1', updatedAt: serverTimestamp() });
+        await showAccount(result.user);
       }
     } catch (error) { renderAuth(signIn ? 'signIn' : 'register', message(displayError(error), 'error')); }
-    finally { button.disabled = false; }
+    finally { registrationInProgress = false; button.disabled = false; }
   };
 }
 
@@ -96,7 +99,7 @@ async function start() {
     if (!module.firebaseConfig || String(module.firebaseConfig.apiKey || '').startsWith('PUBLIC_')) throw new Error('missing-config');
     const app = initializeApp(module.firebaseConfig);
     auth = getAuth(app); db = getFirestore(app);
-    onAuthStateChanged(auth, async (user) => { if (!user) renderAuth(); else { try { await showAccount(user); } catch (error) { root.innerHTML = message(displayError(error), 'error'); } } });
+    onAuthStateChanged(auth, async (user) => { if (registrationInProgress) return; if (!user) renderAuth(); else { try { await showAccount(user); } catch (error) { root.innerHTML = message(displayError(error), 'error'); } } });
   } catch { root.innerHTML = `${message('Firebase Web App setup is not complete yet. The public practice site remains available and no account data can be sent from this page. · Firebase Web App 設定尚未完成；公開練習網站仍可使用，此頁暫不會傳送帳戶資料。', 'error')}<p><a class="return-link" href="/English-web/">Return to public practice · 返回公開練習</a></p>`; }
 }
 start();
