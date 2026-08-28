@@ -21,16 +21,17 @@
     sdk = { auth: authModule.getAuth(app), db: fireModule.getFirestore(app), authModule, fireModule };
     return sdk;
   }
-  async function userOrRedirect() {
+
+  async function currentUser() {
     if (isGuest()) return null;
     try {
       const { auth, authModule } = await loadSdk();
       const user = auth.currentUser || await new Promise((resolve) => authModule.onAuthStateChanged(auth, resolve, () => resolve(null)));
       if (user) return user;
-    } catch { /* The account setup page explains incomplete live configuration. */ }
-    location.replace(accountUrl());
+    } catch { /* The account page explains incomplete configuration. */ }
     return null;
   }
+
   async function recordObjective({ stage, skill, moduleId, questionId, isCorrect }) {
     if (isGuest()) return;
     const normalizedStage = String(stage || '').toUpperCase().match(/[PS][1-6]/)?.[0] || '';
@@ -38,7 +39,7 @@
     const safeModule = ident(moduleId, 'practice-module');
     const safeQuestion = ident(questionId, `${safeModule}-item`);
     if (!/^([PS][1-6])$/.test(normalizedStage) || !allowedSkills.has(normalizedSkill) || !safeModule || !safeQuestion) return;
-    const user = await userOrRedirect();
+    const user = await currentUser();
     if (!user) return;
     try {
       const { db, fireModule } = await loadSdk();
@@ -48,27 +49,44 @@
       batch.set(fireModule.doc(db, 'users', user.uid, 'progress', eventId()), { stage: normalizedStage, skill: normalizedSkill, moduleId: safeModule, questionId: safeQuestion, isCorrect: Boolean(isCorrect), completedAt: fireModule.serverTimestamp() });
       batch.set(fireModule.doc(db, 'usage', user.uid), { attempts: fireModule.increment(1), correct: fireModule.increment(isCorrect ? 1 : 0), lastObjectiveAt: fireModule.serverTimestamp() }, { merge: true });
       await batch.commit();
-    } catch { /* Keep practice feedback responsive; account page remains the source of record. */ }
+    } catch { /* A sync failure never interrupts practice feedback. */ }
   }
+
   async function rememberPrimaryGrade(grade) {
     if (isGuest()) return;
     const stage = `P${Number(grade)}`;
     if (!/^P[1-6]$/.test(stage)) return;
-    const user = await userOrRedirect();
+    const user = await currentUser();
     if (!user) return;
     try { const { db, fireModule } = await loadSdk(); await fireModule.setDoc(fireModule.doc(db, 'preferences', user.uid), { primaryStage: stage, updatedAt: fireModule.serverTimestamp() }); } catch { /* A failure never interrupts practice. */ }
   }
-  function updateConnectionNotice() {
+
+  async function updateConnectionNotice() {
     const notices = document.querySelectorAll('[data-account-sync-status]');
     if (!notices.length) return;
+    const user = await currentUser();
     const content = isGuest()
       ? '<strong>Guest practice · 訪客練習</strong><span>You can practise now. Results are not stored in an account or this browser. Sign in when you want private objective-progress records. · 你可即時練習；結果不會儲存在帳戶或此瀏覽器。需要保存客觀題進度時才登入。</span>'
-      : '<strong>Private account required · 需要私人帳戶</strong><span>Opening Firebase Email/Password sign-in… · 正在開啟 Firebase 電郵／密碼登入…</span>';
+      : user
+        ? '<strong>Private account connected · 已連接私人帳戶</strong><span>Checked reading, language and fixed-answer listening results can be saved privately. · 已核對的閱讀、語言運用及固定答案聆聽結果可保存到私人帳戶。</span>'
+        : `<strong>Choose how to start · 選擇開始方式</strong><span><a href="${accountUrl()}">Sign in / register · 登入／註冊</a> to save objective progress, or <a href="?guest=1">continue as guest · 不登入直接練習</a>. · 登入後才會保存客觀題進度；也可不登入直接練習。</span>`;
     notices.forEach((notice) => { notice.innerHTML = content; });
   }
-  function requireAccountSession() { if (!isGuest()) void userOrRedirect(); }
-  function addGuestReturn() { if (!isGuest() || document.querySelector('[data-guest-login-return]')) return; const topbar = document.querySelector('.topbar'); if (!topbar) return; const link = document.createElement('a'); link.href = accountUrl(); link.className = 'guest-login-return'; link.dataset.guestLoginReturn = 'true'; link.textContent = '← Sign in · 返回登入'; topbar.prepend(link); }
-  updateConnectionNotice(); requireAccountSession(); addGuestReturn();
+
+  function addGuestReturn() {
+    if (!isGuest() || document.querySelector('[data-guest-login-return]')) return;
+    const topbar = document.querySelector('.topbar');
+    if (!topbar) return;
+    const link = document.createElement('a');
+    link.href = accountUrl();
+    link.className = 'guest-login-return';
+    link.dataset.guestLoginReturn = 'true';
+    link.textContent = '← Sign in · 返回登入';
+    topbar.prepend(link);
+  }
+
+  void updateConnectionNotice();
+  addGuestReturn();
   document.querySelectorAll('[data-account-link]').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); location.assign(accountUrl()); }));
   window.EnglishTuitionAccount = Object.freeze({ recordObjective, rememberPrimaryGrade });
 })();
