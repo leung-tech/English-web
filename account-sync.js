@@ -58,9 +58,17 @@
     if (!user) return;
     try { const { db, fireModule } = await loadSdk(); await fireModule.setDoc(fireModule.doc(db, 'preferences', user.uid), { primaryStage: stage, updatedAt: fireModule.serverTimestamp() }); } catch { /* A failure never interrupts practice. */ }
   }
+  function updateConnectionNotice() {
+    const notices = document.querySelectorAll('[data-account-sync-status]');
+    if (!notices.length) return;
+    const content = isGuest()
+      ? '<strong>Guest practice · 訪客練習</strong><span>You can practise now. Results are not stored in an account or this browser. Sign in when you want private objective-progress records. · 你可即時練習；結果不會儲存在帳戶或此瀏覽器。需要保存客觀題進度時才登入。</span>'
+      : '<strong>Private account required · 需要私人帳戶</strong><span>Opening Firebase Email/Password sign-in… · 正在開啟 Firebase 電郵／密碼登入…</span>';
+    notices.forEach((notice) => { notice.innerHTML = content; });
+  }
   function requireAccountSession() { if (!isGuest()) void userOrRedirect(); }
   function addGuestReturn() { if (!isGuest() || document.querySelector('[data-guest-login-return]')) return; const topbar = document.querySelector('.topbar'); if (!topbar) return; const link = document.createElement('a'); link.href = accountUrl(); link.className = 'guest-login-return'; link.dataset.guestLoginReturn = 'true'; link.textContent = '← Sign in · 返回登入'; topbar.prepend(link); }
-  requireAccountSession(); addGuestReturn();
+  updateConnectionNotice(); requireAccountSession(); addGuestReturn();
   document.querySelectorAll('[data-account-link]').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); location.assign(accountUrl()); }));
   window.EnglishTuitionAccount = Object.freeze({ recordObjective, rememberPrimaryGrade });
 })();
